@@ -1,26 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+@utility prose-pink {
+  @apply prose;
+  & > * {
+    --tw-prose-body: var(--color-pink-800);
+    --tw-prose-headings: var(--color-pink-900);
+  }
+}
+
+/* sekarang baru aturan CSS lainnya */
 :root {
-  --background: #ffffff;
+  --background: #131313;
   --foreground: #171717;
+
+  /* ====== BG Radial Variables ====== */
+  --bg-base: hsla(0, 0%, 7%, 1);
+  --bg-gradients: radial-gradient(
+      at 28% 31%,
+      hsla(106, 0%, 7%, 1) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 13% 75%, hsla(0, 0%, 7%, 1) 0px, transparent 50%),
+    radial-gradient(at 89% 71%, hsla(80, 0%, 7%, 1) 0px, transparent 50%),
+    radial-gradient(at 96% 98%, hsla(40, 0%, 32%, 1) 0px, transparent 50%),
+    radial-gradient(at 48% 68%, hsla(260, 0%, 7%, 1) 0px, transparent 50%),
+    radial-gradient(at 8% 98%, hsla(40, 0%, 32%, 1) 0px, transparent 50%),
+    radial-gradient(at 51% 25%, hsla(28, 0%, 7%, 1) 0px, transparent 50%),
+    radial-gradient(at 24% 58%, hsla(40, 0%, 32%, 1) 0px, transparent 50%),
+    radial-gradient(at 13% 4%, hsla(77, 0%, 7%, 1) 0px, transparent 50%);
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Noto Sans", Arial, Helvetica, sans-serif;
+
+  /* ====== Apply Radial Background ====== */
+  background-color: var(--bg-base);
+  background-image: var(--bg-gradients);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
 }
