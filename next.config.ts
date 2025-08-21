@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "http",
-        hostname: "sgb-backpanel.test",
+        protocol: "https",
+        hostname: "vellorist.biz.id",
         port: "",
         pathname: "/**",
       },
