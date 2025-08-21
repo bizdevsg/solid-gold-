@@ -110,7 +110,7 @@ export default function BeritaDetailPage() {
             <div className="bg-neutral-800 rounded-lg shadow-lg">
                 {berita.images?.[0] && (
                     <img
-                        src={`http://portal-backpanel.test/${berita.images[0]}`}
+                        src={`http://portalnews.newsmaker.id/${berita.images[0]}`}
                         alt={berita.title}
                         className="w-full max-h-[400px] object-cover rounded-t-lg mb-6"
                         loading="lazy"
