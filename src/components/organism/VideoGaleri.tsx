@@ -34,7 +34,7 @@ const fetcher = (url: string) =>
 function mediaUrl(p?: string | null) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
-    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "http://sgb-backpanel.test";
+    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://vellorist.biz.id";
     return `${base}/${String(p).replace(/^\/+/, "")}`;
 }
 
