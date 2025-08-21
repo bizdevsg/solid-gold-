@@ -45,7 +45,7 @@ function stripHtml(html: string): string {
 function mediaUrl(p?: string) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
-    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "http://portal-backpanel.test";
+    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://portalnews.newsmaker.id";
     return `${base}/${p.replace(/^\/+/, "")}`;
 }
 
@@ -164,8 +164,8 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                             key={filter}
                             onClick={() => setActiveFilter(filter)}
                             className={`uppercase border border-yellow-500 text-white px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
-                                    ? "bg-yellow-500 text-white"
-                                    : "bg-gray-100/5 hover:bg-gray-100/10"
+                                ? "bg-yellow-500 text-white"
+                                : "bg-gray-100/5 hover:bg-gray-100/10"
                                 }`}
                         >
                             {filter}
