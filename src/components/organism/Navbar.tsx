@@ -17,8 +17,8 @@ export default function Navbar() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // desktop hover
-    const [mobileDropdown, setMobileDropdown] = useState<string | null>(null); // mobile accordion
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+    const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
     const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
     const navRef = useRef<HTMLDivElement | null>(null);
 
@@ -127,7 +127,7 @@ export default function Navbar() {
         };
     }, []);
 
-    // ✅ Saat route berubah: TUTUP menu & dropdown. Jangan auto-buka berdasarkan route.
+    // ✅ Tutup menu saat route berubah
     useEffect(() => {
         if (timeoutId.current) {
             clearTimeout(timeoutId.current);
@@ -204,7 +204,7 @@ export default function Navbar() {
                                 if (hasDropdown) {
                                     const dropdown = (item as Extract<MenuItem, { dropdown: any }>).dropdown;
                                     const desktopOpen = activeDropdown === key;
-                                    const parentActive = isDropdownActive(dropdown); // hanya untuk highlight, bukan membuka
+                                    const parentActive = isDropdownActive(dropdown);
 
                                     return (
                                         <div
@@ -228,7 +228,7 @@ export default function Navbar() {
                                                 <FiChevronDown />
                                             </button>
 
-                                            {/* Desktop Dropdown (show on hover only) */}
+                                            {/* Desktop Dropdown */}
                                             <div
                                                 role="menu"
                                                 aria-label={item.label}
@@ -254,7 +254,7 @@ export default function Navbar() {
                                                                                         : "text-gray-300 hover:text-yellow-500"
                                                                                         }`}
                                                                                     aria-current={childActive ? "page" : undefined}
-                                                                                    onClick={closeAllMenus} // ✅ tutup saat navigasi
+                                                                                    onClick={closeAllMenus}
                                                                                 >
                                                                                     {child.label}
                                                                                 </Link>
@@ -267,7 +267,7 @@ export default function Navbar() {
                                                     </div>
                                                 ) : (
                                                     <ul className="py-2">
-                                                        {dropdown.map((link: MenuLink, lIdx: number) => {
+                                                        {(dropdown as MenuLink[]).map((link, lIdx) => {
                                                             const childActive = isActiveHref(link.href);
                                                             return (
                                                                 <li key={lIdx}>
@@ -278,7 +278,7 @@ export default function Navbar() {
                                                                             : "text-gray-300 hover:text-yellow-500"
                                                                             }`}
                                                                         aria-current={childActive ? "page" : undefined}
-                                                                        onClick={closeAllMenus} // ✅
+                                                                        onClick={closeAllMenus}
                                                                     >
                                                                         {link.label}
                                                                     </Link>
@@ -289,7 +289,7 @@ export default function Navbar() {
                                                 )}
                                             </div>
 
-                                            {/* Mobile Dropdown (accordion) */}
+                                            {/* Mobile Dropdown */}
                                             {mobileDropdown === key && (
                                                 <div className="lg:hidden pl-3 pt-1" role="menu">
                                                     {isGroupArray(dropdown) ? (
@@ -311,7 +311,7 @@ export default function Navbar() {
                                                                                             : "text-gray-300 hover:text-yellow-500"
                                                                                             }`}
                                                                                         aria-current={childActive ? "page" : undefined}
-                                                                                        onClick={closeAllMenus} // ✅
+                                                                                        onClick={closeAllMenus}
                                                                                     >
                                                                                         {child.label}
                                                                                     </Link>
@@ -324,7 +324,7 @@ export default function Navbar() {
                                                         </div>
                                                     ) : (
                                                         <ul>
-                                                            {dropdown.map((link: MenuLink, lIdx: number) => {
+                                                            {(dropdown as MenuLink[]).map((link, lIdx) => {
                                                                 const childActive = isActiveHref(link.href);
                                                                 return (
                                                                     <li key={lIdx}>
@@ -335,7 +335,7 @@ export default function Navbar() {
                                                                                 : "text-gray-300 hover:text-yellow-500"
                                                                                 }`}
                                                                             aria-current={childActive ? "page" : undefined}
-                                                                            onClick={closeAllMenus} // ✅
+                                                                            onClick={closeAllMenus}
                                                                         >
                                                                             {link.label}
                                                                         </Link>
@@ -359,7 +359,7 @@ export default function Navbar() {
                                         href={simple.href}
                                         className={`${linkBase} ${simpleActive ? "text-yellow-400" : "text-white"}`}
                                         aria-current={simpleActive ? "page" : undefined}
-                                        onClick={closeAllMenus} // ✅
+                                        onClick={closeAllMenus}
                                     >
                                         {simple.label}
                                     </Link>
@@ -371,7 +371,7 @@ export default function Navbar() {
                                 <Link
                                     href="https://regol.solidgold.co.id/"
                                     className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold text-sm px-5 py-2 rounded transition hover:from-yellow-500 hover:to-yellow-700 block text-center lg:inline-block"
-                                    onClick={closeAllMenus} // ✅
+                                    onClick={closeAllMenus}
                                 >
                                     Daftar Sekarang
                                 </Link>
