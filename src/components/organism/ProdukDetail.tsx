@@ -26,7 +26,7 @@ export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps
     }
 
     // Pastikan BASE tanpa trailing slash
-    const BASE = (process.env.NEXT_PUBLIC_BASE_URL ?? "http://sgb-backpanel.test").replace(/\/+$/, "");
+    const BASE = (process.env.NEXT_PUBLIC_BASE_URL ?? "https://vellorist.biz.id").replace(/\/+$/, "");
     // Normalisasi path image (tanpa leading slash)
     const relImage = (data.image ?? "").replace(/^\/+/, "");
     const imgSrc = relImage ? `${BASE}/${relImage}` : "https://placehold.co/800x450";

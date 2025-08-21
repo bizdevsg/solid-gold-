@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const response = await fetch("http://sgb-backpanel.test/api/v1/setting", {
+        const response = await fetch("https://vellorist.biz.id/api/v1/setting", {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
                 Accept: "application/json",
