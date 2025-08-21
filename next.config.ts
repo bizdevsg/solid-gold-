@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "portal-backpanel.test",
+        protocol: "https",
+        hostname: "portalnews.newsmaker.id",
         port: "",
         pathname: "/**",
       },
