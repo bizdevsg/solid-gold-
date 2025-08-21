@@ -1,11 +1,31 @@
+import React from "react";
+
+type LinkItem = {
+    label: string;
+    href: string;
+};
+
+type CategoryItem = {
+    category: string;
+    children: LinkItem[];
+};
+
+type DropdownItem = LinkItem | CategoryItem;
+
+type MenuItem = {
+    label: string;
+    key: string;
+    dropdown?: DropdownItem[];
+};
+
 export default function Footer() {
-    const menuItems = [
+    const menuItems: MenuItem[] = [
         {
             label: "Produk",
             key: "produk",
             dropdown: [
-                { label: "Multilateral (JFX)", href: "/produk/multilateral" },
-                { label: "Bilateral (SPA)", href: "/produk/regular-account" },
+                { label: "Multilateral (JFX)", href: "/multilateral" },
+                { label: "Bilateral (SPA)", href: "/bilateral" },
             ],
         },
         {
@@ -15,15 +35,18 @@ export default function Footer() {
                 {
                     category: "Market",
                     children: [
-                        { label: "Index", href: "/news/market/index" },
-                        { label: "Commodity", href: "/news/market/commodity" },
-                        { label: "Currencies", href: "/news/market/currencies" },
+                        { label: "Index", href: "/indexNews" },
+                        { label: "Commodity", href: "/commodityNews" },
+                        { label: "Currencies", href: "/currenciesNews" },
                     ],
                 },
                 {
                     category: "Economic",
                     children: [
-                        { label: "Global & Economy", href: "/news/economic/global-economy" },
+                        {
+                            label: "Global & Economy",
+                            href: "/economicNews",
+                        },
                     ],
                 },
             ],
@@ -32,10 +55,10 @@ export default function Footer() {
             label: "Analysis",
             key: "analysis",
             dropdown: [
-                { label: "Market Analysis", href: "/analysis/technical" },
-                { label: "Economic Calendar", href: "/analysis/fundamental" },
-                { label: "Analysis & Opinion", href: "/analysis/fundamental" },
-                { label: "Pivot & Fibonacci", href: "/analysis/fundamental" },
+                { label: "Market Analysis", href: "/analisisMarket" },
+                { label: "Economic Calendar", href: "/analisis/kalender-ekonomi" },
+                { label: "Analysis & Opinion", href: "/analisisOpini" },
+                { label: "Pivot & Fibonacci", href: "/analisis/pivot-fibonacci" },
             ],
         },
     ];
@@ -52,7 +75,8 @@ export default function Footer() {
                             className="h-12 mb-4"
                         />
                         <p className="text-sm text-gray-400 leading-relaxed">
-                            Broker resmi yang diawasi oleh Bappebti dan Bursa Berjangka.
+                            Broker resmi yang diawasi oleh Bappebti dan Bursa
+                            Berjangka.
                         </p>
                     </div>
 
@@ -63,55 +87,49 @@ export default function Footer() {
                                 {menu.label}
                             </h5>
 
-                            {/* Dropdown */}
-                            {Array.isArray(menu.dropdown) && menu.dropdown.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {menu.dropdown.map((item, idx) => {
-                                        if (item.category) {
+                            {Array.isArray(menu.dropdown) &&
+                                menu.dropdown.length > 0 && (
+                                    <ul className="space-y-2">
+                                        {menu.dropdown.map((item, idx) => {
+                                            if ("category" in item) {
+                                                return (
+                                                    <li key={idx}>
+                                                        <span className="block text-yellow-500 font-medium mb-1">
+                                                            {item.category}
+                                                        </span>
+                                                        <ul className="space-y-1 ml-2">
+                                                            {item.children.map(
+                                                                (child, childIdx) => (
+                                                                    <li key={childIdx}>
+                                                                        <a
+                                                                            href={child.href}
+                                                                            className="hover:text-yellow-500 transition-colors duration-200 text-sm"
+                                                                        >
+                                                                            {
+                                                                                child.label
+                                                                            }
+                                                                        </a>
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                    </li>
+                                                );
+                                            }
+
                                             return (
                                                 <li key={idx}>
-                                                    <span className="block text-yellow-500 font-medium mb-1">
-                                                        {item.category}
-                                                    </span>
-                                                    <ul className="space-y-1 ml-2">
-                                                        {item.children.map((child, childIdx) => (
-                                                            <li key={childIdx}>
-                                                                <a
-                                                                    href={child.href}
-                                                                    className="hover:text-yellow-500 transition-colors duration-200 text-sm"
-                                                                >
-                                                                    {child.label}
-                                                                </a>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+                                                    <a
+                                                        href={item.href}
+                                                        className="hover:text-yellow-500 transition-colors duration-200 text-sm"
+                                                    >
+                                                        {item.label}
+                                                    </a>
                                                 </li>
                                             );
-                                        }
-                                        return (
-                                            <li key={idx}>
-                                                <a
-                                                    href={item.href}
-                                                    className="hover:text-yellow-500 transition-colors duration-200 text-sm"
-                                                >
-                                                    {item.label}
-                                                </a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            ) : (
-                                <ul>
-                                    <li>
-                                        <a
-                                            href={(menu as any).href}
-                                            className="hover:text-yellow-500 transition-colors duration-200 text-sm"
-                                        >
-                                            {menu.label}
-                                        </a>
-                                    </li>
-                                </ul>
-                            )}
+                                        })}
+                                    </ul>
+                                )}
                         </div>
                     ))}
                 </div>
