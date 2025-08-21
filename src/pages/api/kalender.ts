@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        const response = await fetch("http://portal-backpanel.test/api/kalender-ekonomi", {
+        const response = await fetch("http://portalnews.newsmaker.id/api/kalender-ekonomi", {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
                 Accept: "application/json",
