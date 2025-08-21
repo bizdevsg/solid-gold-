@@ -66,7 +66,7 @@ export default function WakilPialangSection() {
                             {/* Foto */}
                             <div className="relative w-full h-48">
                                 <Image
-                                    src={pialang.image ? `http://sgb-backpanel.test/${pialang.image}` : "/images/placeholder.jpg"}
+                                    src={pialang.image ? `https://vellorist.biz.id/${pialang.image}` : "/images/placeholder.jpg"}
                                     alt={pialang.nama}
                                     fill
                                     className="object-cover"
