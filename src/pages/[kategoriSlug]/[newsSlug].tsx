@@ -38,7 +38,7 @@ export default function BeritaDetailPage() {
             setErrMsg(null);
             try {
                 const res = await fetch(
-                    `http://portal-backpanel.test/api/berita/${encodeURIComponent(newsSlug)}`,
+                    `http://portalnews.newsmaker.id/api/berita/${encodeURIComponent(newsSlug)}`,
                     { signal: ac.signal }
                 );
 
