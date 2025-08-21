@@ -198,7 +198,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                                 title={news.title}
                                 category={news.kategori?.name || "-"}
                                 description={cleanDescription}
-                                link={`/${kategoriSlug}/${encodeURIComponent(news.slug)}`}
+                                href={`/${kategoriSlug}/${encodeURIComponent(news.slug)}`}
                             />
                         );
                     })}
