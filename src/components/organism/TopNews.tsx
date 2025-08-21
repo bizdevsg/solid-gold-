@@ -45,21 +45,25 @@ const newsFetcher = async (url: string) => pickArray<Berita>(await baseFetcher(u
 const marketFetcher = async (url: string) => pickArray<Quote>(await baseFetcher(url));
 
 function normalizeMarket(raw: unknown[]): Quote[] {
-    return raw.filter(
-        (d): d is Quote =>
-            d &&
+    return raw.filter((d): d is Quote => {
+        return (
+            d !== null &&
             typeof d === "object" &&
             typeof (d as any).symbol === "string" &&
             typeof (d as any).last === "number" &&
             typeof (d as any).percentChange === "number"
-    );
+        );
+    });
 }
 
 function normalizeNews(raw: unknown[]): Berita[] {
     return raw
         .filter(
             (d): d is Berita =>
-                d && typeof d === "object" && typeof (d as any).id === "number" && typeof (d as any).title === "string"
+                d !== null &&
+                typeof d === "object" &&
+                typeof (d as any).id === "number" &&
+                typeof (d as any).title === "string"
         )
         .sort((a, b) => {
             const ta = a.created_at ? Date.parse(a.created_at) : 0;
@@ -70,7 +74,10 @@ function normalizeNews(raw: unknown[]): Berita[] {
 
 /** builder item marquee */
 function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
-    const topNews = news.slice(0, 3).map((n) => n.title.trim()).filter(Boolean);
+    const topNews = news
+        .slice(0, 3)
+        .map((n) => n.title.trim())
+        .filter(Boolean);
     const newsContent = topNews.length ? topNews.join(" • ") : "Tidak ada berita terbaru";
     const newsItem: DisplayItem = { type: "news", content: newsContent };
     const marketItems: DisplayItem[] = market.map((m) => ({
@@ -146,16 +153,14 @@ export default function TopNews() {
         const contentWidth = contentRef.current.scrollWidth;
         const containerWidth = containerRef.current.clientWidth;
 
-        // kalau konten <= container (nggak perlu jalan)
         if (contentWidth <= containerWidth) {
             setMarqueeActive(false);
             return;
         }
 
-        // pixels per second (semakin besar → semakin cepat)
-        const SPEED = 140; // tweak: 140–200 nyaman; kamu bilang terlalu lama → naikin
-        const duration = contentWidth / SPEED; // detik
-        setMarqueeDuration(Math.max(8, Math.min(duration, 50))); // clamp 8s – 35s
+        const SPEED = 140;
+        const duration = contentWidth / SPEED;
+        setMarqueeDuration(Math.max(8, Math.min(duration, 50)));
         setMarqueeActive(true);
     }, [displayItems]);
 
@@ -217,7 +222,9 @@ export default function TopNews() {
                                                 }`}
                                         >
                                             <span className="font-semibold">{item.content}</span>:{" "}
-                                            <span>{typeof item.value === "number" ? numberFmt.format(item.value) : "-"}</span>{" "}
+                                            <span>
+                                                {typeof item.value === "number" ? numberFmt.format(item.value) : "-"}
+                                            </span>{" "}
                                             <span
                                                 className={
                                                     isUp === undefined
@@ -233,7 +240,6 @@ export default function TopNews() {
                                     );
                                 }
 
-                                // news
                                 return (
                                     <div key={`news-${idx}`} className="flex-shrink-0 text-gray-200 italic">
                                         {item.content}
