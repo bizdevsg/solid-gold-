@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import Error from "next/error";
+import { notFound } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import AOS from "aos";
 import NewsCard from "../moleculs/NewsCard";
@@ -67,7 +67,7 @@ function pickArray<T = unknown>(raw: any): T[] {
 export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     // 404 guard tanpa redirect
     const allowedSlugs = useMemo(() => new Set(Object.keys(kategoriMap)), []);
-    if (!allowedSlugs.has(kategoriSlug)) return <Error statusCode={404} />;
+    if (!allowedSlugs.has(kategoriSlug)) notFound();
 
     const [activeFilter, setActiveFilter] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
@@ -121,7 +121,10 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 activeFilter.toLowerCase() === "all" ||
                 katName.toLowerCase() === activeFilter.toLowerCase();
 
-            const text = (n.title || "").toLowerCase() + " " + stripHtml(n.content || "").toLowerCase();
+            const text =
+                (n.title || "").toLowerCase() +
+                " " +
+                stripHtml(n.content || "").toLowerCase();
             const matchSearch = q === "" || text.includes(q);
 
             return matchFilter && matchSearch;
@@ -223,7 +226,9 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                     data-aos-once="true"
                 >
                     {filteredNews.map((news) => {
-                        const cleanDescription = stripHtml(news.content).replace(/&nbsp;/g, " ").trim();
+                        const cleanDescription = stripHtml(news.content)
+                            .replace(/&nbsp;/g, " ")
+                            .trim();
                         return (
                             <NewsCard
                                 key={news.id}
@@ -231,7 +236,9 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                                 title={news.title}
                                 category={news.kategori?.name || "-"}
                                 description={cleanDescription}
-                                href={`/${encodeURIComponent(kategoriSlug)}/${encodeURIComponent(news.slug)}`}
+                                href={`/${encodeURIComponent(kategoriSlug)}/${encodeURIComponent(
+                                    news.slug
+                                )}`}
                             />
                         );
                     })}
