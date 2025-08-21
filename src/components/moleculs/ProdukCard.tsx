@@ -12,7 +12,7 @@ export default function ProdukCard({
     imagePath,
     href,
 }: ProdukCardProps) {
-    const BASE_URL = "http://sgb-backpanel.test/";
+    const BASE_URL = "https://vellorist.biz.id/";
     const imgSrc = imagePath
         ? `${BASE_URL}${imagePath.startsWith("/") ? imagePath.slice(1) : imagePath}`
         : "https://placehold.co/600x400";
