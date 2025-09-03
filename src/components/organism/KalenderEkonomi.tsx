@@ -134,7 +134,7 @@ export default function KalenderEkonomi() {
                         placeholder="Cari data..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-4 py-2 border border-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        className="w-full px-4 py-2 text-white border border-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     />
                 </div>
             </div>

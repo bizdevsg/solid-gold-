@@ -11,9 +11,17 @@ interface Kategori {
     name: string;
     slug: string;
 }
+
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
+
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants; // ← penting: dukung variasi judul
     slug: string;
     content: string;
     category_id: number;
@@ -22,6 +30,7 @@ interface Berita {
     created_at: string;
     updated_at: string;
 }
+
 interface NewsContainerProps {
     /** contoh valid: "indexNews", "commodityNews", "currenciesNews", "economicNews", "analisisMarket", "analisisOpini" */
     kategoriSlug: string;
@@ -49,6 +58,12 @@ function mediaUrl(p?: string) {
     return `${base}/${p.replace(/^\/+/, "")}`;
 }
 
+function pickTitle(item: Berita): string {
+    const t = item.titles ?? {};
+    const candidates = [t.sg, t.default, item.title];
+    return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
+}
+
 /** fetcher dasar */
 const fetcher = (url: string) =>
     fetch(url, { headers: { accept: "application/json" }, cache: "no-store" }).then((r) => {
@@ -65,12 +80,21 @@ function pickArray<T = unknown>(raw: any): T[] {
 }
 
 export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
-    // 404 guard tanpa redirect
+    // 404 guard
     const allowedSlugs = useMemo(() => new Set(Object.keys(kategoriMap)), []);
     if (!allowedSlugs.has(kategoriSlug)) notFound();
 
     const [activeFilter, setActiveFilter] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Init & refresh AOS
+    useEffect(() => {
+        AOS.init({ once: true });
+    }, []);
+    useEffect(() => {
+        const id = requestAnimationFrame(() => AOS.refreshHard());
+        return () => cancelAnimationFrame(id);
+    });
 
     // Reset filter & search saat kategori berubah
     useEffect(() => {
@@ -96,7 +120,6 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 (b) =>
                     b &&
                     typeof b.id === "number" &&
-                    typeof b.title === "string" &&
                     typeof b.slug === "string"
             ),
         [data]
@@ -121,10 +144,9 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 activeFilter.toLowerCase() === "all" ||
                 katName.toLowerCase() === activeFilter.toLowerCase();
 
-            const text =
-                (n.title || "").toLowerCase() +
-                " " +
-                stripHtml(n.content || "").toLowerCase();
+            // 🔑 gunakan judul prioritas SG untuk pencarian
+            const text = (pickTitle(n) || "").toLowerCase() + " " + katName.toLowerCase();
+
             const matchSearch = q === "" || text.includes(q);
 
             return matchFilter && matchSearch;
@@ -140,12 +162,6 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     const showSkeleton = typeof data === "undefined";
     const showNoData = data !== undefined && filteredNews.length === 0;
     const skeletonCount = filteredNews.length > 0 ? filteredNews.length : 9;
-
-    // Refresh AOS tiap state tampilan berubah
-    useEffect(() => {
-        const id = requestAnimationFrame(() => AOS.refreshHard());
-        return () => cancelAnimationFrame(id);
-    }, [showSkeleton, showNoData, skeletonCount, activeFilter, searchQuery, filteredNews.length]);
 
     // ====== RENDER ======
     if (error) return <div className="text-red-400">Gagal memuat berita.</div>;
@@ -192,10 +208,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                     data-aos-once="true"
                 >
                     {Array.from({ length: skeletonCount }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="rounded-lg overflow-hidden bg-neutral-900 border border-neutral-800"
-                        >
+                        <div key={i} className="rounded-lg overflow-hidden bg-neutral-900 border border-neutral-800">
                             <div className="h-40 w-full bg-neutral-800 animate-pulse" />
                             <div className="p-4 space-y-3">
                                 <div className="h-4 w-3/4 bg-neutral-800 rounded animate-pulse" />
@@ -229,16 +242,15 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                         const cleanDescription = stripHtml(news.content)
                             .replace(/&nbsp;/g, " ")
                             .trim();
+
                         return (
                             <NewsCard
                                 key={news.id}
                                 image={mediaUrl(news.images?.[0])}
-                                title={news.title}
+                                title={pickTitle(news)}
                                 category={news.kategori?.name || "-"}
                                 description={cleanDescription}
-                                href={`/${encodeURIComponent(kategoriSlug)}/${encodeURIComponent(
-                                    news.slug
-                                )}`}
+                                href={`/${encodeURIComponent(kategoriSlug)}/${encodeURIComponent(news.slug)}`}
                             />
                         );
                     })}

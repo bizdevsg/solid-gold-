@@ -40,9 +40,9 @@ export default function AboutSection() {
                 <div className="md:w-1/2 w-full" data-aos="fade-right">
                     <div className="bg-neutral-800 p-10 rounded-lg h-full">
                         <img
-                            src="/assets/Logo SG-WEB111.png"
+                            src="/assets/Logo Solid-Calibri-Fix.png"
                             alt="Tentang Kami"
-                            className="w-full max-h-50 object-contain"
+                            className="w-full max-h-70 object-contain"
                             loading="lazy"
                         />
                     </div>
