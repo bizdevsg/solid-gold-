@@ -38,9 +38,9 @@ export default function AboutSection() {
             <div className="container mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
                 {/* Foto di kiri */}
                 <div className="md:w-1/2 w-full" data-aos="fade-right">
-                    <div className="bg-neutral-800 p-16 rounded-lg h-full">
+                    <div className="bg-neutral-800 p-10 rounded-lg h-full">
                         <img
-                            src="/assets/LOGO-SGB.png"
+                            src="/assets/Logo Solid-Calibri-Fix.png"
                             alt="Tentang Kami"
                             className="w-full max-h-70 object-contain"
                             loading="lazy"

@@ -9,9 +9,16 @@ interface Kategori {
     slug: string;
 }
 
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
+
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants; // <-- tambahkan ini
     slug: string;
     content: string;
     category_id: number;
@@ -77,6 +84,13 @@ function pickArray<T = unknown>(raw: any): T[] {
     return [];
 }
 
+/** Ambil judul dengan prioritas: sg -> default -> title */
+function pickTitle(item: Berita): string {
+    const t = item.titles ?? {};
+    const candidates = [t.sg, t.default, item.title];
+    return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
+}
+
 export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string }) {
     const { data, error, isLoading } = useSWR("/api/berita", fetcher, {
         refreshInterval: 15_000,
@@ -91,7 +105,6 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
             (b) =>
                 b &&
                 typeof b.id === "number" &&
-                typeof b.title === "string" &&
                 typeof b.slug === "string"
         );
 
@@ -147,7 +160,7 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
                             <NewsCard
                                 key={item.id}
                                 image={img}
-                                title={item.title}
+                                title={pickTitle(item)}
                                 category={item.kategori?.name || "-"}
                                 description={cleanDescription}
                                 href={href}
