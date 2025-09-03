@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 import NewsCard from "../moleculs/NewsCard";
 
 interface Kategori {
@@ -8,9 +8,17 @@ interface Kategori {
     name: string;
     slug: string;
 }
+
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
+
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants; // <-- tambahkan ini
     slug: string;
     content: string;
     category_id: number;
@@ -20,66 +28,94 @@ interface Berita {
     updated_at: string;
 }
 
+/** Peta kategori: slug halaman -> daftar nama kategori pada data */
+const kategoriMap: Record<string, string[]> = {
+    indexNews: ["Nikkei", "Hangseng"],
+    commodityNews: ["Gold", "Silver", "Oil"],
+    currenciesNews: [
+        "EUR/USD",
+        "USD/JPY",
+        "USD/CHF",
+        "AUD/USD",
+        "GBP/USD",
+        "US DOLLAR",
+    ],
+    economicNews: ["Global & Economic"],
+    analisisMarket: ["Analisis Market"],
+    analisisOpini: ["Analisis & Opini"],
+};
+
+/** Reverse lookup: dari nama kategori (di data) -> slug halaman */
+function getKategoriSlugFromName(name?: string): string | null {
+    if (!name) return null;
+    const n = name.trim().toLowerCase();
+    for (const [slug, names] of Object.entries(kategoriMap)) {
+        if (names.some((x) => x.trim().toLowerCase() === n)) return slug;
+    }
+    return null;
+}
+
 function stripHtml(html?: string) {
     if (!html) return "";
     return html.replace(/<[^>]*>/g, "");
 }
+
 function mediaUrl(p?: string) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
-    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://portalnews.newsmaker.id";;
+    const base =
+        process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
+        "https://portalnews.newsmaker.id";
     return `${base}/${p.replace(/^\/+/, "")}`;
 }
-function pickRandom<T>(list: T[], n: number): T[] {
-    const copy = list.slice();
-    for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy.slice(0, Math.min(n, copy.length));
+
+/** fetcher dasar */
+const fetcher = (url: string) =>
+    fetch(url, { headers: { accept: "application/json" }, cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
+        return r.json();
+    });
+
+/** Ambil array dari berbagai bentuk respons */
+function pickArray<T = unknown>(raw: any): T[] {
+    if (Array.isArray(raw)) return raw as T[];
+    if (raw && Array.isArray(raw.data)) return raw.data as T[];
+    if (raw && raw.data && Array.isArray(raw.data.data)) return raw.data.data as T[];
+    return [];
+}
+
+/** Ambil judul dengan prioritas: sg -> default -> title */
+function pickTitle(item: Berita): string {
+    const t = item.titles ?? {};
+    const candidates = [t.sg, t.default, item.title];
+    return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
 }
 
 export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string }) {
-    const [news, setNews] = useState<Berita[]>([]);
-    const [loading, setLoading] = useState(true);
-    const abortRef = useRef<AbortController | null>(null);
+    const { data, error, isLoading } = useSWR("/api/berita", fetcher, {
+        refreshInterval: 15_000,
+        revalidateOnFocus: true,
+        revalidateOnReconnect: true,
+        keepPreviousData: true,
+    });
 
-    useEffect(() => {
-        abortRef.current?.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
+    // Normalisasi berita
+    let news: Berita[] = pickArray<Berita>(data)
+        .filter(
+            (b) =>
+                b &&
+                typeof b.id === "number" &&
+                typeof b.slug === "string"
+        );
 
-        (async () => {
-            try {
-                const res = await fetch("/api/berita", {
-                    method: "GET",
-                    cache: "no-store",
-                    signal: controller.signal,
-                    headers: { accept: "application/json" },
-                });
-                if (!res.ok) throw new Error(`Gagal ambil berita (HTTP ${res.status})`);
+    // Exclude slug jika ada
+    if (excludedSlug) {
+        const cur = excludedSlug.toLowerCase().trim();
+        news = news.filter((b) => (b.slug || "").toLowerCase().trim() !== cur);
+    }
 
-                const data: unknown = await res.json();
-                const arr = Array.isArray(data) ? (data as Berita[]) : [];
-
-                const cur = (excludedSlug ?? "").toLowerCase().trim();
-                const filtered = cur
-                    ? arr.filter((b) => (b.slug || "").toLowerCase().trim() !== cur)
-                    : arr;
-
-                setNews(pickRandom(filtered, 3));
-            } catch (error) {
-                if (!controller.signal.aborted) {
-                    console.error("Gagal ambil berita:", error);
-                    setNews([]);
-                }
-            } finally {
-                if (!controller.signal.aborted) setLoading(false);
-            }
-        })();
-
-        return () => controller.abort();
-    }, [excludedSlug]);
+    // Acak dan ambil 3
+    news = [...news].sort(() => 0.5 - Math.random()).slice(0, 3);
 
     return (
         <div>
@@ -90,10 +126,13 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
                 </h1>
             </div>
 
-            {loading ? (
+            {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700">
+                        <div
+                            key={i}
+                            className="bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700"
+                        >
                             <div className="h-48 w-full bg-neutral-700 animate-pulse" />
                             <div className="p-4 space-y-3">
                                 <div className="h-4 w-24 bg-neutral-700 rounded animate-pulse" />
@@ -103,26 +142,37 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
                         </div>
                     ))}
                 </div>
+            ) : error ? (
+                <div className="text-red-400">Gagal memuat berita.</div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {news.map((item) => {
                         const cleanDescription = stripHtml(item.content).replace(/&nbsp;/g, " ").trim();
                         const img = mediaUrl(item.images?.[0]);
 
-                        // Link ke halaman detail berita (sesuai pages/berita/[newsSlug].tsx)
-                        const href = item.slug ? `/berita/${encodeURIComponent(item.slug)}` : "/#";
+                        const mappedKategoriSlug = getKategoriSlugFromName(item.kategori?.name);
+                        const href =
+                            mappedKategoriSlug && item.slug
+                                ? `/${encodeURIComponent(mappedKategoriSlug)}/${encodeURIComponent(item.slug)}`
+                                : "/#";
 
                         return (
                             <NewsCard
                                 key={item.id}
                                 image={img}
-                                title={item.title}
+                                title={pickTitle(item)}
                                 category={item.kategori?.name || "-"}
                                 description={cleanDescription}
                                 href={href}
                             />
                         );
                     })}
+
+                    {news.length === 0 && (
+                        <div className="col-span-full text-center text-gray-300">
+                            Tidak ada berita rekomendasi.
+                        </div>
+                    )}
                 </div>
             )}
         </div>
