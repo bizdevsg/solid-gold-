@@ -9,9 +9,16 @@ interface Kategori {
     slug: string;
 }
 
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
+
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants; // <-- tambahkan ini
     slug: string;
     content: string;
     category_id: number;
@@ -68,17 +75,20 @@ function pickArray<T = unknown>(raw: any): T[] {
     return [];
 }
 
+/** Ambil judul dengan prioritas: sg -> default -> title */
+function pickTitle(item: Berita): string {
+    const t = item.titles ?? {};
+    const candidates = [t.sg, t.default, item.title];
+    return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
+}
+
 export default function NewsHome() {
-    const {
-        data,
-        error,
-        isLoading,
-    } = useSWR("/api/berita", fetcher, {
-        refreshInterval: 15_000,       // auto-refresh tiap 15 detik
+    const { data, error, isLoading } = useSWR("/api/berita", fetcher, {
+        refreshInterval: 15_000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
-        keepPreviousData: true,        // render cepat sambil tunggu data baru
-        dedupingInterval: 0,           // jangan dedupe; setiap interval tetap fetch
+        keepPreviousData: true,
+        dedupingInterval: 0,
     });
 
     // Normalisasi -> sort desc by created_at -> ambil 3 teratas
@@ -87,8 +97,9 @@ export default function NewsHome() {
             (b) =>
                 b &&
                 typeof b.id === "number" &&
-                typeof b.title === "string" &&
-                typeof b.slug === "string"
+                typeof b.slug === "string" &&
+                // title bisa kosong jika mengandalkan titles.sg, jadi cek slug saja sudah cukup
+                true
         )
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 3);
@@ -105,10 +116,7 @@ export default function NewsHome() {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700"
-                        >
+                        <div key={i} className="bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700">
                             <div className="h-48 w-full bg-neutral-700 animate-pulse" />
                             <div className="p-4 space-y-3">
                                 <div className="h-4 w-24 bg-neutral-700 rounded animate-pulse" />
@@ -135,7 +143,7 @@ export default function NewsHome() {
                             <NewsCard
                                 key={item.id}
                                 image={img}
-                                title={item.title}
+                                title={pickTitle(item)}
                                 category={item.kategori?.name || "-"}
                                 description={cleanDescription}
                                 href={href}
@@ -144,9 +152,7 @@ export default function NewsHome() {
                     })}
 
                     {news.length === 0 && (
-                        <div className="col-span-full text-center text-gray-300">
-                            Tidak ada berita terbaru.
-                        </div>
+                        <div className="col-span-full text-center text-gray-300">Tidak ada berita terbaru.</div>
                     )}
                 </div>
             )}

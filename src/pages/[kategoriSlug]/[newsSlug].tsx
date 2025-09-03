@@ -4,14 +4,28 @@ import { useEffect, useMemo, useState } from "react";
 import PageTemplates from "@/components/templates/PageTemplates";
 import RandomizeNews from "@/components/organism/RandomizeNews";
 
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
+
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants; // ← variasi judul (sg, default, dst)
     slug: string;
     content: string;
     kategori?: { name: string };
     images?: string[];
     created_at?: string;
+}
+
+function pickTitle(b?: Berita | null) {
+    if (!b) return "";
+    const sg = b.titles?.sg?.trim();
+    const def = b.titles?.default?.trim();
+    return (sg && sg.length > 0 ? sg : def && def.length > 0 ? def : b.title) || "";
 }
 
 export default function BeritaDetailPage() {
@@ -57,6 +71,7 @@ export default function BeritaDetailPage() {
                     return;
                 }
 
+                // Pastikan content selalu string
                 setBerita({ ...data, content: result?.data?.content ?? "" });
             } catch (e: any) {
                 if (e?.name !== "AbortError") {
@@ -89,13 +104,15 @@ export default function BeritaDetailPage() {
         );
     }
 
+    const pageTitle = pickTitle(berita);
+
     return (
-        <PageTemplates title={berita.title}>
+        <PageTemplates title={pageTitle}>
             <div className="text-center mb-6">
                 {berita.kategori?.name && (
                     <p className="text-yellow-500 font-semibold mb-2">{berita.kategori.name} News</p>
                 )}
-                <h1 className="text-3xl font-bold text-white mb-2">{berita.title}</h1>
+                <h1 className="text-3xl font-bold text-white mb-2">{pageTitle}</h1>
                 {berita.created_at && (
                     <p className="text-gray-400 text-sm">
                         {new Date(berita.created_at).toLocaleDateString("id-ID", {
@@ -110,14 +127,17 @@ export default function BeritaDetailPage() {
             <div className="bg-neutral-800 rounded-lg shadow-lg">
                 {berita.images?.[0] && (
                     <img
-                        src={`http://portalnews.newsmaker.id/${berita.images[0]}`}
-                        alt={berita.title}
+                        src={`https://portalnews.newsmaker.id/${berita.images[0]}`}
+                        alt={pageTitle}
                         className="w-full max-h-[400px] object-cover rounded-t-lg mb-6"
                         loading="lazy"
                     />
                 )}
                 <div className="px-5 pb-5">
-                    <div className="prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: berita.content }} />
+                    <div
+                        className="prose prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: berita.content }}
+                    />
                 </div>
             </div>
 
