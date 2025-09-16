@@ -18,7 +18,7 @@ export default function NewsByCategory({ kategoriSlug }: Props) {
             <MiniHeader title={pageTitle} />
             <NewsContainer kategoriSlug={kategoriSlug} />
             <div className="text-center" data-aos="fade-up">
-                <ReadMore />
+                <ReadMore kategoriSlug={kategoriSlug} />
             </div>
         </PageTemplates>
     );
