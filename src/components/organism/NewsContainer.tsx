@@ -41,7 +41,7 @@ const kategoriMap: Record<string, string[]> = {
     indexNews: ["Nikkei", "Hangseng"],
     commodityNews: ["Gold", "Silver", "Oil"],
     currenciesNews: ["EUR/USD", "USD/JPY", "USD/CHF", "AUD/USD", "GBP/USD", "US DOLLAR"],
-    economicNews: ["Global & Economic"],
+    economicNews: ["Global Economics"],
     analisisMarket: ["Analisis Market"],
     analisisOpini: ["Analisis & Opini"],
 };
