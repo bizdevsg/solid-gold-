@@ -211,7 +211,7 @@ export default function KalenderEkonomi() {
                                                     {item.forecast || "-"}
                                                 </td>
                                                 <td
-                                                    className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getActualClass(
+                                                    className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-100 ${getActualClass(
                                                         item.actual,
                                                         item.forecast
                                                     )}`}
@@ -276,7 +276,7 @@ export default function KalenderEkonomi() {
                                 <span>Forecast:</span>
                                 <span>{item.forecast || "-"}</span>
                             </div>
-                            <div className="flex justify-between text-sm font-medium">
+                            <div className="flex justify-between text-sm text-neutral-100">
                                 <span>Actual:</span>
                                 <span className={getActualClass(item.actual, item.forecast)}>
                                     {item.actual || "-"}
