@@ -8,7 +8,7 @@ export default function Banner() {
                 {/* Image Section */}
                 <div className="flex-shrink-0 order-1 lg:order-2" data-aos="fade-left">
                     <img
-                        src="/assets/corousel-1.png"
+                        src="/assets/People-SGB.png"
                         alt="Banner"
                         className="max-w-md w-full h-auto object-contain"
                     />
