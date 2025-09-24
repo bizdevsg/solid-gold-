@@ -169,7 +169,8 @@ export default function VideoGaleri() {
 
     const activeSrc = useMemo(() => extractIframeSrc(activeVideo?.iframeHtml), [activeVideo?.id]);
 
-    const tiktokId = "7553316247002385676";
+    // TikTok (contoh)
+    const tiktokId = "7550245657978653959";
 
     return (
         <div className="flex flex-col lg:flex-row gap-5 p-4">
