@@ -168,7 +168,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-2 md:px-0">
                 <div
                     ref={navRef}
-                    className={`bg-neutral-900/40 backdrop-blur-3xl px-4 md:px-6 w-full rounded-md ${isScrolled || isOpen ? "py-2" : "lg:py-2"
+                    className={`backdrop-blur-3xl px-4 md:px-6 w-full rounded-md ${isScrolled || isOpen ? "py-2 bg-neutral-700/40" : "lg:py-2"
                         } min-h-[60px] flex items-center`}
                 >
                     <div className="flex flex-col lg:flex-row w-full justify-between lg:items-center gap-y-4 lg:gap-y-0">
@@ -180,7 +180,7 @@ export default function Navbar() {
                                     alt="Solid Gold"
                                     width={160}
                                     height={40}
-                                    className="h-10 w-auto"
+                                    className="h-8   md:h-10 w-auto"
                                     priority
                                 />
                             </Link>
@@ -254,8 +254,8 @@ export default function Navbar() {
                                                                                 <Link
                                                                                     href={child.href}
                                                                                     className={`block py-1 ${childActive
-                                                                                            ? "text-yellow-400"
-                                                                                            : "text-gray-300 hover:text-yellow-500"
+                                                                                        ? "text-yellow-400"
+                                                                                        : "text-gray-300 hover:text-yellow-500"
                                                                                         }`}
                                                                                     aria-current={childActive ? "page" : undefined}
                                                                                     onClick={closeAllMenus}
@@ -278,8 +278,8 @@ export default function Navbar() {
                                                                     <Link
                                                                         href={link.href}
                                                                         className={`block py-2 px-4 ${childActive
-                                                                                ? "text-yellow-400"
-                                                                                : "text-gray-300 hover:text-yellow-500"
+                                                                            ? "text-yellow-400"
+                                                                            : "text-gray-300 hover:text-yellow-500"
                                                                             }`}
                                                                         aria-current={childActive ? "page" : undefined}
                                                                         onClick={closeAllMenus}
@@ -311,8 +311,8 @@ export default function Navbar() {
                                                                                     <Link
                                                                                         href={child.href}
                                                                                         className={`block py-1 pl-1 ${childActive
-                                                                                                ? "text-yellow-400"
-                                                                                                : "text-gray-300 hover:text-yellow-500"
+                                                                                            ? "text-yellow-400"
+                                                                                            : "text-gray-300 hover:text-yellow-500"
                                                                                             }`}
                                                                                         aria-current={childActive ? "page" : undefined}
                                                                                         onClick={closeAllMenus}
@@ -335,8 +335,8 @@ export default function Navbar() {
                                                                         <Link
                                                                             href={link.href}
                                                                             className={`block py-2 pl-2 ${childActive
-                                                                                    ? "text-yellow-400"
-                                                                                    : "text-gray-300 hover:text-yellow-500"
+                                                                                ? "text-yellow-400"
+                                                                                : "text-gray-300 hover:text-yellow-500"
                                                                                 }`}
                                                                             aria-current={childActive ? "page" : undefined}
                                                                             onClick={closeAllMenus}

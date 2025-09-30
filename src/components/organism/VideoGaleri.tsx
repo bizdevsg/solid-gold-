@@ -23,7 +23,17 @@ type ApiVideo = {
     created_at?: string;
     updated_at?: string;
 };
-type VideoItem = { id: number; title: string; thumb: string; iframeHtml: string };
+
+type VideoItem = {
+    id: number;
+    title: string;
+    thumb: string;
+    iframeHtml: string;
+};
+
+interface ApiSetting {
+    tiktok_id: string;
+}
 
 interface ApiResponse<T> {
     status: number;
@@ -48,7 +58,8 @@ const fetcher = (url: string) => {
 function mediaUrl(p?: string | null) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
-    const base = process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://vellorist.biz.id";
+    const base =
+        process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://vellorist.biz.id";
     return `${base}/${String(p).replace(/^\/+/, "")}`;
 }
 
@@ -59,15 +70,49 @@ function extractIframeSrc(html?: string): string | undefined {
     return m?.[1];
 }
 
+/* ========= Body Scroll Lock ========= */
+function useBodyScrollLock(locked: boolean) {
+    React.useEffect(() => {
+        if (!locked) return;
+
+        // Menyimpan style sebelumnya untuk dikembalikan saat modal ditutup
+        const prevOverflow = document.body.style.overflow;
+        const prevPaddingRight = document.body.style.paddingRight;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+        // Mengunci scroll dengan mengubah properti body
+        document.body.style.overflow = "hidden";
+        if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+        // Mengembalikan ke keadaan semula setelah modal ditutup
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            document.body.style.paddingRight = prevPaddingRight;
+        };
+    }, [locked]);
+}
+
 export default function VideoGaleri() {
+    /* ===== TikTok ID ===== */
+    const { data: settingData, error: settingErr } = useSWR<
+        ApiResponse<ApiSetting>
+    >("https://vellorist.biz.id/api/v1/setting", fetcher);
+
+    const tiktokId =
+        Array.isArray(settingData?.data) && settingData.data.length > 0
+            ? settingData.data[0].tiktok_id
+            : "";
+
     /* ====== LEGALITAS ====== */
     const {
         data: legalitasData,
         error: legalitasErr,
         isLoading: legalitasLoading,
-    } = useSWR<ApiResponse<ApiLegalitas[]>>("https://vellorist.biz.id/api/v1/legalitas", fetcher, {
-        refreshInterval: 60_000,
-    });
+    } = useSWR<ApiResponse<ApiLegalitas[]>>(
+        "https://vellorist.biz.id/api/v1/legalitas",
+        fetcher,
+        { refreshInterval: 60_000 }
+    );
 
     const legalitasList: LegalitasItem[] = useMemo(() => {
         if (Array.isArray(legalitasData?.data)) {
@@ -84,14 +129,21 @@ export default function VideoGaleri() {
 
     useEffect(() => {
         if (legalitasList.length < 2) return;
-        const itv = setInterval(() => setLegalitasIndex((p) => (p + 1) % legalitasList.length), 5000);
+        const itv = setInterval(
+            () => setLegalitasIndex((p) => (p + 1) % legalitasList.length),
+            5000
+        );
         return () => clearInterval(itv);
     }, [legalitasList.length]);
 
     const prevLegalitas = () =>
-        setLegalitasIndex((p) => (legalitasList.length ? (p === 0 ? legalitasList.length - 1 : p - 1) : 0));
+        setLegalitasIndex((p) =>
+            legalitasList.length ? (p === 0 ? legalitasList.length - 1 : p - 1) : 0
+        );
     const nextLegalitas = () =>
-        setLegalitasIndex((p) => (legalitasList.length ? (p === legalitasList.length - 1 ? 0 : p + 1) : 0));
+        setLegalitasIndex((p) =>
+            legalitasList.length ? (p === legalitasList.length - 1 ? 0 : p + 1) : 0
+        );
     const currentLegalitas = legalitasList[legalitasIndex];
 
     /* ====== VIDEO ====== */
@@ -101,9 +153,11 @@ export default function VideoGaleri() {
         data: videoData,
         error: videoErr,
         isLoading: videoLoading,
-    } = useSWR<ApiResponse<ApiVideo[]>>("https://vellorist.biz.id/api/v1/video", fetcher, {
-        refreshInterval: videoModalOpen ? 0 : 60_000,
-    });
+    } = useSWR<ApiResponse<ApiVideo[]>>(
+        "https://vellorist.biz.id/api/v1/video",
+        fetcher,
+        { refreshInterval: videoModalOpen ? 0 : 60_000 }
+    );
 
     const videoList: VideoItem[] = useMemo(() => {
         if (Array.isArray(videoData?.data)) {
@@ -122,19 +176,28 @@ export default function VideoGaleri() {
 
     useEffect(() => {
         if (videoList.length < 2 || videoModalOpen) return;
-        const itv = setInterval(() => setVideoIndex((p) => (p + 1) % videoList.length), 5000);
+        const itv = setInterval(
+            () => setVideoIndex((p) => (p + 1) % videoList.length),
+            5000
+        );
         return () => clearInterval(itv);
     }, [videoList.length, videoModalOpen]);
 
     const prevVideo = () =>
-        setVideoIndex((p) => (videoList.length ? (p === 0 ? videoList.length - 1 : p - 1) : 0));
+        setVideoIndex((p) =>
+            videoList.length ? (p === 0 ? videoList.length - 1 : p - 1) : 0
+        );
     const nextVideo = () =>
-        setVideoIndex((p) => (videoList.length ? (p === videoList.length - 1 ? 0 : p + 1) : 0));
+        setVideoIndex((p) =>
+            videoList.length ? (p === videoList.length - 1 ? 0 : p + 1) : 0
+        );
     const currentVideo = videoList[videoIndex];
 
     /* ====== Modal Legalitas ====== */
     const [legalitasModalOpen, setLegalitasModalOpen] = useState(false);
-    const [activeLegalitas, setActiveLegalitas] = useState<LegalitasItem | null>(null);
+    const [activeLegalitas, setActiveLegalitas] = useState<LegalitasItem | null>(
+        null
+    );
     const openLegalitasModal = useCallback((img: LegalitasItem) => {
         setActiveLegalitas(img);
         setLegalitasModalOpen(true);
@@ -145,7 +208,8 @@ export default function VideoGaleri() {
     }, []);
     useEffect(() => {
         if (!legalitasModalOpen) return;
-        const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeLegalitasModal();
+        const onKey = (e: KeyboardEvent) =>
+            e.key === "Escape" && closeLegalitasModal();
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [legalitasModalOpen, closeLegalitasModal]);
@@ -162,29 +226,52 @@ export default function VideoGaleri() {
     }, []);
     useEffect(() => {
         if (!videoModalOpen) return;
-        const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeVideoModal();
+        const onKey = (e: KeyboardEvent) =>
+            e.key === "Escape" && closeVideoModal();
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [videoModalOpen, closeVideoModal]);
 
-    const activeSrc = useMemo(() => extractIframeSrc(activeVideo?.iframeHtml), [activeVideo?.id]);
+    const activeSrc = useMemo(
+        () => extractIframeSrc(activeVideo?.iframeHtml),
+        [activeVideo?.id]
+    );
 
-    // TikTok (contoh)
-    const tiktokId = "7553316247002385676";
+    // Kunci scroll body jika ada modal yang terbuka
+    const anyModalOpen = legalitasModalOpen || videoModalOpen;
+    useBodyScrollLock(anyModalOpen);
 
     return (
         <div className="flex flex-col lg:flex-row gap-5 p-4">
             {/* TikTok */}
-            <section className="flex flex-col items-center text-center space-y-5 lg:w-1/3" data-aos="fade-right">
-                <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">Video TikTok</div>
-                <TikTokEmbed videoId={tiktokId} />
+            <section
+                className="flex flex-col items-center text-center space-y-5 lg:w-1/3"
+                data-aos="fade-right"
+            >
+                <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
+                    Video TikTok
+                </div>
+
+                {settingErr && (
+                    <div className="text-red-400 text-sm">Gagal memuat TikTok ID</div>
+                )}
+                {!tiktokId ? (
+                    <div className="text-neutral-300 text-sm">Memuat TikTok ID…</div>
+                ) : (
+                    <TikTokEmbed videoId={tiktokId} />
+                )}
             </section>
 
             {/* Legalitas & Video */}
             <section className="flex flex-col lg:w-2/3 space-y-10">
                 {/* LEGALITAS */}
-                <div className="flex flex-col items-center text-center space-y-5" data-aos="fade-left">
-                    <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">Legalitas</div>
+                <div
+                    className="flex flex-col items-center text-center space-y-5"
+                    data-aos="fade-left"
+                >
+                    <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
+                        Legalitas
+                    </div>
                     <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-lg min-h-[16rem] bg-neutral-900">
                         {legalitasLoading ? (
                             <div className="w-full h-full animate-pulse bg-neutral-800" />
@@ -209,8 +296,12 @@ export default function VideoGaleri() {
                                 </AnimatePresence>
                                 {legalitasList.length > 1 && (
                                     <>
-                                        <button onClick={prevLegalitas} className="absolute top-1/2 left-2">❮</button>
-                                        <button onClick={nextLegalitas} className="absolute top-1/2 right-2">❯</button>
+                                        <button onClick={prevLegalitas} className="absolute top-1/2 left-2">
+                                            ❮
+                                        </button>
+                                        <button onClick={nextLegalitas} className="absolute top-1/2 right-2">
+                                            ❯
+                                        </button>
                                     </>
                                 )}
                             </>
@@ -219,8 +310,13 @@ export default function VideoGaleri() {
                 </div>
 
                 {/* VIDEO */}
-                <div className="flex flex-col items-center text-center space-y-5" data-aos="fade-left">
-                    <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">Video Edukasi</div>
+                <div
+                    className="flex flex-col items-center text-center space-y-5"
+                    data-aos="fade-left"
+                >
+                    <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
+                        Video Edukasi
+                    </div>
                     <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-lg min-h-[16rem] bg-neutral-900">
                         {videoLoading ? (
                             <div className="w-full h-full animate-pulse bg-neutral-800" />
@@ -250,8 +346,12 @@ export default function VideoGaleri() {
                                 </AnimatePresence>
                                 {videoList.length > 1 && (
                                     <>
-                                        <button onClick={prevVideo} className="absolute top-1/2 left-2">❮</button>
-                                        <button onClick={nextVideo} className="absolute top-1/2 right-2">❯</button>
+                                        <button onClick={prevVideo} className="absolute top-1/2 left-2">
+                                            ❮
+                                        </button>
+                                        <button onClick={nextVideo} className="absolute top-1/2 right-2">
+                                            ❯
+                                        </button>
                                     </>
                                 )}
                             </>
@@ -263,11 +363,11 @@ export default function VideoGaleri() {
             {/* Modal Legalitas */}
             {legalitasModalOpen && activeLegalitas && (
                 <div
-                    className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex justify-center items-center z-50 p-4"
+                    className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex justify-center items-center z-50 p-4 overscroll-contain"
                     onClick={closeLegalitasModal}
                 >
                     <div
-                        className="bg-neutral-900 relative p-3 sm:p-4 rounded-xl shadow-2xl w-full sm:max-w-3xl md:max-w-4xl lg:max-w-5xl"
+                        className="bg-neutral-900 relative p-3 sm:p-4 rounded-xl shadow-2xl w-fit"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
@@ -277,11 +377,17 @@ export default function VideoGaleri() {
                             Close
                         </button>
 
-                        <div className="w-full max-h-[85vh] overflow-auto flex items-center justify-center">
-                            <img src={activeLegalitas.file} alt={activeLegalitas.title} className="max-h-[80vh] w-auto h-auto rounded-lg" />
+                        <div className="w-full max-h-[90vh] overflow-auto flex items-center justify-center">
+                            <img
+                                src={activeLegalitas.file}
+                                alt={activeLegalitas.title}
+                                className="max-h-[85vh] w-auto h-auto rounded-lg"
+                            />
                         </div>
 
-                        <div className="mt-3 text-white font-medium">{activeLegalitas.title}</div>
+                        <div className="mt-3 text-white font-medium">
+                            {activeLegalitas.title}
+                        </div>
                     </div>
                 </div>
             )}
@@ -289,7 +395,7 @@ export default function VideoGaleri() {
             {/* Modal Video */}
             {videoModalOpen && activeVideo && (
                 <div
-                    className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex justify-center items-center z-50 p-4"
+                    className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex justify-center items-center z-50 p-4 overscroll-contain"
                     onClick={closeVideoModal}
                 >
                     <div
@@ -321,7 +427,9 @@ export default function VideoGaleri() {
                             )}
                         </div>
 
-                        <div className="mt-3 text-white font-medium">{activeVideo.title}</div>
+                        <div className="mt-3 text-white font-medium">
+                            {activeVideo.title}
+                        </div>
                     </div>
                 </div>
             )}

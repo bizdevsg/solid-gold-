@@ -4,6 +4,10 @@ import type { AppProps } from "next/app";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import AOS from "aos";
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false; // Menonaktifkan otomatis penambahan CSS oleh FontAwesome
+
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
