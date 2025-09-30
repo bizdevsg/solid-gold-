@@ -2,37 +2,71 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
+import Link from "next/link";
 
-// Types
-interface Quote {
-    symbol: string;
-    last: number;
-    valueChange: number;
-    percentChange: number;
+// ===== Types =====
+interface Kategori {
+    id: number;
+    name: string;
+    slug: string;
 }
-
+type TitleVariants = {
+    default?: string;
+    sg?: string;
+    [key: string]: string | undefined;
+};
 interface Berita {
     id: number;
     title: string;
+    titles?: TitleVariants;
     slug: string;
+    content?: string;
+    category_id?: number;
+    kategori?: Kategori | null;
+    images?: string[];
     created_at?: string;
+    updated_at?: string;
+}
+interface Quote {
+    symbol: string;
+    last: number;
+    valueChange?: number;
+    percentChange: number;
 }
 
 type DisplayItem =
-    | { type: "news"; content: string }
+    | { type: "news"; content: string; href: string }
     | { type: "market"; content: string; value?: number; percentChange?: number }
-    | { type: "sep" };
+    | { type: "sep"; variant: "dot" | "bar" }; // ‘•’ atau ‘|’
 
 const numberFmt = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 });
 
-// ---------- fetchers & helpers ----------
+// ===== Kategori mapping (nama kategori API -> slug halaman) =====
+const kategoriMap: Record<string, string[]> = {
+    indexNews: ["Nikkei", "Hang seng"],
+    commodityNews: ["Gold", "Silver", "Oil"],
+    currenciesNews: ["EUR/USD", "USD/JPY", "USD/CHF", "AUD/USD", "GBP/USD", "US DOLLAR"],
+    economicNews: ["Global & Economic"],
+    analisisMarket: ["Analisis Market"],
+    analisisOpini: ["Analisis & Opini"],
+};
+function getKategoriSlugFromName(name?: string): string | null {
+    if (!name) return null;
+    const n = name.trim().toLowerCase();
+    for (const [slug, names] of Object.entries(kategoriMap)) {
+        if (names.some((x) => x.trim().toLowerCase() === n)) return slug;
+    }
+    return null;
+}
+
+// ===== fetchers & helpers =====
 const baseFetcher = (url: string) =>
     fetch(url, {
         headers: {
             accept: "application/json",
-            "Authorization": "Bearer SGB-c7b0604664fd48d9",
+            Authorization: "Bearer SGB-c7b0604664fd48d9",
         },
-        cache: "no-store"
+        cache: "no-store",
     }).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
         return r.json();
@@ -45,50 +79,81 @@ function pickArray<T = unknown>(raw: any): T[] {
     return [];
 }
 
+function pickTitle(item: Berita): string {
+    const t = item.titles ?? {};
+    const candidates = [t.sg, t.default, item.title];
+    return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
+}
+
 function normalizeMarket(raw: unknown): Quote[] {
     if (!Array.isArray(raw)) return [];
-    return raw.filter((d): d is Quote => {
-        return (
+    return raw.filter(
+        (d): d is Quote =>
             d !== null &&
             typeof d === "object" &&
             typeof (d as any).symbol === "string" &&
             typeof (d as any).last === "number" &&
             typeof (d as any).percentChange === "number"
-        );
-    });
+    );
 }
 
 function normalizeNews(raw: unknown): Berita[] {
-    if (!Array.isArray(raw)) return [];
-    return raw
-        .filter(
-            (d): d is Berita =>
-                d !== null &&
-                typeof d === "object" &&
-                typeof (d as any).id === "number" &&
-                typeof (d as any).title === "string"
-        )
-        .sort((a, b) => {
-            const ta = a.created_at ? Date.parse(a.created_at) : 0;
-            const tb = b.created_at ? Date.parse(b.created_at) : 0;
-            return tb - ta;
-        });
+    const arr = pickArray<Berita>(raw).filter(
+        (b) => b && typeof b.id === "number" && typeof b.slug === "string"
+    );
+    return arr.sort((a, b) => {
+        const ta = a.created_at ? Date.parse(a.created_at) : 0;
+        const tb = b.created_at ? Date.parse(b.created_at) : 0;
+        return tb - ta;
+    });
+}
+
+// Sisipkan ‘•’ antar berita
+function intersperseNewsWithDots(items: DisplayItem[]): DisplayItem[] {
+    const out: DisplayItem[] = [];
+    items.forEach((it, i) => {
+        if (i > 0) out.push({ type: "sep", variant: "dot" }); // ‘•’ antar news
+        out.push(it);
+    });
+    return out;
 }
 
 function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
-    const topNews = news.slice(0, 3).map((n) => n.title.trim()).filter(Boolean);
-    const newsContent = topNews.length ? topNews.join(" • ") : "Tidak ada berita terbaru";
-    const newsItem: DisplayItem = { type: "news", content: newsContent };
+    // Ambil 3 berita teratas → masing2 item terpisah dengan href
+    const newsItems: DisplayItem[] = news.slice(0, 3).map((n) => {
+        const mapped = getKategoriSlugFromName(n.kategori?.name);
+        const href =
+            mapped && n.slug ? `/${encodeURIComponent(mapped)}/${encodeURIComponent(n.slug)}` : "/#";
+        return {
+            type: "news" as const,
+            content: pickTitle(n).trim() || n.title?.trim() || "(Tanpa judul)",
+            href,
+        };
+    });
+
+    const newsPart: DisplayItem[] =
+        newsItems.length > 0
+            ? newsItems
+            : [{ type: "news", content: "Tidak ada berita terbaru", href: "/#" }];
+
     const marketItems: DisplayItem[] = market.map((m) => ({
         type: "market",
         content: m.symbol,
         value: Number.isFinite(m.last) ? m.last : undefined,
         percentChange: Number.isFinite(m.percentChange) ? m.percentChange : undefined,
     }));
-    return [{ type: "sep" }, newsItem, { type: "sep" }, ...marketItems, { type: "sep" }];
+
+    // Susunan akhir: | • news • news • news | market... |
+    return [
+        { type: "sep", variant: "bar" },               // leading |
+        ...intersperseNewsWithDots(newsPart),          // • antar news
+        { type: "sep", variant: "bar" },               // | sebelum market
+        ...marketItems,                                // market...
+        { type: "sep", variant: "bar" },               // trailing |
+    ];
 }
 
-// ---------- komponen ----------
+// ===== Komponen =====
 export default function TopNews() {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const contentRef = useRef<HTMLDivElement | null>(null);
@@ -108,8 +173,8 @@ export default function TopNews() {
                 setHasError(false);
                 const newsRes = await baseFetcher("https://portalnews.newsmaker.id/api/v1/berita");
                 if (!mounted) return;
-                setNewsRaw(pickArray<Berita>(newsRes));
-            } catch (err) {
+                setNewsRaw(newsRes);
+            } catch {
                 if (mounted) setHasError(true);
             } finally {
                 if (mounted) setNewsLoading(false);
@@ -126,13 +191,15 @@ export default function TopNews() {
         data: marketRaw,
         error: marketErr,
         isLoading: marketLoading,
-    } = useSWR("https://endpoapi-production-3202.up.railway.app/api/quotes", async (url) =>
-        pickArray<Quote>(await baseFetcher(url))
-        , {
+    } = useSWR(
+        "https://endpoapi-production-3202.up.railway.app/api/quotes",
+        async (url) => pickArray<Quote>(await baseFetcher(url)),
+        {
             refreshInterval: 15000,
             revalidateOnFocus: true,
             revalidateOnReconnect: true,
-        });
+        }
+    );
 
     const news = useMemo(() => normalizeNews(newsRaw), [newsRaw]);
     const market = useMemo(() => normalizeMarket(marketRaw ?? []), [marketRaw]);
@@ -142,6 +209,7 @@ export default function TopNews() {
     const displayItems: DisplayItem[] = useMemo(() => {
         if (!items.length) return [];
         const trimmed = items[items.length - 1]?.type === "sep" ? items.slice(0, -1) : items;
+        // duplikasi untuk efek marquee seamless
         return [...trimmed, ...trimmed];
     }, [items]);
 
@@ -157,7 +225,7 @@ export default function TopNews() {
             setMarqueeActive(false);
             return;
         }
-        const SPEED = 140;
+        const SPEED = 140; // px/s
         const duration = contentWidth / SPEED;
         setMarqueeDuration(Math.max(8, Math.min(duration, 50)));
         setMarqueeActive(true);
@@ -184,8 +252,7 @@ export default function TopNews() {
                     ) : (
                         <div
                             ref={contentRef}
-                            className={`whitespace-nowrap flex gap-6 will-change-transform ${marqueeActive ? "marquee" : ""
-                                }`}
+                            className={`whitespace-nowrap flex gap-6 will-change-transform ${marqueeActive ? "marquee" : ""}`}
                             style={
                                 marqueeActive
                                     ? ({ ["--marquee-duration" as any]: `${marqueeDuration}s` } as React.CSSProperties)
@@ -196,14 +263,15 @@ export default function TopNews() {
                         >
                             {displayItems.map((item, idx) => {
                                 if (item.type === "sep") {
+                                    const char = item.variant === "bar" ? "|" : "•";
                                     return (
                                         <div
                                             key={`sep-${idx}`}
-                                            className="flex-shrink-0 mx-1 text-neutral-500"
+                                            className={`flex-shrink-0 ${item.variant === "bar" ? "mx-2" : "mx-0"} text-neutral-500`}
                                             role="separator"
                                             aria-hidden="true"
                                         >
-                                            | |
+                                            {char}
                                         </div>
                                     );
                                 }
@@ -222,16 +290,10 @@ export default function TopNews() {
                                                 } `}
                                         >
                                             <span className="font-semibold">{item.content}</span>:{" "}
-                                            <span>
-                                                {typeof item.value === "number" ? numberFmt.format(item.value) : "-"}
-                                            </span>{" "}
+                                            <span>{typeof item.value === "number" ? numberFmt.format(item.value) : "-"}</span>{" "}
                                             <span
                                                 className={
-                                                    isUp === undefined
-                                                        ? "text-gray-300"
-                                                        : isUp
-                                                            ? "text-green-400"
-                                                            : "text-red-400"
+                                                    isUp === undefined ? "text-gray-300" : isUp ? "text-green-400" : "text-red-400"
                                                 }
                                             >
                                                 ({hasPct ? pct!.toFixed(2) : "-"}%)
@@ -240,10 +302,21 @@ export default function TopNews() {
                                     );
                                 }
 
-                                return (
-                                    <div key={`news-${idx}`} className="flex-shrink-0 text-gray-200 italic">
+                                // ===== NEWS as Link =====
+                                return item.href && item.href !== "/#" ? (
+                                    <Link
+                                        key={`news-${idx}`}
+                                        href={item.href}
+                                        className="flex-shrink-0 text-gray-200 italic hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-sm transition-colors"
+                                        aria-label={`Baca: ${item.content}`}
+                                        prefetch
+                                    >
                                         {item.content}
-                                    </div>
+                                    </Link>
+                                ) : (
+                                    <span key={`news-${idx}`} className="flex-shrink-0 text-gray-400 italic">
+                                        {item.content}
+                                    </span>
                                 );
                             })}
                         </div>
