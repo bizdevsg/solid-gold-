@@ -12,7 +12,7 @@ export default function TradingView() {
                         />
                         <p className="mt-4 text-justify">
                             Chart yang kami gunakan disediakan oleh TradingView, sebuah platform charting bagi para trader dan investor dari seluruh penjuru dunia.
-                            Temukan berbagai instrumen finansial seperti chart <strong>EURUSD</strong>, <strong>BTCUSDT</strong>, <strong>IHSG</strong>, dan juga peralatan seperti Stock Screener yang tersedia secara gratis dan
+                            Temukan berbagai instrumen finansial seperti chart <strong>EURUSD</strong>, <strong>BTCUSD</strong>, <strong>IHSG</strong>, dan juga peralatan seperti Stock Screener yang tersedia secara gratis dan
                             dapat membantu dalam aktivitas trading dan investasi anda.
                         </p>
                     </div>

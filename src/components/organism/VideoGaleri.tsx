@@ -63,6 +63,7 @@ function mediaUrl(p?: string | null) {
     return `${base}/${String(p).replace(/^\/+/, "")}`;
 }
 
+// Hilangkan <script> dan ambil src dari <iframe ... src="...">
 function extractIframeSrc(html?: string): string | undefined {
     if (!html) return;
     const noScript = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
@@ -70,21 +71,73 @@ function extractIframeSrc(html?: string): string | undefined {
     return m?.[1];
 }
 
+// Normalisasi & amankan URL embed (support YouTube/youtu.be + autoplay)
+function normalizeEmbedSrc(raw?: string): string | null {
+    if (!raw) return null;
+    try {
+        const base = typeof window !== "undefined" ? window.location.origin : "https://example.com";
+        const url = new URL(raw, base);
+        const host = url.hostname.toLowerCase();
+
+        // YouTube shortlink → embed
+        if (host.includes("youtu.be")) {
+            const id = url.pathname.replace("/", "");
+            const params = new URLSearchParams(url.search);
+            params.set("autoplay", "1");
+            params.set("mute", "1");
+            params.set("rel", "0");
+            params.set("playsinline", "1");
+            return `https://www.youtube.com/embed/${encodeURIComponent(id)}?${params.toString()}`;
+        }
+
+        // YouTube watch → embed
+        if (host.includes("youtube.com")) {
+            const path = url.pathname;
+            const params = new URLSearchParams(url.search);
+            let id = "";
+            if (path.startsWith("/watch")) {
+                id = params.get("v") || "";
+            } else if (path.startsWith("/embed/")) {
+                id = path.split("/embed/")[1] || "";
+            }
+            if (id) {
+                params.set("autoplay", "1");
+                params.set("mute", "1");
+                params.set("rel", "0");
+                params.set("playsinline", "1");
+                return `https://www.youtube.com/embed/${encodeURIComponent(id)}?${params.toString()}`;
+            }
+        }
+
+        // Vimeo: tambahkan autoplay kalau belum
+        if (host.includes("vimeo.com")) {
+            const params = new URLSearchParams(url.search);
+            params.set("autoplay", "1");
+            const rebuilt = new URL(url.toString());
+            rebuilt.search = params.toString();
+            return rebuilt.toString();
+        }
+
+        // Default: kembalikan src apa adanya
+        return url.toString();
+    } catch {
+        return raw;
+    }
+}
+
 /* ========= Body Scroll Lock ========= */
 function useBodyScrollLock(locked: boolean) {
     React.useEffect(() => {
         if (!locked) return;
-
-        // Menyimpan style sebelumnya untuk dikembalikan saat modal ditutup
         const prevOverflow = document.body.style.overflow;
         const prevPaddingRight = document.body.style.paddingRight;
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        const scrollbarWidth =
+            window.innerWidth - document.documentElement.clientWidth;
 
-        // Mengunci scroll dengan mengubah properti body
         document.body.style.overflow = "hidden";
-        if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+        if (scrollbarWidth > 0)
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-        // Mengembalikan ke keadaan semula setelah modal ditutup
         return () => {
             document.body.style.overflow = prevOverflow;
             document.body.style.paddingRight = prevPaddingRight;
@@ -94,8 +147,9 @@ function useBodyScrollLock(locked: boolean) {
 
 export default function VideoGaleri() {
     /* ===== TikTok ID ===== */
+    // Perbaikan: API mengembalikan array setting → gunakan ApiSetting[].
     const { data: settingData, error: settingErr } = useSWR<
-        ApiResponse<ApiSetting>
+        ApiResponse<ApiSetting[]>
     >("https://vellorist.biz.id/api/v1/setting", fetcher);
 
     const tiktokId =
@@ -208,8 +262,7 @@ export default function VideoGaleri() {
     }, []);
     useEffect(() => {
         if (!legalitasModalOpen) return;
-        const onKey = (e: KeyboardEvent) =>
-            e.key === "Escape" && closeLegalitasModal();
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeLegalitasModal();
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [legalitasModalOpen, closeLegalitasModal]);
@@ -222,20 +275,39 @@ export default function VideoGaleri() {
     }, []);
     const closeVideoModal = useCallback(() => {
         setVideoModalOpen(false);
-        setActiveVideo(null);
+        setActiveVideo(null); // unmount iframe → hentikan audio
     }, []);
     useEffect(() => {
         if (!videoModalOpen) return;
-        const onKey = (e: KeyboardEvent) =>
-            e.key === "Escape" && closeVideoModal();
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") closeVideoModal();
+            if (e.key === "ArrowLeft") prevVideo();
+            if (e.key === "ArrowRight") nextVideo();
+        };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [videoModalOpen, closeVideoModal]);
 
-    const activeSrc = useMemo(
-        () => extractIframeSrc(activeVideo?.iframeHtml),
-        [activeVideo?.id]
-    );
+    // src embed siap pakai (autoplay+mute) — berubah saat video atau modal open berubah
+    const activeSrc = useMemo(() => {
+        const raw = extractIframeSrc(activeVideo?.iframeHtml);
+        const norm = normalizeEmbedSrc(raw);
+        if (!norm) return undefined;
+
+        // Pastikan autoplay aktif ketika modal terbuka
+        try {
+            const u = new URL(norm, typeof window !== "undefined" ? window.location.origin : "https://example.com");
+            const sp = u.searchParams;
+            if (videoModalOpen) {
+                sp.set("autoplay", "1");
+                sp.set("mute", sp.get("mute") ?? "1");
+            }
+            u.search = sp.toString();
+            return u.toString();
+        } catch {
+            return norm;
+        }
+    }, [activeVideo?.id, videoModalOpen]);
 
     // Kunci scroll body jika ada modal yang terbuka
     const anyModalOpen = legalitasModalOpen || videoModalOpen;
@@ -373,6 +445,7 @@ export default function VideoGaleri() {
                         <button
                             onClick={closeLegalitasModal}
                             className="absolute right-3 top-3 px-3 py-1 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
+                            autoFocus
                         >
                             Close
                         </button>
@@ -404,21 +477,23 @@ export default function VideoGaleri() {
                     >
                         <button
                             onClick={closeVideoModal}
-                            className="absolute right-3 top-3 px-3 py-1 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
+                            className="absolute right-3 top-3 px-3 py-1 z-50 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
+                            autoFocus
                         >
                             Close
                         </button>
 
-                        <div className="w-full h-[65vh] bg-black rounded-lg overflow-hidden">
+                        {/* Wrapper rasio 16:9 agar iframe pasti punya tinggi */}
+                        <div className="video-frame bg-black rounded-lg overflow-hidden">
                             {activeSrc ? (
                                 <iframe
-                                    key={activeVideo.id}
+                                    key={activeVideo.id} // force remount tiap ganti video → reset playback
                                     src={activeSrc}
                                     title={activeVideo.title}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerPolicy="strict-origin-when-cross-origin"
                                     allowFullScreen
-                                    className="w-full h-full rounded-lg"
+                                    sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-neutral-300">
@@ -427,12 +502,28 @@ export default function VideoGaleri() {
                             )}
                         </div>
 
-                        <div className="mt-3 text-white font-medium">
-                            {activeVideo.title}
-                        </div>
+                        <div className="mt-3 text-white font-medium">{activeVideo.title}</div>
                     </div>
                 </div>
             )}
+
+            {/* Aspect-ratio helper */}
+            <style jsx>{`
+        .video-frame {
+          position: relative;
+          width: 100%;
+          /* 16:9 */
+          padding-top: 56.25%;
+        }
+        .video-frame > iframe,
+        .video-frame > div { /* fallback container "Embed tidak tersedia" */
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          border: 0;
+        }
+      `}</style>
         </div>
     );
 }
