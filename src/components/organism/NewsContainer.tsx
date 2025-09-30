@@ -62,7 +62,12 @@ function pickTitle(item: Berita): string {
     return candidates.find((s): s is string => !!s && s.trim().length > 0) ?? "";
 }
 const fetcher = (url: string) =>
-    fetch(url, { headers: { accept: "application/json" }, cache: "no-store" }).then((r) => {
+    fetch(url, {
+        headers: {
+            "Authorization": "Bearer SGB-c7b0604664fd48d9",
+            "Accept": "application/json",
+        }, cache: "no-store"
+    }).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
         return r.json();
     });
@@ -111,7 +116,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
 
     const filters = useMemo(() => ["All", ...(kategoriMap[kategoriSlug] || [])], [kategoriSlug]);
 
-    const { data, error } = useSWR("https://portalnews.newsmaker.id/api/berita", fetcher, {
+    const { data, error } = useSWR("https://portalnews.newsmaker.id/api/v1/berita", fetcher, {
         refreshInterval: 15_000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,

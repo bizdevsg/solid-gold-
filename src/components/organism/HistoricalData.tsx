@@ -17,7 +17,13 @@ type Row = {
 };
 
 const fetcher = (url: string) =>
-    fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" }).then((r) => {
+    fetch(url, {
+        headers: {
+            Authorization: "Bearer SGB-c7b0604664fd48d9",
+            Accept: "application/json",
+        },
+        cache: "no-store",
+    }).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
         return r.json();
     });
@@ -28,13 +34,20 @@ function pickArray<T = unknown>(raw: any): T[] {
     return [];
 }
 
-const numFmt = new Intl.NumberFormat("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const numFmt = new Intl.NumberFormat("id-ID", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
 const dateFmt = (s?: string) => {
     if (!s) return "-";
     const d = new Date(s);
     return Number.isNaN(d.getTime())
         ? s
-        : d.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "2-digit" });
+        : d.toLocaleDateString("id-ID", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+        });
 };
 
 // Tanpa "All"
@@ -61,12 +74,16 @@ export default function HistoricalDataTable() {
     const DEFAULT_FILTER: FilterType = "LGD Daily";
     const [activeFilter, setActiveFilter] = useState<FilterType>(DEFAULT_FILTER);
 
-    const { data, error, isLoading, mutate } = useSWR<unknown>("https://portalnews.newsmaker.id/api/pivot-history", fetcher, {
-        refreshInterval: 60_000,
-        revalidateOnFocus: true,
-        revalidateOnReconnect: true,
-        keepPreviousData: true,
-    });
+    const { data, error, isLoading, mutate } = useSWR<unknown>(
+        "https://portalnews.newsmaker.id/api/v1/pivot-history",
+        fetcher,
+        {
+            refreshInterval: 60_000,
+            revalidateOnFocus: true,
+            revalidateOnReconnect: true,
+            keepPreviousData: true,
+        }
+    );
 
     const rows: Row[] = useMemo(() => {
         const arr = pickArray<Row>(data);
@@ -82,8 +99,23 @@ export default function HistoricalDataTable() {
     const filteredRows = useMemo(() => {
         const targetRaw = activeFilter.toLowerCase();
         const target = (ALIAS[targetRaw] ?? targetRaw).trim();
-        return rows.filter((r) => (r.category || "").toLowerCase().trim() === target);
+        return rows.filter(
+            (r) => (r.category || "").toLowerCase().trim() === target
+        );
     }, [rows, activeFilter]);
+
+    // --- Tambahan pagination ---
+    const [page, setPage] = useState(1);
+    const pageSize = 5; // jumlah baris per halaman
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+    const paginatedRows = useMemo(() => {
+        const start = (page - 1) * pageSize;
+        return filteredRows.slice(start, start + pageSize);
+    }, [filteredRows, page]);
+
+    // reset page ketika filter berubah supaya mulai dari page 1 lagi
+    // agar tidak error page melebihi totalPages
+    if (page > totalPages) setPage(1);
 
     return (
         <div className="w-full">
@@ -109,7 +141,10 @@ export default function HistoricalDataTable() {
                         return (
                             <button
                                 key={f}
-                                onClick={() => setActiveFilter(f)}
+                                onClick={() => {
+                                    setActiveFilter(f);
+                                    setPage(1); // reset page ke 1 saat filter berubah
+                                }}
                                 className={`px-3 py-1.5 rounded-full border text-sm transition-colors whitespace-nowrap cursor-pointer ${active
                                     ? "bg-yellow-500 border-yellow-500 text-black"
                                     : "bg-transparent border-neutral-600 text-neutral-200 hover:bg-neutral-800"
@@ -139,11 +174,21 @@ export default function HistoricalDataTable() {
                         {isLoading ? (
                             Array.from({ length: 6 }).map((_, i) => (
                                 <tr key={`sk-${i}`} className="animate-pulse">
-                                    <td className="px-3 py-2"><div className="h-4 w-24 bg-neutral-700 rounded" /></td>
-                                    <td className="px-3 py-2 text-right"><div className="h-4 w-16 bg-neutral-700 rounded inline-block" /></td>
-                                    <td className="px-3 py-2 text-right"><div className="h-4 w-16 bg-neutral-700 rounded inline-block" /></td>
-                                    <td className="px-3 py-2 text-right"><div className="h-4 w-16 bg-neutral-700 rounded inline-block" /></td>
-                                    <td className="px-3 py-2 text-right"><div className="h-4 w-16 bg-neutral-700 rounded inline-block" /></td>
+                                    <td className="px-3 py-2">
+                                        <div className="h-4 w-24 bg-neutral-700 rounded" />
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        <div className="h-4 w-16 bg-neutral-700 rounded inline-block" />
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        <div className="h-4 w-16 bg-neutral-700 rounded inline-block" />
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        <div className="h-4 w-16 bg-neutral-700 rounded inline-block" />
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        <div className="h-4 w-16 bg-neutral-700 rounded inline-block" />
+                                    </td>
                                 </tr>
                             ))
                         ) : error ? (
@@ -152,20 +197,34 @@ export default function HistoricalDataTable() {
                                     Gagal memuat data.
                                 </td>
                             </tr>
-                        ) : filteredRows.length === 0 ? (
+                        ) : paginatedRows.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-3 py-6 text-center text-neutral-300">
+                                <td
+                                    colSpan={6}
+                                    className="px-3 py-6 text-center text-neutral-300"
+                                >
                                     Tidak ada data pada kategori <b>{activeFilter}</b>.
                                 </td>
                             </tr>
                         ) : (
-                            filteredRows.map((r) => (
-                                <tr key={r.id} className="border-t border-neutral-800 hover:bg-neutral-800/40">
+                            paginatedRows.map((r) => (
+                                <tr
+                                    key={r.id}
+                                    className="border-t border-neutral-800 hover:bg-neutral-800/40"
+                                >
                                     <td className="px-3 py-2">{dateFmt(r.tanggal)}</td>
-                                    <td className="px-3 py-2 text-right">{numFmt.format(parseFloat(r.open))}</td>
-                                    <td className="px-3 py-2 text-right">{numFmt.format(parseFloat(r.high))}</td>
-                                    <td className="px-3 py-2 text-right">{numFmt.format(parseFloat(r.low))}</td>
-                                    <td className="px-3 py-2 text-right">{numFmt.format(parseFloat(r.close))}</td>
+                                    <td className="px-3 py-2 text-right">
+                                        {numFmt.format(parseFloat(r.open))}
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        {numFmt.format(parseFloat(r.high))}
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        {numFmt.format(parseFloat(r.low))}
+                                    </td>
+                                    <td className="px-3 py-2 text-right">
+                                        {numFmt.format(parseFloat(r.close))}
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -173,8 +232,37 @@ export default function HistoricalDataTable() {
                 </table>
             </div>
 
-            <div className="mt-2 text-xs text-neutral-400">
-                Menampilkan kategori: <strong className="text-neutral-200">{activeFilter}</strong>
+            <div className="mt-2 flex flex-col md:flex-row md:items-center md:justify-between text-xs text-neutral-400 gap-2">
+                <div>
+                    Menampilkan kategori:{" "}
+                    <strong className="text-neutral-200">{activeFilter}</strong>
+                </div>
+                {/* Pagination controls */}
+                <div className="flex items-center gap-2">
+                    <button
+                        disabled={page === 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        className={`px-2 py-1 rounded border ${page === 1
+                            ? "text-neutral-500 border-neutral-700 cursor-not-allowed"
+                            : "border-neutral-600 hover:bg-neutral-800"
+                            }`}
+                    >
+                        Prev
+                    </button>
+                    <span>
+                        Page {page} / {totalPages}
+                    </span>
+                    <button
+                        disabled={page === totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        className={`px-2 py-1 rounded border ${page === totalPages
+                            ? "text-neutral-500 border-neutral-700 cursor-not-allowed"
+                            : "border-neutral-600 hover:bg-neutral-800"
+                            }`}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );

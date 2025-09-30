@@ -1,4 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
 
 type LinkItem = {
     label: string;
@@ -46,6 +48,10 @@ export default function Footer() {
                         {
                             label: "Global & Economy",
                             href: "/economicNews",
+                        },
+                        {
+                            label: "Fiscal & Global",
+                            href: "/fiscalMoneter",
                         },
                     ],
                 },
@@ -136,8 +142,16 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <div className="border-t border-gray-800 text-center py-4 text-sm text-gray-500">
-                © {new Date().getFullYear()} Solid Gold Berjangka. All rights reserved.
+            <div className="border-t border-gray-800">
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 flex gap-5 py-5 flex-col md:flex-row justify-between items-center">
+                    <div className="text-left text-sm text-gray-300">
+                        © {new Date().getFullYear()} Solid Gold Berjangka. All rights reserved.
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <a href="https://www.instagram.com/solidgoldjakarta.official/" target="_blank" className="text-yellow-500 bg-neutral-500 p-1 rounded-full text-2xl"><FontAwesomeIcon icon={faInstagram} /></a>
+                        <a href="https://www.youtube.com/@Ptsolidgoldberjangka" target="_blank" className="text-yellow-500 bg-neutral-500 p-1 rounded-full text-2xl"><FontAwesomeIcon icon={faYoutube} /></a>
+                    </div>
+                </div>
             </div>
         </footer>
     );

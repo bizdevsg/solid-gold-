@@ -69,7 +69,12 @@ function mediaUrl(p?: string) {
 }
 
 const fetcher = (url: string) =>
-    fetch(url, { headers: { accept: "application/json" }, cache: "no-store" }).then(
+    fetch(url, {
+        headers: {
+            "Authorization": "Bearer SGB-c7b0604664fd48d9",
+            "Accept": "application/json",
+        }, cache: "no-store"
+    }).then(
         (r) => {
             if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
             return r.json();
@@ -96,7 +101,7 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
         data,
         error,
         isLoading,
-    } = useSWR("https://portalnews.newsmaker.id/api/berita", fetcher, {
+    } = useSWR("https://portalnews.newsmaker.id/api/v1/berita", fetcher, {
         refreshInterval: 15_000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,

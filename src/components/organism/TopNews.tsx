@@ -27,7 +27,13 @@ const numberFmt = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 });
 
 // ---------- fetchers & helpers ----------
 const baseFetcher = (url: string) =>
-    fetch(url, { headers: { accept: "application/json" }, cache: "no-store" }).then((r) => {
+    fetch(url, {
+        headers: {
+            accept: "application/json",
+            "Authorization": "Bearer SGB-c7b0604664fd48d9",
+        },
+        cache: "no-store"
+    }).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} on ${url}`);
         return r.json();
     });
@@ -100,7 +106,7 @@ export default function TopNews() {
             try {
                 setNewsLoading(true);
                 setHasError(false);
-                const newsRes = await baseFetcher("https://portalnews.newsmaker.id/api/berita");
+                const newsRes = await baseFetcher("https://portalnews.newsmaker.id/api/v1/berita");
                 if (!mounted) return;
                 setNewsRaw(pickArray<Berita>(newsRes));
             } catch (err) {

@@ -22,30 +22,30 @@ export default function KalenderEkonomi() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("https://portalnews.newsmaker.id/api/kalender-ekonomi");
-      if (!res.ok) throw new Error("Gagal mengambil data");
-      const json = await res.json();
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("https://portalnews.newsmaker.id/api/v1/kalender-ekonomi");
+        if (!res.ok) throw new Error("Gagal mengambil data");
+        const json = await res.json();
 
-      // Memastikan data berada dalam format array di dalam json.data
-      if (Array.isArray(json.data)) {
-        setData(json.data); // Menyimpan data kalender ekonomi ke state
-      } else {
-        console.error("Data yang diterima tidak sesuai format:", json);
+        // Memastikan data berada dalam format array di dalam json.data
+        if (Array.isArray(json.data)) {
+          setData(json.data); // Menyimpan data kalender ekonomi ke state
+        } else {
+          console.error("Data yang diterima tidak sesuai format:", json);
+          setData([]);
+        }
+      } catch (error) {
+        console.error(error);
         setData([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchData();
-}, []);
+    };
+    fetchData();
+  }, []);
 
   const getCountryCode = (code: string) => {
     return currencyToCountry[code?.toUpperCase()] || "unknown";
@@ -169,8 +169,8 @@ useEffect(() => {
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
-                  ? "bg-yellow-500 text-white font-semibold"
-                  : "bg-gray-100/5 hover:bg-gray-100/10"
+                ? "bg-yellow-500 text-white font-semibold"
+                : "bg-gray-100/5 hover:bg-gray-100/10"
                 }`}
             >
               {filter}

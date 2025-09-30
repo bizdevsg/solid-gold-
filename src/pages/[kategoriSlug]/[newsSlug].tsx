@@ -52,8 +52,15 @@ export default function BeritaDetailPage() {
             setErrMsg(null);
             try {
                 const res = await fetch(
-                    `https://portalnews.newsmaker.id/api/berita/${encodeURIComponent(newsSlug)}`,
-                    { signal: ac.signal }
+                    `https://portalnews.newsmaker.id/api/v1/berita/${encodeURIComponent(newsSlug)}`,
+                    {
+                        signal: ac.signal,
+                        headers: {
+                            Authorization: "Bearer SGB-c7b0604664fd48d9", // ← Bearer token ditambahkan di sini
+                            Accept: "application/json",
+                        },
+                        cache: "no-store",
+                    }
                 );
 
                 if (res.status === 404) {

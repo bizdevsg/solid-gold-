@@ -4,7 +4,7 @@ export default function TradingView() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 py-12">
                 <div className="flex flex-col lg:flex-row gap-5">
                     {/* Gambar dan Teks */}
-                    <div className="w-full">
+                    <div className="w-full grow">
                         <img
                             src="/assets/TradingView.png"
                             alt="TradingView"
@@ -18,7 +18,7 @@ export default function TradingView() {
                     </div>
 
                     {/* Tombol "Live Chart" */}
-                    <div className="flex items-center md:justify-center">
+                    <div className="flex flex-none items-center md:justify-center">
                         <a
                             href="https://id.tradingview.com/chart/"
                             target="_blank"

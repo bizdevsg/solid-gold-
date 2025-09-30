@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import MiniHeader from "../atoms/MiniHeader";
 
 type LogoItem = {
@@ -22,7 +21,8 @@ const LogoGrid = ({
     Aos,
     AosHeader,
     className = "space-y-5",
-    gridClassName = "grid grid-cols-2 gap-5",
+    gridClassName = "grid grid-cols-2 gap-5 md:grid-cols-3",
+    lastItemFullMobile = false, // opsi baru
 }: {
     title: string;
     Aos: string;
@@ -30,12 +30,14 @@ const LogoGrid = ({
     items: LogoItem[];
     className?: string;
     gridClassName?: string;
+    lastItemFullMobile?: boolean;
 }) => {
     return (
         <div className={className}>
             <div className="flex justify-center w-full" data-aos={AosHeader}>
                 <MiniHeader title={title} />
             </div>
+
             <div className={gridClassName} data-aos={Aos}>
                 {items.map((item, index) => {
                     const href = item.href?.trim();
@@ -51,9 +53,19 @@ const LogoGrid = ({
                         </div>
                     );
 
+                    // hanya item terakhir yg col-span-2 jika lastItemFullMobile true
+                    const spanClass =
+                        lastItemFullMobile && index === items.length - 1
+                            ? "col-span-2 md:col-span-1"
+                            : "";
+
                     // No href → show just the card
                     if (!isValidHref(href)) {
-                        return <div key={key}>{cardContent}</div>;
+                        return (
+                            <div key={key} className={spanClass}>
+                                {cardContent}
+                            </div>
+                        );
                     }
 
                     // External link
@@ -65,6 +77,7 @@ const LogoGrid = ({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={item.alt}
+                                className={spanClass}
                             >
                                 {cardContent}
                             </a>
@@ -73,7 +86,12 @@ const LogoGrid = ({
 
                     // Internal link
                     return (
-                        <Link key={key} href={href!} aria-label={item.alt}>
+                        <Link
+                            key={key}
+                            href={href!}
+                            aria-label={item.alt}
+                            className={spanClass}
+                        >
                             {cardContent}
                         </Link>
                     );
@@ -122,9 +140,28 @@ export default function Watcher() {
     ];
 
     return (
-        <div className="border-y border-white/25 space-y-10 py-10 px-5" data-aos="fade-left">
-            <LogoGrid title="BERIZIN DAN DIAWASI" items={logoPengawas} gridClassName="grid grid-cols-2 md:grid-cols-4 gap-5" Aos="fade-right" AosHeader="fade-left" />
-            <LogoGrid title="KEANGGOTAAN DARI" items={logoMember} gridClassName="grid grid-cols-2 md:grid-cols-3 gap-5" Aos="fade-left" AosHeader="fade-right" />
+        <div
+            className="border-y border-white/25 space-y-10 py-10 px-5"
+            data-aos="zoom-in"
+        >
+            {/* logoPengawas normal */}
+            <LogoGrid
+                title="BERIZIN DAN DIAWASI"
+                items={logoPengawas}
+                Aos="fade-left"
+                AosHeader="fade-right"
+                gridClassName="grid grid-cols-2 md:grid-cols-4 gap-5"
+            />
+
+            {/* logoMember: baris pertama 2, baris kedua 1 full di mobile */}
+            <LogoGrid
+                title="KEANGGOTAAN DARI"
+                items={logoMember}
+                Aos="fade-left"
+                AosHeader="fade-right"
+                gridClassName="grid grid-cols-2 md:grid-cols-3 gap-5"
+                lastItemFullMobile={true}
+            />
         </div>
     );
 }
