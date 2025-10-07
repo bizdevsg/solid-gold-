@@ -43,12 +43,13 @@ const numberFmt = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 });
 
 // ===== Kategori mapping (nama kategori API -> slug halaman) =====
 const kategoriMap: Record<string, string[]> = {
-    indexNews: ["Nikkei", "Hang seng"],
+    indexNews: ["Nikkei", "Hang seng", "Market Update"],
     commodityNews: ["Gold", "Silver", "Oil"],
     currenciesNews: ["EUR/USD", "USD/JPY", "USD/CHF", "AUD/USD", "GBP/USD", "US DOLLAR"],
     economicNews: ["Global & Economic"],
     analisisMarket: ["Analisis Market"],
     analisisOpini: ["Analisis & Opini"],
+    fiscalMoneter: ["Fiscal & Moneter"],
 };
 function getKategoriSlugFromName(name?: string): string | null {
     if (!name) return null;
@@ -120,7 +121,7 @@ function intersperseNewsWithDots(items: DisplayItem[]): DisplayItem[] {
 
 function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
     // Ambil 3 berita teratas → masing2 item terpisah dengan href
-    const newsItems: DisplayItem[] = news.slice(0, 3).map((n) => {
+    const newsItems: DisplayItem[] = news.slice(0, 5).map((n) => {
         const mapped = getKategoriSlugFromName(n.kategori?.name);
         const href =
             mapped && n.slug ? `/${encodeURIComponent(mapped)}/${encodeURIComponent(n.slug)}` : "/#";

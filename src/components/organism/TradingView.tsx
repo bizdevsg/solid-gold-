@@ -2,7 +2,7 @@ export default function TradingView() {
     return (
         <div className="w-full bg-linear-to-r from-zinc-900 to-zinc-800 text-gray-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 py-12">
-                <div className="flex flex-col lg:flex-row gap-5">
+                <div className="flex flex-col lg:flex-row gap-10">
                     {/* Gambar dan Teks */}
                     <div className="w-full grow">
                         <img

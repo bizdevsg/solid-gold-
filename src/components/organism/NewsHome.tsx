@@ -30,7 +30,7 @@ interface Berita {
 
 /** Peta kategori: slug halaman -> daftar nama kategori pada data */
 const kategoriMap: Record<string, string[]> = {
-  indexNews: ["Nikkei", "Hang seng"],
+  indexNews: ["Nikkei", "Hang seng", "Market Update"],
   commodityNews: ["Gold", "Silver", "Oil"],
   currenciesNews: [
     "EUR/USD",
