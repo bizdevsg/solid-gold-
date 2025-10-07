@@ -28,10 +28,32 @@ const fetcher = (url: string) =>
         return r.json();
     });
 
-function pickArray<T = unknown>(raw: any): T[] {
-    if (Array.isArray(raw)) return raw as T[];
-    if (raw && Array.isArray(raw.data)) return raw.data as T[];
-    return [];
+// Convert API baru ke Row[]
+function normalizeApi(raw: any): Row[] {
+    if (!raw || !Array.isArray(raw.data)) return [];
+
+    const rows: Row[] = [];
+
+    raw.data.forEach((group: any) => {
+        const symbol = group.symbol;
+        if (Array.isArray(group.data)) {
+            group.data.forEach((item: any) => {
+                rows.push({
+                    id: item.id,
+                    tanggal: item.date, // API pakai "date"
+                    open: String(item.open),
+                    high: String(item.high),
+                    low: String(item.low),
+                    close: String(item.close),
+                    category: symbol, // ganti "symbol" jadi category
+                    created_at: item.createdAt,
+                    updated_at: item.updatedAt,
+                });
+            });
+        }
+    });
+
+    return rows;
 }
 
 const numFmt = new Intl.NumberFormat("id-ID", {
@@ -53,7 +75,8 @@ const dateFmt = (s?: string) => {
 // Tanpa "All"
 const FILTERS = [
     "LGD Daily",
-    "LSI",
+    "BCO Daily",
+    "LSI Daily",
     "HSI Daily",
     "SNI Daily",
     "AUD/USD",
@@ -64,18 +87,17 @@ const FILTERS = [
 ] as const;
 type FilterType = (typeof FILTERS)[number];
 
-// Alias supaya "LGS Daily" tetap memunculkan "LGD Daily"
+// Alias supaya tetap nyambung
 const ALIAS: Record<string, string> = {
     "lgs daily": "lgd daily",
 };
 
 export default function HistoricalDataTable() {
-    // Default langsung LGD Daily
     const DEFAULT_FILTER: FilterType = "LGD Daily";
     const [activeFilter, setActiveFilter] = useState<FilterType>(DEFAULT_FILTER);
 
     const { data, error, isLoading, mutate } = useSWR<unknown>(
-        "https://portalnews.newsmaker.id/api/v1/pivot-history",
+        "https://endpoapi-production-3202.up.railway.app/api/historical?dateFrom=2025-07-01",
         fetcher,
         {
             refreshInterval: 60_000,
@@ -86,7 +108,7 @@ export default function HistoricalDataTable() {
     );
 
     const rows: Row[] = useMemo(() => {
-        const arr = pickArray<Row>(data);
+        const arr = normalizeApi(data);
         return arr
             .slice()
             .sort((a, b) => {
@@ -104,56 +126,26 @@ export default function HistoricalDataTable() {
         );
     }, [rows, activeFilter]);
 
-    // --- Tambahan pagination ---
-    const [page, setPage] = useState(1);
-    const pageSize = 5; // jumlah baris per halaman
-    const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
-    const paginatedRows = useMemo(() => {
-        const start = (page - 1) * pageSize;
-        return filteredRows.slice(start, start + pageSize);
-    }, [filteredRows, page]);
-
-    // reset page ketika filter berubah supaya mulai dari page 1 lagi
-    // agar tidak error page melebihi totalPages
-    if (page > totalPages) setPage(1);
+    const limitedRows = filteredRows.slice(0, 5);
 
     return (
-        <div className="w-full">
+        <div className="w-full mb-4">
             {/* Header & Controls */}
-            <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 className="text-white font-semibold text-lg">Historical Data</h2>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => mutate()}
-                        className="px-3 py-1.5 text-sm rounded bg-yellow-500 hover:bg-yellow-600 text-black font-medium"
-                        aria-label="Refresh data"
+                    {/* Dropdown filter */}
+                    <select
+                        value={activeFilter}
+                        onChange={(e) => setActiveFilter(e.target.value as FilterType)}
+                        className="px-3 py-1.5 text-sm rounded border border-neutral-600 bg-neutral-900 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     >
-                        Refresh
-                    </button>
-                </div>
-            </div>
-
-            {/* Filter chips (tanpa All) */}
-            <div className="mb-4 overflow-x-auto">
-                <div className="inline-flex gap-2 pr-2">
-                    {FILTERS.map((f) => {
-                        const active = activeFilter === f;
-                        return (
-                            <button
-                                key={f}
-                                onClick={() => {
-                                    setActiveFilter(f);
-                                    setPage(1); // reset page ke 1 saat filter berubah
-                                }}
-                                className={`px-3 py-1.5 rounded-full border text-sm transition-colors whitespace-nowrap cursor-pointer ${active
-                                    ? "bg-yellow-500 border-yellow-500 text-black"
-                                    : "bg-transparent border-neutral-600 text-neutral-200 hover:bg-neutral-800"
-                                    }`}
-                            >
+                        {FILTERS.map((f) => (
+                            <option key={f} value={f}>
                                 {f}
-                            </button>
-                        );
-                    })}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
@@ -169,7 +161,6 @@ export default function HistoricalDataTable() {
                             <th className="px-3 py-2 text-right">Close</th>
                         </tr>
                     </thead>
-
                     <tbody className="bg-neutral-900/40 text-white">
                         {isLoading ? (
                             Array.from({ length: 6 }).map((_, i) => (
@@ -193,11 +184,14 @@ export default function HistoricalDataTable() {
                             ))
                         ) : error ? (
                             <tr>
-                                <td colSpan={6} className="px-3 py-6 text-center text-red-400">
+                                <td
+                                    colSpan={6}
+                                    className="px-3 py-6 text-center text-red-400"
+                                >
                                     Gagal memuat data.
                                 </td>
                             </tr>
-                        ) : paginatedRows.length === 0 ? (
+                        ) : limitedRows.length === 0 ? (
                             <tr>
                                 <td
                                     colSpan={6}
@@ -207,7 +201,7 @@ export default function HistoricalDataTable() {
                                 </td>
                             </tr>
                         ) : (
-                            paginatedRows.map((r) => (
+                            limitedRows.map((r) => (
                                 <tr
                                     key={r.id}
                                     className="border-t border-neutral-800 hover:bg-neutral-800/40"
@@ -230,39 +224,6 @@ export default function HistoricalDataTable() {
                         )}
                     </tbody>
                 </table>
-            </div>
-
-            <div className="mt-2 flex flex-col md:flex-row md:items-center md:justify-between text-xs text-neutral-400 gap-2">
-                <div>
-                    Menampilkan kategori:{" "}
-                    <strong className="text-neutral-200">{activeFilter}</strong>
-                </div>
-                {/* Pagination controls */}
-                <div className="flex items-center gap-2">
-                    <button
-                        disabled={page === 1}
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        className={`px-2 py-1 rounded border ${page === 1
-                            ? "text-neutral-500 border-neutral-700 cursor-not-allowed"
-                            : "border-neutral-600 hover:bg-neutral-800"
-                            }`}
-                    >
-                        Prev
-                    </button>
-                    <span>
-                        Page {page} / {totalPages}
-                    </span>
-                    <button
-                        disabled={page === totalPages}
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        className={`px-2 py-1 rounded border ${page === totalPages
-                            ? "text-neutral-500 border-neutral-700 cursor-not-allowed"
-                            : "border-neutral-600 hover:bg-neutral-800"
-                            }`}
-                    >
-                        Next
-                    </button>
-                </div>
             </div>
         </div>
     );

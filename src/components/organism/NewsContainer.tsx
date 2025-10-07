@@ -36,7 +36,7 @@ interface NewsContainerProps {
 }
 
 const kategoriMap: Record<string, string[]> = {
-    indexNews: ["Nikkei", "Hang seng"],
+    indexNews: ["Nikkei", "Hang seng", "Market Update"],
     commodityNews: ["Gold", "Silver", "Oil"],
     currenciesNews: ["EUR/USD", "USD/JPY", "USD/CHF", "AUD/USD", "GBP/USD", "US DOLLAR"],
     economicNews: ["Global Economics"],

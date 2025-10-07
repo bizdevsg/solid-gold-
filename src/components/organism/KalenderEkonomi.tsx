@@ -1,163 +1,148 @@
 import { useState, useEffect } from "react";
+import React from "react";
 import CountryFlag from "react-country-flag";
 
+// Definisikan interface untuk item data
+interface DataItem {
+  time: string; // Waktu yang dikirim dari API
+  currency: string;
+  impact: string;
+  event: string;
+  previous: string;
+  forecast: string;
+  actual: string;
+  details: {
+    sources: string;
+    measures: string;
+    usualEffect: string;
+    frequency: string;
+    nextReleased: string;
+    notes: string;
+    whyTraderCare: string;
+    history: {
+      date: string;
+      previous: string;
+      forecast: string;
+      actual: string;
+    }[];
+  };
+}
+
+// Daftar filter yang tersedia
 const filters = ["Today", "This Week", "Previous Week", "Next Week"];
 
+// Pemetaan mata uang ke kode negara ISO Alpha-2
 const currencyToCountry: Record<string, string> = {
-  US: "US",
-  EUR: "EU",
+  "U.S": "US",
+  EUR: "EU", // Menggunakan Jerman karena EU tidak valid di react-country-flag
   JPY: "JP",
+  JPN: "JP", // Alias JPN dari API
   GBP: "GB",
   AUD: "AU",
   CAD: "CA",
   CHF: "CH",
   CHN: "CN",
   HKD: "HK",
-  IDN: "ID",
+  IDR: "ID",
 };
 
 export default function KalenderEkonomi() {
   const [activeFilter, setActiveFilter] = useState("Today");
   const [searchQuery, setSearchQuery] = useState("");
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<DataItem[]>([]); // Tipe data yang benar
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Menentukan jumlah item per halaman
+  const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("https://portalnews.newsmaker.id/api/v1/kalender-ekonomi");
-        if (!res.ok) throw new Error("Gagal mengambil data");
-        const json = await res.json();
-
-        // Memastikan data berada dalam format array di dalam json.data
-        if (Array.isArray(json.data)) {
-          setData(json.data); // Menyimpan data kalender ekonomi ke state
-        } else {
-          console.error("Data yang diterima tidak sesuai format:", json);
-          setData([]);
-        }
-      } catch (error) {
-        console.error(error);
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const getCountryCode = (code: string) => {
-    return currencyToCountry[code?.toUpperCase()] || "unknown";
+  // Pemetaan endpoint berdasarkan filter
+  const endpointMap: Record<string, string> = {
+    Today: "today",
+    "This Week": "this-week",
+    "Previous Week": "previous-week",
+    "Next Week": "next-week",
   };
 
+  const fetchData = async (filter: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://endpoapi-production-3202.up.railway.app/api/calendar/${endpointMap[filter]}`
+      );
+      if (!res.ok) throw new Error("Gagal mengambil data");
+      const json = await res.json();
+      setData(Array.isArray(json.data) ? json.data : []);
+    } catch (error) {
+      console.error(error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(activeFilter);
+  }, [activeFilter]);
+
+  // Handle accordion toggle
+  const toggleAccordion = (index: number) => {
+    setActiveAccordion(activeAccordion === index ? null : index);
+  };
+
+  const getCountryCode = (currency: string) =>
+    currencyToCountry[currency?.toUpperCase()] || "UN"; // UN → logo bendera putih (fallback)
+
   const getActualClass = (actual: string, forecast: string) => {
-    const actualNum = parseFloat(actual?.replace(/[^0-9.-]+/g, ""));
-    const forecastNum = parseFloat(forecast?.replace(/[^0-9.-]+/g, ""));
+    // Hilangkan semua karakter kecuali angka, titik, koma, minus
+    const cleanActual = actual?.replace(/[^0-9.,-]+/g, "") || "";
+    const cleanForecast = forecast?.replace(/[^0-9.,-]+/g, "") || "";
+
+    // Ganti koma dengan titik agar parseFloat tidak gagal
+    const actualNum = parseFloat(cleanActual.replace(",", "."));
+    const forecastNum = parseFloat(cleanForecast.replace(",", "."));
+
     if (isNaN(actualNum) || isNaN(forecastNum)) return "text-neutral-100";
     if (actualNum > forecastNum) return "text-green-500";
     if (actualNum < forecastNum) return "text-red-500";
     return "text-neutral-100";
   };
 
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des",
-    ];
-    const day = d.getDate();
-    const month = monthNames[d.getMonth()];
-    const year = d.getFullYear();
-    return `${day} ${month} ${year}`;
+
+  const getColorImpact = (impact: string) => {
+    if (!impact) return "text-neutral-100"; // default
+
+    const i = impact.toLowerCase();
+
+    if (i.includes("★★★")) return "text-red-500 font-semibold";
+    if (i.includes("★★")) return "text-yellow-500 font-semibold";
+    if (i.includes("★")) return "text-green-500 font-semibold";
+
+    return "text-neutral-100"; // fallback
   };
 
-  const parseTimeToMinutes = (timeStr: string) => {
-    if (!timeStr) return 0;
-    const [h, m] = timeStr.split(":").map((n) => parseInt(n) || 0);
-    return h * 60 + m;
+  // Logika pagination untuk filter selain "Today"
+  const handlePagination = (groupedData: DataItem[]) => {
+    const totalPages = Math.ceil(groupedData.length / itemsPerPage);
+
+    // Logika pagination
+    const paginatedData = groupedData.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+
+    return { paginatedData, totalPages };
   };
 
-  let filteredData = data
-    .filter((item) => {
-      const q = searchQuery.toLowerCase();
-      const country = (item.country || "").toLowerCase();
-      const impact = (item.impact || "").toLowerCase();
-      const figures = (item.figures || "").toLowerCase();
-      const forecast = (item.forecast || "").toLowerCase();
-      const previous = (item.previous || "").toLowerCase();
-      const actual = (item.actual || "").toLowerCase();
-      return (
-        country.includes(q) ||
-        impact.includes(q) ||
-        figures.includes(q) ||
-        forecast.includes(q) ||
-        previous.includes(q) ||
-        actual.includes(q)
-      );
-    })
-    .filter((item) => {
-      if (!item.date) return false;
-
-      const itemDate = new Date(item.date);
-      const now = new Date();
-      const itemDay = new Date(
-        itemDate.getFullYear(),
-        itemDate.getMonth(),
-        itemDate.getDate()
-      );
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      if (activeFilter === "Today")
-        return itemDay.getTime() === today.getTime();
-
-      const getWeekRange = (startOffset: number) => {
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay() + startOffset);
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
-        return [weekStart, weekEnd];
-      };
-
-      if (activeFilter === "This Week") {
-        const [start, end] = getWeekRange(0);
-        return itemDay >= start && itemDay <= end;
-      }
-      if (activeFilter === "Previous Week") {
-        const [start, end] = getWeekRange(-7);
-        return itemDay >= start && itemDay <= end;
-      }
-      if (activeFilter === "Next Week") {
-        const [start, end] = getWeekRange(7);
-        return itemDay >= start && itemDay <= end;
-      }
-
-      return true;
-    });
-
-  filteredData = filteredData.sort((a, b) => {
-    if (activeFilter === "Today") {
-      return parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time);
-    } else {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      if (dateA !== dateB) {
-        return dateA - dateB;
-      }
-      return parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time);
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= Math.ceil(data.length / itemsPerPage)) {
+      setCurrentPage(page);
     }
-  });
+  };
+
+  // Untuk "Today", tidak ada pagination, tampilkan data secara langsung
+  const groupedData = activeFilter === "Today" ? data : data;
+  const { paginatedData, totalPages } =
+    activeFilter !== "Today" ? handlePagination(groupedData) : { paginatedData: groupedData, totalPages: 1 };
 
   return (
     <div className="space-y-5">
@@ -169,7 +154,7 @@ export default function KalenderEkonomi() {
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
-                ? "bg-yellow-500 text-white font-semibold"
+                ? "bg-yellow-500 text-black font-semibold"
                 : "bg-gray-100/5 hover:bg-gray-100/10"
                 }`}
             >
@@ -189,167 +174,187 @@ export default function KalenderEkonomi() {
         </div>
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:flex flex-col">
-        <div className="-m-1.5 overflow-x-auto">
-          <div className="p-1.5 min-w-full inline-block align-middle">
-            <div className="border border-yellow-500 rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-yellow-500">
-                <thead className="bg-yellow-500">
+      {/* Data Table */}
+      <div className="w-full">
+        <div className="inline-block w-full align-middle">
+          <div className="border border-yellow-500 rounded-lg overflow-hidden">
+            <table className="w-full table-auto border-collapse">
+              <thead className="bg-yellow-500">
+                <tr>
+                  <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
+                    Time
+                  </th>
+                  <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
+                    Country
+                  </th>
+                  <th className="px-2 md:px-4 py-2 text-center font-bold bg-yellow-400 text-neutral-900 uppercase">
+                    Impact
+                  </th>
+                  <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
+                    Event
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {loading ? (
                   <tr>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Country
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Impact
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Figures
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Previous
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Forecast
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-neutral-900 uppercase">
-                      Actual
-                    </th>
+                    <td colSpan={7} className="text-center py-4 text-neutral-100">
+                      Loading...
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {loading ? (
-                    <tr>
-                      <td
-                        colSpan={8}
-                        className="text-center py-4 text-neutral-100"
+                ) : paginatedData.length > 0 ? (
+                  paginatedData.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <tr
+                        className="cursor-pointer hover:bg-neutral-700/30 transition"
+                        onClick={() => toggleAccordion(index)}
                       >
-                        Loading...
-                      </td>
-                    </tr>
-                  ) : filteredData.length > 0 ? (
-                    filteredData.map((item, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100">
-                          {formatDate(item.date)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-100">
+                        <td className="px-2 md:px-4 py-2 text-neutral-100 break-words align-middle text-center md:text-left">
                           {item.time || "-"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100 flex items-center gap-2">
-                          <CountryFlag
-                            countryCode={getCountryCode(item.country)}
-                            svg
-                            style={{ width: "1.5em", height: "1.5em" }}
-                            title={item.country || ""}
-                          />
-                          {item.country || "-"}
+
+                        <td className="px-2 md:px-4 py-2 text-neutral-100 break-words">
+                          <div className="flex items-center gap-1 flex-wrap justify-center md:justify-baseline">
+                            <CountryFlag
+                              countryCode={getCountryCode(item.currency)}
+                              svg
+                              style={{ width: "1.2em", height: "1.2em" }}
+                            />
+                            <span>{item.currency}</span>
+                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100">
-                          {item.impact || "-"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100">
-                          {item.figures || "-"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100">
-                          {item.previous || "-"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-100">
-                          {item.forecast || "-"}
-                        </td>
+
                         <td
-                          className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getActualClass(
-                            item.actual,
-                            item.forecast
+                          className={`px-2 md:px-4 py-2 text-center bg-neutral-600/20 ${getColorImpact(
+                            item.impact
                           )}`}
                         >
-                          {item.actual || "-"}
+                          {item.impact}
+                        </td>
+
+                        <td className="px-2 md:px-4 py-2 text-neutral-100 break-words align-top">
+                          <div className="font-medium">{item.event}</div>
+                          <div className="flex flex-wrap gap-1 text-neutral-400">
+                            <p><strong>Previous:</strong> {item.previous || "-"}</p>
+                            <span>|</span>
+                            <p><strong>Forecast:</strong> {item.forecast || "-"}</p>
+                            <span>|</span>
+                            <p>
+                              <strong>Actual:</strong>{" "}
+                              <span className={getActualClass(item.actual, item.forecast)}>
+                                {item.actual || "-"}
+                              </span>
+                            </p>
+                          </div>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={8}
-                        className="text-center py-4 text-neutral-100"
-                      >
-                        Tidak ada data
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+
+                      {/* Accordion Detail */}
+                      {activeAccordion === index && (
+                        <tr>
+                          <td colSpan={4} className="bg-neutral-600/20 p-4">
+                            <div className="flex flex-col gap-4 md:flex-row">
+                              {/* Card Detail */}
+                              <div className="text-white space-y-3 border border-yellow-500 p-4 rounded-lg w-full">
+                                <div>
+                                  <p className="font-bold text-lg">Sources:</p> {item.details.sources || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Measures:</p> {item.details.measures || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Usual Effect:</p> {item.details.usualEffect || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Frequency:</p> {item.details.frequency || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Next Released:</p> {item.details.nextReleased || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Notes:</p> {item.details.notes || "-"}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-lg">Why Trader Care:</p> {item.details.whyTraderCare || "-"}
+                                </div>
+                              </div>
+
+                              {/* History Table */}
+                              <div className="w-full">
+                                <table className="w-full border-collapse text-white rounded-xl overflow-hidden shadow-md table-auto">
+                                  <thead>
+                                    <tr className="bg-zinc-700 uppercase text-xs">
+                                      <th className="px-2 py-2 text-left">Date</th>
+                                      <th className="px-2 py-2 text-left">Previous</th>
+                                      <th className="px-2 py-2 text-left">Forecast</th>
+                                      <th className="px-2 py-2 text-left">Actual</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {item.details.history.map((historyItem, idx) => (
+                                      <tr
+                                        key={idx}
+                                        className={`${idx % 2 === 0 ? "bg-neutral-700" : "bg-zinc-800"} hover:bg-zinc-900 transition-colors`}
+                                      >
+                                        <td className="px-2 py-2 break-words">{historyItem.date}</td>
+                                        <td className="px-2 py-2 break-words">{historyItem.previous}</td>
+                                        <td className="px-2 py-2 break-words">{historyItem.forecast}</td>
+                                        <td
+                                          className={`px-2 py-2 break-words font-semibold ${historyItem.actual > historyItem.forecast
+                                            ? "text-green-400"
+                                            : historyItem.actual < historyItem.forecast
+                                              ? "text-red-600"
+                                              : ""
+                                            }`}
+                                        >
+                                          {historyItem.actual}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center py-4 text-neutral-100">
+                      Tidak ada data
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      {/* Mobile Cards */}
-      <div className="flex flex-col md:hidden space-y-3">
-        {loading ? (
-          <div className="text-center py-4 text-neutral-100">Loading...</div>
-        ) : filteredData.length > 0 ? (
-          filteredData.map((item, index) => (
-            <div
-              key={index}
-              className="border border-yellow-500 rounded-lg p-4 bg-gray-900/10 flex flex-col gap-2"
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex flex-row items-center gap-1">
-                  <span className="text-sm text-neutral-100 font-medium">
-                    {formatDate(item.date)}
-                  </span>
-                  <span className="text-sm text-neutral-100 font-medium">-</span>
-                  <span className="text-sm text-neutral-100 font-medium">
-                    {item.time || "-"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CountryFlag
-                    countryCode={getCountryCode(item.country)}
-                    svg
-                    style={{ width: "1.5em", height: "1.5em" }}
-                    title={item.country || ""}
-                  />
-                  <span className="text-sm text-neutral-100">
-                    {item.country || "-"}
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-between text-sm text-neutral-100">
-                <span>Impact:</span>
-                <span>{item.impact || "-"}</span>
-              </div>
-              <div className="flex justify-between text-sm text-neutral-100">
-                <span>Figures:</span>
-                <span>{item.figures || "-"}</span>
-              </div>
-              <div className="flex justify-between text-sm text-neutral-100">
-                <span>Previous:</span>
-                <span>{item.previous || "-"}</span>
-              </div>
-              <div className="flex justify-between text-sm text-neutral-100">
-                <span>Forecast:</span>
-                <span>{item.forecast || "-"}</span>
-              </div>
-              <div className="flex justify-between text-sm text-neutral-100">
-                <span>Actual:</span>
-                <span className={getActualClass(item.actual, item.forecast)}>
-                  {item.actual || "-"}
-                </span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-4 text-neutral-100">Tidak ada data</div>
-        )}
-      </div>
+      {/* Pagination Controls */}
+      {activeFilter !== "Today" && (
+        <div className="flex justify-center space-x-2 mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md"
+          >
+            Previous
+          </button>
+          <span className="text-neutral-100">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

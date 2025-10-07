@@ -30,7 +30,7 @@ interface Berita {
 }
 
 const kategoriMap: Record<string, string[]> = {
-    indexNews: ["Nikkei", "Hang seng"],
+    indexNews: ["Nikkei", "Hang seng", "Market Update"],
     commodityNews: ["Gold", "Silver", "Oil"],
     currenciesNews: [
         "EUR/USD",
