@@ -21,9 +21,9 @@ function calcClassic({ H, L, C }: { H: number; L: number; C: number }) {
     } as const;
 }
 
-function calcWoodie({ C, H, L }: { C: number; H: number; L: number }) {
+function calcWoodie({ O, H, L }: { O: number; H: number; L: number }) {
     // Woodie pivot uses close twice in the pivot
-    const P = (H + L + 2 * C) / 4;
+    const P = (H + L + 2 * O) / 4;
     return {
         P,
         R1: 2 * P - L,
@@ -77,16 +77,16 @@ export default function PivotFibonacciWidget() {
     const [downA, setDownA] = useState(""); // High price
     const [downB, setDownB] = useState(""); // Low price
 
+    // 🧮 Hitung Pivot
     const values = useMemo(() => {
-        const H = num(high), L = num(low), C = num(close);
-        if ([H, L, C].some((x) => !Number.isFinite(x))) return null;
+        const H = num(high), L = num(low), C = num(close), O = num(open);
+        if (![H, L, C, O].every(Number.isFinite)) return null;
         return {
             classic: calcClassic({ H, L, C }),
-            // Woodie perhitungan pakai CLOSE (bukan OPEN)
-            woodie: calcWoodie({ C, H, L }),
+            woodie: calcWoodie({ O, H, L }),
             camarilla: calcCamarilla({ H, L, C }),
         } as const;
-    }, [high, low, close]);
+    }, [open, high, low, close]);
 
     const fibUp = useMemo(() => {
         const A = num(upA), B = num(upB);
