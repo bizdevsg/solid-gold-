@@ -153,7 +153,7 @@ export default function KalenderEkonomi() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
+              className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter
                 ? "bg-yellow-500 text-black font-semibold"
                 : "bg-gray-100/5 hover:bg-gray-100/10"
                 }`}
@@ -180,7 +180,7 @@ export default function KalenderEkonomi() {
           <div className="border border-yellow-500 rounded-lg overflow-hidden">
             <table className="w-full table-auto border-collapse">
               <thead className="bg-yellow-500">
-                <tr>
+                <tr className="divide-x divide-yellow-700">
                   <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
                     Time
                   </th>
@@ -195,7 +195,7 @@ export default function KalenderEkonomi() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-zinc-600">
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="text-center py-4 text-neutral-100">
@@ -206,7 +206,7 @@ export default function KalenderEkonomi() {
                   paginatedData.map((item, index) => (
                     <React.Fragment key={index}>
                       <tr
-                        className="cursor-pointer hover:bg-neutral-700/30 transition"
+                        className="cursor-pointer hover:bg-neutral-700/30 transition divide-x divide-zinc-800"
                         onClick={() => toggleAccordion(index)}
                       >
                         <td className="px-2 md:px-4 py-2 text-neutral-100 break-words align-middle text-center md:text-left">
@@ -214,7 +214,7 @@ export default function KalenderEkonomi() {
                         </td>
 
                         <td className="px-2 md:px-4 py-2 text-neutral-100 break-words">
-                          <div className="flex items-center gap-1 flex-wrap justify-center md:justify-baseline">
+                          <div className="flex items-center gap-3 flex-wrap justify-center md:justify-start">
                             <CountryFlag
                               countryCode={getCountryCode(item.currency)}
                               svg
