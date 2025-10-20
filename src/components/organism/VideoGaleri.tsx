@@ -182,13 +182,14 @@ export default function VideoGaleri() {
     useEffect(() => setLegalitasIndex(0), [legalitasList.length]);
 
     useEffect(() => {
-        if (legalitasList.length < 2) return;
+        if (legalitasList.length <= 2) return; // <= 2 tidak perlu slideshow
         const itv = setInterval(
             () => setLegalitasIndex((p) => (p + 1) % legalitasList.length),
             5000
         );
         return () => clearInterval(itv);
     }, [legalitasList.length]);
+
 
     const prevLegalitas = () =>
         setLegalitasIndex((p) =>
@@ -229,7 +230,7 @@ export default function VideoGaleri() {
     useEffect(() => setVideoIndex(0), [videoList.length]);
 
     useEffect(() => {
-        if (videoList.length < 2 || videoModalOpen) return;
+        if (videoList.length <= 2 || videoModalOpen) return;
         const itv = setInterval(
             () => setVideoIndex((p) => (p + 1) % videoList.length),
             5000
@@ -351,31 +352,60 @@ export default function VideoGaleri() {
                             <div className="p-6 text-red-400">Gagal memuat legalitas.</div>
                         ) : legalitasList.length === 0 ? (
                             <div className="p-6 text-neutral-300">Belum ada data legalitas.</div>
+                        ) : legalitasList.length === 1 ? (
+                            // Hanya 1 data → tampilkan satu gambar saja, tanpa slideshow
+                            <img
+                                src={legalitasList[0].file}
+                                alt={legalitasList[0].title}
+                                className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
+                                onClick={() => openLegalitasModal(legalitasList[0])}
+                            />
+                        ) : legalitasList.length === 2 ? (
+                            // Tepat 2 data → tampilkan dua-duanya sekaligus tanpa tombol/animasi
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {legalitasList.map((item, idx) => (
+                                    <img
+                                        key={idx}
+                                        src={item.file}
+                                        alt={item.title}
+                                        className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
+                                        onClick={() => openLegalitasModal(item)}
+                                    />
+                                ))}
+                            </div>
                         ) : (
+                            // > 2 data → slideshow 2 item per slide
                             <>
                                 <AnimatePresence mode="wait">
-                                    <motion.img
+                                    <motion.div
                                         key={legalitasIndex}
-                                        src={currentLegalitas.file}
-                                        alt={currentLegalitas.title}
-                                        className="w-full h-82 object-cover rounded-lg bg-neutral-800 cursor-pointer"
-                                        onClick={() => openLegalitasModal(currentLegalitas)}
+                                        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
                                         initial={{ x: 300, opacity: 0 }}
                                         animate={{ x: 0, opacity: 1 }}
                                         exit={{ x: -300, opacity: 0 }}
                                         transition={{ duration: 0.8 }}
-                                    />
+                                    >
+                                        {Array.from({ length: 2 }).map((_, i) => {
+                                            const idx = (legalitasIndex + i) % legalitasList.length;
+                                            const item = legalitasList[idx];
+                                            return (
+                                                <img
+                                                    key={idx}
+                                                    src={item.file}
+                                                    alt={item.title}
+                                                    className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
+                                                    onClick={() => openLegalitasModal(item)}
+                                                />
+                                            );
+                                        })}
+                                    </motion.div>
                                 </AnimatePresence>
-                                {legalitasList.length > 1 && (
-                                    <>
-                                        <button onClick={prevLegalitas} className="absolute top-1/2 left-2">
-                                            ❮
-                                        </button>
-                                        <button onClick={nextLegalitas} className="absolute top-1/2 right-2">
-                                            ❯
-                                        </button>
-                                    </>
-                                )}
+                                <button onClick={prevLegalitas} className="absolute top-1/2 left-2">
+                                    ❮
+                                </button>
+                                <button onClick={nextLegalitas} className="absolute top-1/2 right-2">
+                                    ❯
+                                </button>
                             </>
                         )}
                     </div>
@@ -396,36 +426,62 @@ export default function VideoGaleri() {
                             <div className="p-6 text-red-400">Gagal memuat video.</div>
                         ) : videoList.length === 0 ? (
                             <div className="p-6 text-neutral-300">Belum ada data video.</div>
+                        ) : videoList.length === 1 ? (
+                            // 1 video → tampil satu saja
+                            <img
+                                src={videoList[0].thumb}
+                                alt={videoList[0].title}
+                                className="w-full h-full object-cover rounded-lg bg-neutral-900 cursor-pointer"
+                                onClick={() => openVideoModal(videoList[0])}
+                            />
+                        ) : videoList.length === 2 ? (
+                            // 2 video → tampil dua-duanya sekaligus tanpa slide
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {videoList.map((item) => (
+                                    <img
+                                        key={item.id}
+                                        src={item.thumb}
+                                        alt={item.title}
+                                        className="w-full h-64 object-cover rounded-lg bg-neutral-900 cursor-pointer"
+                                        onClick={() => openVideoModal(item)}
+                                        loading="lazy"
+                                    />
+                                ))}
+                            </div>
                         ) : (
+                            // > 2 → slideshow 2 item per slide
                             <>
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={videoIndex}
-                                        className="relative"
+                                        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
                                         initial={{ x: 300, opacity: 0 }}
                                         animate={{ x: 0, opacity: 1 }}
                                         exit={{ x: -300, opacity: 0 }}
                                         transition={{ duration: 0.8 }}
                                     >
-                                        <img
-                                            src={currentVideo.thumb}
-                                            alt={currentVideo.title}
-                                            className="w-full h-82 object-cover rounded-lg bg-neutral-900 cursor-pointer"
-                                            onClick={() => openVideoModal(currentVideo)}
-                                            loading="lazy"
-                                        />
+                                        {Array.from({ length: 2 }).map((_, i) => {
+                                            const idx = (videoIndex + i) % videoList.length;
+                                            const item = videoList[idx];
+                                            return (
+                                                <img
+                                                    key={item.id}
+                                                    src={item.thumb}
+                                                    alt={item.title}
+                                                    className="w-full h-64 object-cover rounded-lg bg-neutral-900 cursor-pointer"
+                                                    onClick={() => openVideoModal(item)}
+                                                    loading="lazy"
+                                                />
+                                            );
+                                        })}
                                     </motion.div>
                                 </AnimatePresence>
-                                {videoList.length > 1 && (
-                                    <>
-                                        <button onClick={prevVideo} className="absolute top-1/2 left-2">
-                                            ❮
-                                        </button>
-                                        <button onClick={nextVideo} className="absolute top-1/2 right-2">
-                                            ❯
-                                        </button>
-                                    </>
-                                )}
+                                <button onClick={prevVideo} className="absolute top-1/2 left-2">
+                                    ❮
+                                </button>
+                                <button onClick={nextVideo} className="absolute top-1/2 right-2">
+                                    ❯
+                                </button>
                             </>
                         )}
                     </div>

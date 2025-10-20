@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import FooterMiniCardContainer from "@/components/moleculs/FooterMiniCardContainer";
 
 type LinkItem = {
     label: string;
@@ -74,16 +75,19 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 py-12">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                     {/* Logo & Deskripsi */}
-                    <div>
-                        <img
-                            src="/assets/Logo Solid-Calibri-Fix-2.png"
-                            alt="Logo"
-                            className="h-12 mb-4"
-                        />
-                        <p className="text-sm text-gray-400 leading-relaxed">
-                            Broker resmi yang diawasi oleh Bappebti dan Bursa
-                            Berjangka.
-                        </p>
+                    <div className="space-y-3">
+                        <div>
+                            <img
+                                src="/assets/Logo Solid-Calibri-Fix-2.png"
+                                alt="Logo"
+                                className="h-12 mb-4"
+                            />
+                            <p className="text-sm text-gray-400 leading-relaxed">
+                                Broker resmi yang diawasi oleh Bappebti dan Bursa
+                                Berjangka.
+                            </p>
+                        </div>
+                        <FooterMiniCardContainer />
                     </div>
 
                     {/* Menu Items */}

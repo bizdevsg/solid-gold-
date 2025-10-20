@@ -44,11 +44,11 @@ const LogoGrid = ({
                     const key = `${item.alt}-${item.src}`;
 
                     const cardContent = (
-                        <div className="h-full flex items-center justify-center p-4 bg-neutral-800 rounded hover:shadow hover:shadow-yellow-500 transition duration-300">
+                        <div className="h-full flex items-center justify-center px-4 py-7 bg-neutral-800 rounded hover:shadow hover:shadow-yellow-500 transition duration-300">
                             <img
                                 src={encodeURI(item.src)}
                                 alt={item.alt}
-                                className="max-h-[80px] w-auto object-contain"
+                                className="max-h-[65px] w-auto object-contain"
                             />
                         </div>
                     );
@@ -118,7 +118,6 @@ export default function Watcher() {
             alt: "Logo Bank Indonesia",
             href: "https://www.bi.go.id/id/default.aspx",
         },
-        { src: "/assets/logo TSI.png", alt: "Logo TSI", href: "" },
     ];
 
     const logoMember: LogoItem[] = [
@@ -150,7 +149,8 @@ export default function Watcher() {
                 items={logoPengawas}
                 Aos="fade-left"
                 AosHeader="fade-right"
-                gridClassName="grid grid-cols-2 md:grid-cols-4 gap-5"
+                gridClassName="grid grid-cols-2 md:grid-cols-3 gap-5"
+                lastItemFullMobile={true}
             />
 
             {/* logoMember: baris pertama 2, baris kedua 1 full di mobile */}
