@@ -193,7 +193,7 @@ export default function TopNews() {
         error: marketErr,
         isLoading: marketLoading,
     } = useSWR(
-        "https://endpoapi-production-3202.up.railway.app/api/quotes",
+        "https://endpoapi-production-3202.up.railway.app/api/live-quotes",
         async (url) => pickArray<Quote>(await baseFetcher(url)),
         {
             refreshInterval: 15000,
