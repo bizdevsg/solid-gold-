@@ -50,8 +50,9 @@ export default function Navbar() {
         {   label: "Prosedur",
             key: "prosedur",
             dropdown: [
-                { label: "Multilateral (JFX)", href: "/produk/multilateral" },
-                { label: "Bilateral (SPA)", href: "/produk/bilateral" },
+                { label: "Petunjuk Transaksi", href: "/prosedur/petunjuk-transaksi" },
+                { label: "Prosedur Penarikan", href: "/prosedur/prosedur-penarikan" },
+                { label: "Prosedur Registrasi Online", href: "/prosedur/prosedur-regol" },
             ],
          },
         {

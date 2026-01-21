@@ -19,7 +19,7 @@ export default function KarakteristikProduk() {
               </div>
               <h2 className="text-xl font-bold text-yellow-400">Efisiensi Modal</h2>
             </div>
-            <p className="text-gray-300">
+            <p>
               Dalam bertransaksi menggunakan Margin Trading (dana jaminan), dengan demikian para investor dapat melakukan transaksi yang besar dengan modal yang relatif kecil. Dengan dana minimal sebesar 10% dari nilai total transaksi, tidak perlu dana 100%.
             </p>
           </div>
@@ -32,7 +32,7 @@ export default function KarakteristikProduk() {
               </div>
               <h2 className="text-xl font-bold text-yellow-400">Fleksibilitas Transaksi</h2>
             </div>
-            <p className="text-gray-300">
+            <p>
               Transaksi dua arah yang memungkinkan para investor untuk mendapatkan peluang pada saat pasar bergerak naik maupun turun.
             </p>
           </div>
@@ -45,7 +45,7 @@ export default function KarakteristikProduk() {
               </div>
               <h2 className="text-xl font-bold text-yellow-400">Pergerakan Harga Sangat Fluktuatif</h2>
             </div>
-            <p className="text-gray-300">
+            <p>
               Pergerakan harga harian yang besar dengan range berkisar 100 - 500 poin memberikan peluang keuntungan yang besar dengan kontrak size US $ 5 / point dan hanya dibebankan biaya transaksi / Fee sebesar 3 (Tiga) poin ditambah PPN 11%.
             </p>
           </div>
@@ -58,7 +58,7 @@ export default function KarakteristikProduk() {
               </div>
               <h2 className="text-xl font-bold text-yellow-400">Likuiditas Tinggi</h2>
             </div>
-            <p className="text-gray-300">
+            <p>
               Produk ini memiliki tingkat likuiditas yang sangat tinggi, dengan begitu para investor dapat melakukan transaksi beli dan jual kapan saja selama market berjalan, tanpa harus ada antrian di harga pasar.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function KarakteristikProduk() {
             {/* Fixed Rate */}
             <div className="bg-neutral-800/50 p-6 rounded-lg border border-neutral-600/30">
               <h3 className="text-xl font-semibold text-yellow-400 mb-3">Fixed Rate / Kurs Tetap</h3>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-200">
                 <li className="flex items-start">
                   <span className="text-yellow-500 mr-2">•</span>
                   <span>US $ 1 = Rp. 10.000 (kurs tetap)</span>
@@ -89,7 +89,7 @@ export default function KarakteristikProduk() {
             {/* Floating Rate */}
             <div className="bg-neutral-800/50 p-6 rounded-lg border border-neutral-600/30">
               <h3 className="text-xl font-semibold text-yellow-400 mb-3">Floating Rate / Kurs Berjalan</h3>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-200">
                 <li className="flex items-start">
                   <span className="text-yellow-500 mr-2">•</span>
                   <span>US $ 1 = US $ 1 (sesuai kurs USD terhadap Rupiah)</span>
