@@ -24,6 +24,19 @@ export default function Navbar() {
     const navRef = useRef<HTMLDivElement | null>(null);
 
     const menuItems: MenuItem[] = [
+        {   label: "Beranda", href: "/" },
+        {   label: "Tentang Kami",
+            key: "about",
+            dropdown: [
+                { label: "Profil Perusahaan", href: "/tentang-kami/profil" },
+                { label: "Legalitas Bisnis", href: "/tentang-kami/legalitas-bisnis" },
+                { label: "Wakil Pialang Berjangka", href: "/tentang-kami/wakil-pialang" },
+                { label: "Kelembagaan", href: "/tentang-kami/kelembagaan" },
+                { label: "Fasilitas & Layanan", href: "/tentang-kami/fasilitas-layanan" },
+                { label: "Pencapaian", href: "/tentang-kami/video-galeri" },
+                { label: "Umum", href: "/tentang/market-update" },
+            ],
+         },
         {
             label: "Produk",
             key: "produk",
@@ -32,6 +45,13 @@ export default function Navbar() {
                 { label: "Bilateral (SPA)", href: "/produk/bilateral" },
             ],
         },
+        {   label: "Prosedur",
+            key: "prosedur",
+            dropdown: [
+                { label: "Multilateral (JFX)", href: "/produk/multilateral" },
+                { label: "Bilateral (SPA)", href: "/produk/bilateral" },
+            ],
+         },
         {
             label: "Berita",
             key: "news",
@@ -63,8 +83,7 @@ export default function Navbar() {
                 { label: "Pivot & Fibonacci", href: "/analisis/pivot-fibonacci" },
             ],
         },
-        { label: "Tentang", href: "/tentang-kami" },
-        { label: "Kontak", href: "/kontak" },
+        {   label: "Kontak", href: "/kontak" },
     ];
 
     /** Utils Active */
