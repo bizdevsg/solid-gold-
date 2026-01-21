@@ -43,6 +43,8 @@ export default function Navbar() {
             dropdown: [
                 { label: "Multilateral (JFX)", href: "/produk/multilateral" },
                 { label: "Bilateral (SPA)", href: "/produk/bilateral" },
+                { label: "Karakteristik Produk", href: "/produk/karakteristik-produk" },
+                { label: "Ilustrasi Transaksi", href: "/produk/ilustrasi-transaksi" },
             ],
         },
         {   label: "Prosedur",
