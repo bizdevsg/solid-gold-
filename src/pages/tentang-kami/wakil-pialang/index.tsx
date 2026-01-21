@@ -37,7 +37,7 @@ export default function WakilPialangPage() {
             {cityCounts.map((city, index) => (
               <div 
                 key={city.name}
-                className="bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border-l-4 border-yellow-500 cursor-pointer"
+                className="bg-neutral-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border-l-4 border-yellow-500 cursor-pointer"
                 onClick={() => router.push(`/tentang-kami/wakil-pialang/${city.name.toLowerCase()}`)}
                 data-aos="fade-up"
                 data-aos-delay={index * 100}

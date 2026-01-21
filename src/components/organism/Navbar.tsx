@@ -34,7 +34,8 @@ export default function Navbar() {
                 { label: "Kelembagaan", href: "/tentang-kami/kelembagaan" },
                 { label: "Fasilitas & Layanan", href: "/tentang-kami/fasilitas-layanan" },
                 { label: "Pencapaian", href: "/tentang-kami/video-galeri" },
-                { label: "Umum", href: "/tentang/market-update" },
+                { label: "Umum", href: "/tentang-kami/market-update" },
+                { label: "Alasan Anda Memilih Kami", href: "/tentang-kami/alasan" },
             ],
          },
         {
