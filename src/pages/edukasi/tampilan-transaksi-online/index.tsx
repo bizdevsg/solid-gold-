@@ -5,7 +5,7 @@ import Header from "@/components/moleculs/Header";
 export default function TampilanTransaksiOnlinePage() {
   return (
     <PageTemplates title="Tampilan Transaksi Online">
-      <div className="container mx-auto px-4 py-12 text-gray-200">
+      <div className="container text-gray-200">
         <Header 
           title="Tampilan Transaksi Online" 
           subtitle="PT. Solid Gold Berjangka" 
