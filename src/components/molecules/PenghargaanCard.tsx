@@ -43,7 +43,7 @@ export default function PenghargaanCard({ image, title }: PenghargaanCardProps) 
           onClick={closeModal}
         >
           <div 
-            className="relative w-11/12 max-w-md max-h-[80vh] bg-neutral-800 rounded-lg overflow-hidden mx-auto my-auto"
+            className="relative w-11/12 max-w-sm sm:max-w-6xl max-h-[70vh] sm:max-h-[90vh] bg-neutral-800 rounded-lg overflow-hidden mx-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -68,7 +68,7 @@ export default function PenghargaanCard({ image, title }: PenghargaanCardProps) 
             </button>
 
             {/* Image Container */}
-            <div className="relative w-full h-[50vh] max-h-[400px] bg-gray-900/50">
+            <div className="relative w-full h-[40vh] sm:h-[70vh] max-h-[300px] sm:max-h-[600px] bg-gray-900/50">
               <Image
                 src={image}
                 alt={title}

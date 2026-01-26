@@ -8,8 +8,13 @@ export default function PenghargaanPage() {
     {
       id: 1,
       image: "/assets/Penghargaan-TransaksiTerbanyak.png",
-      title: "PT. Solidgold Berjangka medapatkan penghargaan dari Bursa Berjangka Jakarta (JFX) sebagai pialang dengan transaksi Bilateral terbanyak ke-2 Tahun 2011"
+      title: "Penghargaan Dengan Volume Transaksi Bilateral Terbanyak ke-2 Tahun 2011"
     },
+    {
+      id: 2,
+      image: "/assets/Penghargaan-AnggotaTrilingTerbaik.png",
+      title: "Penghargaan Anggota Kliring Terbaik ke-2 Tahun 2014"
+    }
   ];
 
   return (
