@@ -38,7 +38,7 @@ export default function AboutSection() {
                     <div className="w-full md:w-5/12 lg:w-1/2" data-aos="fade-right">
                         <div className="bg-neutral-800 p-6 md:p-8 lg:p-10 rounded-lg h-full flex items-center justify-center">
                             <img
-                                src="/assets/Logo Solid-Calibri-Fix.png"
+                                src="/assets/sglogo.png"
                                 alt="Tentang Kami - PT Solid Gold Berjangka"
                                 className="w-full max-h-80 object-contain"
                                 loading="lazy"

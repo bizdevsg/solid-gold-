@@ -12,7 +12,12 @@ export default function ProdukCard({
     imagePath,
     href,
 }: ProdukCardProps) {
-    const BASE_URL = "https://vellorist.biz.id/";
+    const BASE_URL =
+        (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
+            process.env.NEXT_PUBLIC_API_BASE_URL ??
+            process.env.NEXT_PUBLIC_BASE_URL ??
+            "https://sg-admin.newsmaker.id"
+        ).replace(/\/+$/, "") + "/";
     const imgSrc = imagePath
         ? `${BASE_URL}${imagePath.startsWith("/") ? imagePath.slice(1) : imagePath}`
         : "https://placehold.co/600x400";
