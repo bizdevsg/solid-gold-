@@ -2,6 +2,12 @@
 
 import useSWR from "swr";
 
+const API_BASE = (
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    "https://sg-admin.newsmaker.id"
+).replace(/\/+$/, "");
+
 type Kantor = {
     id: number;
     nama_kantor_cabang: string;
@@ -29,7 +35,7 @@ const fetcher = (url: string) =>
     });
 
 export default function KantorCabangSection() {
-    const { data, error, isLoading } = useSWR<Kantor[]>("https://vellorist.biz.id/api/v1/kantor-cabang", fetcher, {
+    const { data, error, isLoading } = useSWR<Kantor[]>(`${API_BASE}/api/v1/kantor-cabang`, fetcher, {
         refreshInterval: 30_000,   // auto-refresh tiap 30 detik
         revalidateOnFocus: true,    // revalidate saat tab kembali aktif
         revalidateOnReconnect: true,

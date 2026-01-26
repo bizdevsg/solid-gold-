@@ -4,6 +4,12 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import AOS from "aos";
 
+const API_BASE = (
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    "https://sg-admin.newsmaker.id"
+).replace(/\/+$/, "");
+
 type Setting = {
     id: number;
     web_title: string;
@@ -45,7 +51,7 @@ function toEmbedUrl(mapsLink?: string | null, address?: string) {
 }
 
 export default function KantorPusat() {
-    const { data, error, isLoading } = useSWR<Setting[]>("https://vellorist.biz.id/api/v1/setting", fetcher, {
+    const { data, error, isLoading } = useSWR<Setting[]>(`${API_BASE}/api/v1/setting`, fetcher, {
         refreshInterval: 60_000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,

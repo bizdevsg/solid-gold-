@@ -62,9 +62,10 @@ function stripHtml(html?: string) {
 function mediaUrl(p?: string) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
-    const base =
-        process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
-        "https://portalnews.newsmaker.id";
+    const base = (
+        process.env.NEXT_PUBLIC_PORTALNEWS_MEDIA_BASE_URL ??
+        "https://portalnews.newsmaker.id"
+    ).replace(/\/+$/, "");
     return `${base}/${p.replace(/^\/+/, "")}`;
 }
 

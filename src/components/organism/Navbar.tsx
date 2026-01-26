@@ -199,7 +199,7 @@ export default function Navbar() {
                         <div className="w-full flex flex-row justify-between items-center lg:w-auto">
                             <Link href="/" aria-label="Beranda" onClick={closeAllMenus}>
                                 <Image
-                                    src="/assets/Logo Solid-Calibri-Fix-2.png"
+                                    src="/assets/sglogo.png"
                                     alt="Solid Gold"
                                     width={160}
                                     height={40}

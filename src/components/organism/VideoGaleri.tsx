@@ -42,6 +42,12 @@ interface ApiResponse<T> {
 }
 
 /* ========= Utils ========= */
+const API_BASE = (
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    "https://sg-admin.newsmaker.id"
+).replace(/\/+$/, "");
+
 const fetcher = (url: string) => {
     return fetch(url, {
         headers: {
@@ -59,7 +65,7 @@ function mediaUrl(p?: string | null) {
     if (!p) return "/placeholder.jpg";
     if (/^https?:\/\//i.test(p)) return p;
     const base =
-        process.env.NEXT_PUBLIC_MEDIA_BASE_URL || "https://vellorist.biz.id";
+        process.env.NEXT_PUBLIC_MEDIA_BASE_URL || API_BASE;
     return `${base}/${String(p).replace(/^\/+/, "")}`;
 }
 
@@ -150,7 +156,7 @@ export default function VideoGaleri() {
     // Perbaikan: API mengembalikan array setting → gunakan ApiSetting[].
     const { data: settingData, error: settingErr } = useSWR<
         ApiResponse<ApiSetting[]>
-    >("https://vellorist.biz.id/api/v1/setting", fetcher);
+    >(`${API_BASE}/api/v1/setting`, fetcher);
 
     const tiktokId =
         Array.isArray(settingData?.data) && settingData.data.length > 0
@@ -163,7 +169,7 @@ export default function VideoGaleri() {
         error: legalitasErr,
         isLoading: legalitasLoading,
     } = useSWR<ApiResponse<ApiLegalitas[]>>(
-        "https://vellorist.biz.id/api/v1/legalitas",
+        `${API_BASE}/api/v1/legalitas`,
         fetcher,
         { refreshInterval: 60_000 }
     );
@@ -209,7 +215,7 @@ export default function VideoGaleri() {
         error: videoErr,
         isLoading: videoLoading,
     } = useSWR<ApiResponse<ApiVideo[]>>(
-        "https://vellorist.biz.id/api/v1/video",
+        `${API_BASE}/api/v1/video`,
         fetcher,
         { refreshInterval: videoModalOpen ? 0 : 60_000 }
     );

@@ -11,6 +11,10 @@ import { DataLoaderProvider, useDataLoader } from "@/providers/DataLoaderProvide
 import TradingView from "../organism/TradingView";
 import LanguageToggle from "../atoms/LanguageToggle";
 
+// Live chat (Tawk.to) sementara dimatikan.
+// Untuk nyalain lagi tanpa ubah kode: set env `NEXT_PUBLIC_ENABLE_LIVE_CHAT=true` lalu rebuild.
+const ENABLE_LIVE_CHAT = process.env.NEXT_PUBLIC_ENABLE_LIVE_CHAT === "true";
+
 interface PageTemplatesProps {
     title?: string;
     children?: React.ReactNode;
@@ -131,24 +135,26 @@ function PageInner({ children, title }: PageTemplatesProps) {
 
             {/* <LanguageToggle /> */}
 
-            {/* Tawk.to Script */}
-            <Script
-                id="tawk-to"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                    __html: `
-                        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-                        (function(){
-                            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-                            s1.async=true;
-                            s1.src='https://embed.tawk.to/689ee66f35c68d1927d54cb8/1j2mb89if';
-                            s1.charset='UTF-8';
-                            s1.setAttribute('crossorigin','*');
-                            s0.parentNode.insertBefore(s1,s0);
-                        })();
-                    `,
-                }}
-            />
+            {/* Live chat (Tawk.to) - sementara dihilangkan, kodenya tetap ada */}
+            {ENABLE_LIVE_CHAT && (
+                <Script
+                    id="tawk-to"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+                            (function(){
+                                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                                s1.async=true;
+                                s1.src='https://embed.tawk.to/689ee66f35c68d1927d54cb8/1j2mb89if';
+                                s1.charset='UTF-8';
+                                s1.setAttribute('crossorigin','*');
+                                s0.parentNode.insertBefore(s1,s0);
+                            })();
+                        `,
+                    }}
+                />
+            )}
         </>
     );
 }
