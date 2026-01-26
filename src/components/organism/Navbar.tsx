@@ -50,6 +50,7 @@ export default function Navbar() {
                     ]
                 },
                 { label: "Alasan Anda Memilih Kami", href: "/tentang-kami/alasan" },
+                { label: "Kontak", href: "/kontak" },
             ],
          },
         {
@@ -102,7 +103,16 @@ export default function Navbar() {
                 { label: "Pivot & Fibonacci", href: "/analisis/pivot-fibonacci" },
             ],
         },
-        {   label: "Kontak", href: "/kontak" },
+        {   label: "Edukasi",
+            key: "edukasi",
+            dropdown: [
+                { label: "Transaksi Sistem Online", href: "/edukasi/transaksi-sistem-online" },
+                { label: "Tampilan Transaksi Online", href: "/edukasi/tampilan-transaksi-online" },
+                { label: "Istilah Dalam Transaksi Online", href: "/edukasi/istilah-dalam-transaksi-online" },
+                { label: "Loco London Gold", href: "/edukasi/loco-london-gold" },
+                { label: "Simbol Index", href: "/edukasi/simbol-index" },
+            ]
+         },
     ];
 
     /** Utils Active */
