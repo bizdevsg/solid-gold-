@@ -1,6 +1,5 @@
 import AboutSection from "@/components/organism/AboutSection";
 import StatsSection from "@/components/organism/Stats";
-import WakilPialangSection from "@/components/organism/WakilPialang";
 import Watcher from "@/components/organism/Watcher";
 import PageTemplates from "@/components/templates/PageTemplates";
 
@@ -25,8 +24,6 @@ export default function TentangKami() {
 
 
             <hr className="border border-white/25" data-aos="fade-up" />
-
-            <WakilPialangSection />
 
         </PageTemplates>
     );
