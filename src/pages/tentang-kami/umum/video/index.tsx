@@ -8,16 +8,16 @@ export default function VideoPage() {
     {
       id: 1,
       title: "Anniversary SGB Makassar ke - 21",
-      date: "21 Desember 2024",
+      date: "19 Januari 2026",
       description: "Merayakan hari jadi ke-21 PT. Solidgold Berjangka cabang Makassar dengan berbagai kegiatan dan acara spesial bersama karyawan dan nasabah setia.",
       videoUrl: "https://www.youtube.com/embed/_fuv2OJf6GE"
     },
     {
       id: 2,
-      title: "Anniversary SGB Makassar ke - 21",
-      date: "21 Desember 2024",
-      description: "Merayakan hari jadi ke-21 PT. Solidgold Berjangka cabang Makassar dengan berbagai kegiatan dan acara spesial bersama karyawan dan nasabah setia.",
-      videoUrl: "https://www.youtube.com/embed/_fuv2OJf6GE"
+      title: "Bulan Literasi PBK 2024",
+      date: "5 Agustus 2024",
+      description: "Kegiatan Bulan Literasi Perdagangan Berjangka Komoditi 2024 yang diselenggarakan oleh PT. Solidgold Berjangka untuk edukasi masyarakat mengenai investasi berjangka.",
+      videoUrl: "https://www.youtube.com/embed/Lwv3K0glBUQ"
     }
   ];
 
