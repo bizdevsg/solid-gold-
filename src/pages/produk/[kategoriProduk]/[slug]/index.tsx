@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => 
         const host = ctx.req.headers.host!;
         const protocol = host.startsWith("localhost") ? "http" : "https";
 
-        const res = await fetch(`https://vellorist.biz.id/api/v1/produk`, {
+        const res = await fetch(`https://sg-admin.newsmaker.id/api/v1/produk`, {
             headers: {
                 Accept: "application/json",
                 Authorization: "Bearer SGB-c7b0604664fd48d9", // 🔹 tambahkan token
