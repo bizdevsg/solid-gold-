@@ -20,6 +20,16 @@ interface ProdukContainerProps {
 }
 
 export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps) {
+    const API_BASE = useMemo(
+        () =>
+            (
+                process.env.NEXT_PUBLIC_API_BASE_URL ??
+                process.env.NEXT_PUBLIC_BASE_URL ??
+                "https://sg-admin.newsmaker.id"
+            ).replace(/\/+$/, ""),
+        []
+    );
+
     const [produk, setProduk] = useState<Produk[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -35,7 +45,7 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
             try {
                 setLoading(true);
                 setError(null);
-                const res = await fetch("https://vellorist.biz.id/api/v1/produk", {
+                const res = await fetch(`${API_BASE}/api/v1/produk`, {
                     cache: "no-store",
                     headers: {
                         "Authorization": "Bearer SGB-c7b0604664fd48d9",
@@ -68,7 +78,7 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
         return () => {
             isMounted = false;
         };
-    }, [targetKategori]);
+    }, [API_BASE, targetKategori]);
 
     if (loading) {
         return (

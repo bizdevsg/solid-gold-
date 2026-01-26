@@ -78,7 +78,7 @@ export default function Footer() {
                     <div className="space-y-3">
                         <div>
                             <img
-                                src="/assets/Logo Solid-Calibri-Fix-2.png"
+                                src="/assets/sglogo.png"
                                 alt="Logo"
                                 className="h-12 mb-4"
                             />
