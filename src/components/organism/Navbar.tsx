@@ -46,8 +46,8 @@ export default function Navbar() {
                 { label: "Umum",
                     href: "/tentang-kami/umum",
                     subDropdown :[
-                        {label: "Informasi", href: "/tentang-kami/informasi"},
-                        {label: "video", href: "/tentang-kami/video"}
+                        {label: "Informasi", href: "/tentang-kami/umum/informasi"},
+                        {label: "video", href: "/tentang-kami/umum/video"}
                     ]
                 },
                 { label: "Alasan Anda Memilih Kami", href: "/tentang-kami/alasan" },
