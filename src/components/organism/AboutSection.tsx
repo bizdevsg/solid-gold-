@@ -63,7 +63,7 @@ export default function AboutSection() {
                 </div>
 
                 {/* Visi Misi Section */}
-                <div className="mx-auto bg-neutral-800/50 p-8 rounded-lg border border-neutral-600/30">
+                <div className="mx-auto bg-neutral-800/50 p-8 rounded-lg border border-neutral-600/30" data-aos="fade-left">
                     <h2 className="text-2xl md:text-3xl font-bold mb-8 text-yellow-500 text-center uppercase tracking-wider">
                         Visi dan Misi Perusahaan
                     </h2>
