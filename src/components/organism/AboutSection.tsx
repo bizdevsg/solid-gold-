@@ -30,61 +30,81 @@ const fetcher = (url: string) =>
     });
 
 export default function AboutSection() {
-    const { data, error, isLoading } = useSWR<Setting[]>(
-        "https://vellorist.biz.id/api/v1/setting",
-        fetcher,
-        {
-            refreshInterval: 60_000,
-            revalidateOnFocus: true,
-            revalidateOnReconnect: true,
-            keepPreviousData: true,
-            dedupingInterval: 0,
-        }
-    );
-
-    const setting = data?.[0];
-
     return (
-        <section className="text-white py-8 md:py-16">
-            <div className="container mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
-                {/* Foto di kiri */}
-                <div className="md:w-1/2 w-full" data-aos="fade-right">
-                    <div className="bg-neutral-800 p-10 rounded-lg h-full">
-                        <img
-                            src="/assets/Logo Solid-Calibri-Fix.png"
-                            alt="Tentang Kami"
-                            className="w-full max-h-70 object-contain"
-                            loading="lazy"
-                        />
+        <section className="py-12 md:py-20">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-12 mb-16">
+                    {/* Left Section - Image */}
+                    <div className="w-full md:w-5/12 lg:w-1/2" data-aos="fade-right">
+                        <div className="bg-neutral-800 p-6 md:p-8 lg:p-10 rounded-lg h-full flex items-center justify-center">
+                            <img
+                                src="/assets/Logo Solid-Calibri-Fix.png"
+                                alt="Tentang Kami - PT Solid Gold Berjangka"
+                                className="w-full max-h-80 object-contain"
+                                loading="lazy"
+                            />
+                        </div>
                     </div>
+
+                    {/* Right Section - Content */}
+                    <div className="w-full md:w-7/12 lg:w-1/2 text-left" data-aos="fade-left">
+                        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-yellow-500 uppercase tracking-wider">
+                            Profil Perusahaan
+                        </h2>
+                        <div className="space-y-6 text-white">
+                            <p className="leading-relaxed">
+                                Berdiri sejak tahun 2002, PT Solid Gold Berjangka ("SGB") merupakan perusahaan pialang berjangka terdaftar dan diawasi oleh Badan Pengawas Perdagangan Berjangka Komoditi (BAPPEBTI). Berpengalaman lebih dari 20 tahun di industri Perdagangan Berjangka Komoditi, SGB adalah anggota dari PT Bursa Berjangka Jakarta (BBJ) dan PT Kliring Berjangka Indonesia (Persero).
+                            </p>
+                            <p className="leading-relaxed">
+                                Saat ini pelayanan transaksi PT Solid Gold Berjangka terus meluas dengan total kantor operasional mencapai 3 kantor tersebar di Jakarta, Semarang, Makassar.
+                            </p>
+                        </div>
+                    </div>    
                 </div>
 
-                {/* Teks di kanan */}
-                <div className="md:w-1/2 w-full text-center" data-aos="fade-left">
-                    <h2 className="font-bold mb-2 uppercase text-yellow-500">Tentang Kami</h2>
+                {/* Visi Misi Section */}
+                <div className="mx-auto bg-neutral-800/50 p-8 rounded-lg border border-neutral-600/30">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-8 text-yellow-500 text-center uppercase tracking-wider">
+                        Visi dan Misi Perusahaan
+                    </h2>
+                    
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-xl font-semibold text-yellow-400 mb-4 border-b border-yellow-500/30 pb-2">
+                                Misi Perusahaan
+                            </h3>
+                            <ul className="space-y-3 text-white pl-5">
+                                <li className="flex items-start">
+                                    <span className="text-yellow-500 mr-2">•</span>
+                                    <span>Menjadi sebuah perusahaan pialang berjangka yang memiliki skala internasional</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="text-yellow-500 mr-2">•</span>
+                                    <span>Menjadi market leader, baik itu secara regional ataupun internasional</span>
+                                </li>
+                            </ul>
+                        </div>
 
-                    {isLoading ? (
-                        <>
-                            <div className="h-8 w-3/4 mx-auto bg-neutral-800 rounded animate-pulse mb-4" />
-                            <div className="space-y-3">
-                                <div className="h-4 w-full bg-neutral-800 rounded animate-pulse" />
-                                <div className="h-4 w-11/12 bg-neutral-800 rounded animate-pulse" />
-                                <div className="h-4 w-10/12 bg-neutral-800 rounded animate-pulse" />
-                            </div>
-                        </>
-                    ) : error ? (
-                        <p className="text-red-400">Gagal memuat data perusahaan.</p>
-                    ) : (
-                        <>
-                            <h1 className="font-bold mb-4 uppercase text-2xl sm:text-3xl md:text-4xl">
-                                {setting?.web_title || "—"}
-                            </h1>
+                        <div>
+                            <h3 className="text-xl font-semibold text-yellow-400 mb-4 border-b border-yellow-500/30 pb-2">
+                                Visi Perusahaan
+                            </h3>
+                            <ul className="space-y-3 text-white pl-5">
+                                <li className="flex items-start">
+                                    <span className="text-yellow-500 mr-2">•</span>
+                                    <span>Mengembangkan dan memajukan Perdagangan Berjangka di Indonesia sehingga dapat memberikan dampak positif kepada perekonomian Nasional baik dari segi mikro dan makro</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="text-yellow-500 mr-2">•</span>
+                                    <span>Memberdayakan Perdagangan Berjangka di Indonesia dan membantu semua pihak yang membutuhkannya untuk dapat mempergunakannya sebagai sarana lindung nilai (Hedging)</span>
+                                </li>
+                            </ul>
+                        </div>
 
-                            <p className="text-gray-300 mb-4 whitespace-pre-line">
-                                {setting?.web_description || "—"}
-                            </p>
-                        </>
-                    )}
+                        <div className="mt-6 text-white">
+                            <p>Dari visi dan misi perusahaan keuangan PT. Solid Gold Berjangka ini, kami berusaha semaksimal mungkin mendirikan perusahaan agar dapat memajukan dan mengembangkan perdagangan berjangka di Indonesia untuk memberikan dampak positif bagi perekonomian nasional, baik dari segi makro maupun mikro.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
