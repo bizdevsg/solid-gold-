@@ -7,8 +7,28 @@ export default function SertifikatPage() {
   const sertifikatData = [
     {
       id: 1,
-      image: "/assets/Penghargaan-TransaksiTerbanyak.png",
-      title: "Sertifikat Izin Usaha Pialang Berjangka dari Bappebti Nomor: 11/BAPPEBTI/SI/06/2007"
+      image: "/assets/Sertifikat-Legalitas.jpg",
+      title: "Sertifikat Legalitass"
+    },
+    {
+      id: 2,
+      image: "/assets/Sertifikat-IzinUsahaPB.jpg",
+      title: "Izin Usaha Pialang Berjangka"
+    },
+    {
+      id: 3,
+      image: "/assets/Sertifikat-KeanggotaanKBI.jpeg",
+      title: "Keanggotaan Lembaga Kliring Berjangka (KBI)"
+    },
+    {
+      id: 4,
+      image: "/assets/Sertifikat-PersetujuanPesertaSPA.jpg",
+      title: "Pemberian Persetujuan sebagai Peserta Sistem Perdagangan Alternatif"
+    },
+    {
+      id: 5,
+      image: "/assets/Sertifikat-PialangTeraktif.jpg",
+      title: "Penghargaan sebagai Pialang Teraktif"
     },
   ];
 
