@@ -34,7 +34,6 @@ export default function Navbar() {
                 { label: "Profil Perusahaan", href: "/tentang-kami/profil" },
                 { label: "Legalitas Bisnis", href: "/tentang-kami/legalitas-bisnis" },
                 { label: "Wakil Pialang Berjangka", href: "/tentang-kami/wakil-pialang" },
-                { label: "Kelembagaan", href: "/tentang-kami/kelembagaan" },
                 { label: "Fasilitas & Layanan", href: "/tentang-kami/fasilitas-layanan" },
                 { label: "Pencapaian",
                     href: "/tentang-kami/pencapaian",
