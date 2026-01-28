@@ -1,5 +1,6 @@
 import AboutSection from "@/components/organism/AboutSection";
 import StatsSection from "@/components/organism/Stats";
+import VideoGaleri from "@/components/organism/VideoGaleri";
 import Watcher from "@/components/organism/Watcher";
 import PageTemplates from "@/components/templates/PageTemplates";
 
@@ -22,6 +23,18 @@ export default function TentangKami() {
                 <StatsSection />
             </section>
 
+            <section className="px-4 sm:px-6 lg:px-8 py-10" data-aos="fade-up">
+                <div className="text-center mb-8">
+                    <p className="text-yellow-500 font-semibold uppercase text-sm md:text-base">
+                        Galeri
+                    </p>
+                    <h2 className="text-white font-bold text-lg md:text-2xl">
+                        Video & Legalitas
+                    </h2>
+                </div>
+
+                <VideoGaleri />
+            </section>
 
             <hr className="border border-white/25" data-aos="fade-up" />
 

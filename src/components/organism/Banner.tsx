@@ -17,7 +17,7 @@ export default function Banner() {
                 {/* Text Section */}
                 <div className="text-center max-w-lg order-2 lg:order-1" data-aos="fade-right">
                     <p className="text-lg text-yellow-500 font-semibold mb-2">
-                        PT. Solid Group Berjangka
+                        PT. Solid Gold Berjangka
                     </p>
                     <h3 className="text-3xl md:text-4xl   font-bold leading-snug mb-4 text-white">
                         Selamat Datang di <br /> Solid Gold Berjangka

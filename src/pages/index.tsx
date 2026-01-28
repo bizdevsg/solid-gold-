@@ -2,6 +2,7 @@ import AutoModal from "@/components/moleculs/AutoModal";
 import Banner from "@/components/organism/Banner";
 import MarketUpdate from "@/components/organism/MarketUpdate";
 import NewsHome from "@/components/organism/NewsHome";
+import ProdukHome from "@/components/organism/ProdukHome";
 import VideoGaleri from "@/components/organism/VideoGaleri";
 import Watcher from "@/components/organism/Watcher";
 import PageTemplates from "@/components/templates/PageTemplates";
@@ -11,9 +12,10 @@ export default function Home() {
     <PageTemplates title="Home">
       <Banner />
       <MarketUpdate />
-      <VideoGaleri />
+      <ProdukHome />
       <Watcher />
       <NewsHome />
+      <VideoGaleri />
       <AutoModal />
     </PageTemplates>
   );
