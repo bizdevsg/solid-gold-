@@ -22,6 +22,7 @@ interface ProdukContainerProps {
 
 export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps) {
     const { t } = useI18n();
+    const [isMounted, setIsMounted] = useState(false);
     const API_BASE = useMemo(
         () =>
             (
