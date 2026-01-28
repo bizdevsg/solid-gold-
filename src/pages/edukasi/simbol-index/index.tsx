@@ -1,15 +1,82 @@
-import React from 'react';
+import React from "react";
 import PageTemplates from "@/components/templates/PageTemplates";
 import Header from "@/components/moleculs/Header";
+import { useI18n } from "@/i18n/useI18n";
+
+type TextMap = { id: string; en: string };
+
+const pick = (locale: string, value: TextMap) => (locale === "en" ? value.en : value.id);
 
 export default function SimbolIndexPage() {
+  const { locale } = useI18n();
+
+  const title = locale === "en" ? "Index Symbols" : "Simbol Index";
+  const subtitle = "PT. Solid Gold Berjangka";
+
+  const symbolCards = [
+    { code: "HSIV9", desc: { id: "Hang Seng Index (Futures) untuk kontrak Oktober 2009", en: "Hang Seng Index (Futures) for October 2009 contract" } },
+    { code: "HSI", desc: { id: "Hang Seng Index (Spot)", en: "Hang Seng Index (Spot)" } },
+    { code: "SN1Z9", desc: { id: "Nikkei 225 Index (Futures) untuk kontrak Desember 2009", en: "Nikkei 225 Index (Futures) for December 2009 contract" } },
+    { code: "SNI", desc: { id: "Nikkei 225 Index (Spot)", en: "Nikkei 225 Index (Spot)" } },
+    { code: "JKSCI", desc: { id: "Jakarta Composite Index (Spot)", en: "Jakarta Composite Index (Spot)" } },
+    { code: "SISE4", desc: { id: "Straits Times Index (Spot)", en: "Straits Times Index (Spot)" } },
+    { code: "KCOM", desc: { id: "Kuala Lumpur Composite Index (Spot)", en: "Kuala Lumpur Composite Index (Spot)" } },
+    { code: "SHICOM", desc: { id: "Shanghai Composite Index (Spot)", en: "Shanghai Composite Index (Spot)" } },
+    { code: "SZICOM", desc: { id: "Shenzhen Composite Index (Spot)", en: "Shenzhen Composite Index (Spot)" } },
+    { code: "TOPX", desc: { id: "Tokyo Stock Price Index (Spot)", en: "Tokyo Stock Price Index (Spot)" } },
+    { code: "BSET", desc: { id: "Bangkok Stock Price Index (Spot)", en: "Bangkok Stock Price Index (Spot)" } },
+    { code: "KSCI", desc: { id: "Korea Stock Composite Index (Spot)", en: "Korea Stock Composite Index (Spot)" } },
+    { code: "DJIA", desc: { id: "Dow Jones Industrial Average (Spot)", en: "Dow Jones Industrial Average (Spot)" } },
+    { code: "NDX", desc: { id: "Nasdaq 100 Index (Spot)", en: "Nasdaq 100 Index (Spot)" } },
+    { code: "NDXI", desc: { id: "Nasdaq Composite Index (Spot)", en: "Nasdaq Composite Index (Spot)" } },
+    { code: "SPX", desc: { id: "Standard & Poor's 500 Index (Spot)", en: "Standard & Poor's 500 Index (Spot)" } },
+    { code: "FTSE", desc: { id: "Financial Times Stock Exchange (Spot)", en: "Financial Times Stock Exchange (Spot)" } },
+    { code: "DAX", desc: { id: "Deutscher Aktien Index / German Stock Index (Spot)", en: "Deutscher Aktien Index / German Stock Index (Spot)" } },
+    { code: "NYSEI", desc: { id: "New York Stock Index (Spot)", en: "New York Stock Index (Spot)" } },
+    { code: "LGD", desc: { id: "Loco Gold London (Spot)", en: "Loco Gold London (Spot)" } },
+  ];
+
+  const monthSymbols = {
+    hangSeng: [
+      { code: "F", id: "Januari", en: "January" },
+      { code: "G", id: "Februari", en: "February" },
+      { code: "H", id: "Maret", en: "March" },
+      { code: "J", id: "April", en: "April" },
+      { code: "K", id: "Mei", en: "May" },
+      { code: "M", id: "Juni", en: "June" },
+      { code: "N", id: "Juli", en: "July" },
+      { code: "Q", id: "Agustus", en: "August" },
+      { code: "U", id: "September", en: "September" },
+      { code: "V", id: "Oktober", en: "October" },
+      { code: "X", id: "November", en: "November" },
+      { code: "Z", id: "Desember", en: "December" },
+    ],
+    nikkei: [
+      { code: "H", id: "Maret", en: "March" },
+      { code: "M", id: "Juni", en: "June" },
+      { code: "U", id: "September", en: "September" },
+      { code: "Z", id: "Desember", en: "December" },
+    ],
+    brent: [
+      { code: "F", id: "Januari", en: "January" },
+      { code: "G", id: "Februari", en: "February" },
+      { code: "H", id: "Maret", en: "March" },
+      { code: "J", id: "April", en: "April" },
+      { code: "K", id: "Mei", en: "May" },
+      { code: "M", id: "Juni", en: "June" },
+      { code: "N", id: "Juli", en: "July" },
+      { code: "Q", id: "Agustus", en: "August" },
+      { code: "U", id: "September", en: "September" },
+      { code: "V", id: "Oktober", en: "October" },
+      { code: "X", id: "November", en: "November" },
+      { code: "Z", id: "Desember", en: "December" },
+    ],
+  };
+
   return (
-    <PageTemplates title="Simbol Index">
+    <PageTemplates title={title}>
       <div className="container text-gray-200">
-        <Header 
-          title="Simbol Index" 
-          subtitle="PT. Solid Gold Berjangka" 
-        />
+        <Header title={title} subtitle={subtitle} />
 
         {/* SIMBOL INDEX */}
         <div className="bg-neutral-800 rounded-lg p-8 shadow-lg">
@@ -19,109 +86,16 @@ export default function SimbolIndexPage() {
               <span className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold mr-3">
                 1
               </span>
-              Simbol Index
+              {title}
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">HSIV9</span>
-                <p className="text-gray-300 text-sm mt-1">Hang Seng Index (Futures) untuk kontrak Oktober 2009</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">HSI</span>
-                <p className="text-gray-300 text-sm mt-1">Hang Seng Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SN1Z9</span>
-                <p className="text-gray-300 text-sm mt-1">Nikkei 225 Index (Futures) untuk kontrak Desember 2009</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SNI</span>
-                <p className="text-gray-300 text-sm mt-1">Nikkei 225 Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">JKSCI</span>
-                <p className="text-gray-300 text-sm mt-1">Jakarta Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SISE4</span>
-                <p className="text-gray-300 text-sm mt-1">Straits Times Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">KCOM</span>
-                <p className="text-gray-300 text-sm mt-1">Kuala Lumpur Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SHICOM</span>
-                <p className="text-gray-300 text-sm mt-1">Shanghai Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SZICOM</span>
-                <p className="text-gray-300 text-sm mt-1">Shenzhen Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">TOPX</span>
-                <p className="text-gray-300 text-sm mt-1">Tokyo Stock Price Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">BSET</span>
-                <p className="text-gray-300 text-sm mt-1">Bangkok Stock Price Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">KSCI</span>
-                <p className="text-gray-300 text-sm mt-1">Korea Stock Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">DJIA</span>
-                <p className="text-gray-300 text-sm mt-1">Dow Jones Industrial Average (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">NDX</span>
-                <p className="text-gray-300 text-sm mt-1">Nasdaq 100 Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">NDXI</span>
-                <p className="text-gray-300 text-sm mt-1">Nasdaq Composite Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">SPX</span>
-                <p className="text-gray-300 text-sm mt-1">Standard & Poor's 500 Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">FTSE</span>
-                <p className="text-gray-300 text-sm mt-1">Financial Times Stock Exchange (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">DAX</span>
-                <p className="text-gray-300 text-sm mt-1">Deutscher Aktien Index / German Stock Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">NYSEI</span>
-                <p className="text-gray-300 text-sm mt-1">New York Stock Index (Spot)</p>
-              </div>
-              
-              <div className="bg-neutral-700 rounded-lg p-4">
-                <span className="text-yellow-500 font-mono font-bold">LGD</span>
-                <p className="text-gray-300 text-sm mt-1">Loco Gold London (Spot)</p>
-              </div>
+              {symbolCards.map((item) => (
+                <div key={item.code} className="bg-neutral-700 rounded-lg p-4">
+                  <span className="text-yellow-500 font-mono font-bold">{item.code}</span>
+                  <p className="text-gray-300 text-sm mt-1">{pick(locale, item.desc)}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -131,61 +105,19 @@ export default function SimbolIndexPage() {
               <span className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold mr-3">
                 2
               </span>
-              Simbol Bulan Kontrak
+              {locale === "en" ? "Contract Month Symbols" : "Simbol Bulan Kontrak"}
             </h2>
 
             {/* Hang Seng Futures */}
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-yellow-500 mb-3">Hang Seng Futures</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">F</span>
-                  <p className="text-gray-300 text-sm mt-1">Januari</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">G</span>
-                  <p className="text-gray-300 text-sm mt-1">Februari</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">H</span>
-                  <p className="text-gray-300 text-sm mt-1">Maret</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">J</span>
-                  <p className="text-gray-300 text-sm mt-1">April</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">K</span>
-                  <p className="text-gray-300 text-sm mt-1">Mei</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">M</span>
-                  <p className="text-gray-300 text-sm mt-1">Juni</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">N</span>
-                  <p className="text-gray-300 text-sm mt-1">Juli</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">Q</span>
-                  <p className="text-gray-300 text-sm mt-1">Agustus</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">U</span>
-                  <p className="text-gray-300 text-sm mt-1">September</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">V</span>
-                  <p className="text-gray-300 text-sm mt-1">Oktober</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">X</span>
-                  <p className="text-gray-300 text-sm mt-1">November</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">Z</span>
-                  <p className="text-gray-300 text-sm mt-1">Desember</p>
-                </div>
+                {monthSymbols.hangSeng.map((m) => (
+                  <div key={m.code} className="bg-neutral-700 rounded p-3 text-center">
+                    <span className="text-yellow-500 font-mono font-bold text-lg">{m.code}</span>
+                    <p className="text-gray-300 text-sm mt-1">{locale === "en" ? m.en : m.id}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -193,22 +125,12 @@ export default function SimbolIndexPage() {
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-yellow-500 mb-3">Nikkei 225 Futures</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">H</span>
-                  <p className="text-gray-300 text-sm mt-1">Maret</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">M</span>
-                  <p className="text-gray-300 text-sm mt-1">Juni</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">U</span>
-                  <p className="text-gray-300 text-sm mt-1">September</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">Z</span>
-                  <p className="text-gray-300 text-sm mt-1">Desember</p>
-                </div>
+                {monthSymbols.nikkei.map((m) => (
+                  <div key={m.code} className="bg-neutral-700 rounded p-3 text-center">
+                    <span className="text-yellow-500 font-mono font-bold text-lg">{m.code}</span>
+                    <p className="text-gray-300 text-sm mt-1">{locale === "en" ? m.en : m.id}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -216,74 +138,42 @@ export default function SimbolIndexPage() {
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-yellow-500 mb-3">Brent Crude Oil Futures</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">F</span>
-                  <p className="text-gray-300 text-sm mt-1">Januari</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">G</span>
-                  <p className="text-gray-300 text-sm mt-1">Februari</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">H</span>
-                  <p className="text-gray-300 text-sm mt-1">Maret</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">J</span>
-                  <p className="text-gray-300 text-sm mt-1">April</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">K</span>
-                  <p className="text-gray-300 text-sm mt-1">Mei</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">M</span>
-                  <p className="text-gray-300 text-sm mt-1">Juni</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">N</span>
-                  <p className="text-gray-300 text-sm mt-1">Juli</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">Q</span>
-                  <p className="text-gray-300 text-sm mt-1">Agustus</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">U</span>
-                  <p className="text-gray-300 text-sm mt-1">September</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">V</span>
-                  <p className="text-gray-300 text-sm mt-1">Oktober</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">X</span>
-                  <p className="text-gray-300 text-sm mt-1">November</p>
-                </div>
-                <div className="bg-neutral-700 rounded p-3 text-center">
-                  <span className="text-yellow-500 font-mono font-bold text-lg">Z</span>
-                  <p className="text-gray-300 text-sm mt-1">Desember</p>
-                </div>
+                {monthSymbols.brent.map((m) => (
+                  <div key={m.code} className="bg-neutral-700 rounded p-3 text-center">
+                    <span className="text-yellow-500 font-mono font-bold text-lg">{m.code}</span>
+                    <p className="text-gray-300 text-sm mt-1">{locale === "en" ? m.en : m.id}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Example */}
             <div className="bg-neutral-700 rounded-lg p-4">
-              <h3 className="text-xl font-semibold text-yellow-500 mb-3">Contoh Kontrak</h3>
+              <h3 className="text-xl font-semibold text-yellow-500 mb-3">
+                {locale === "en" ? "Contract Example" : "Contoh Kontrak"}
+              </h3>
               <div className="bg-neutral-600 rounded p-4">
-                <p className="text-yellow-500 font-mono font-bold text-lg mb-3">LCOPZ9 = Brent Crude Oil Contract</p>
+                <p className="text-yellow-500 font-mono font-bold text-lg mb-3">
+                  LCOPZ9 = {locale === "en" ? "Brent Crude Oil Contract" : "Brent Crude Oil Contract"}
+                </p>
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <span className="text-yellow-500 font-mono font-bold mr-3">LCOP</span>
-                    <span className="text-gray-300">= Brent Crude Oil Code</span>
+                    <span className="text-gray-300">
+                      {locale === "en" ? "= Brent Crude Oil Code" : "= Brent Crude Oil Code"}
+                    </span>
                   </div>
                   <div className="flex items-center">
                     <span className="text-yellow-500 font-mono font-bold mr-3">Z</span>
-                    <span className="text-gray-300">= Futures Contract for 2 Months ahead</span>
+                    <span className="text-gray-300">
+                      {locale === "en"
+                        ? "= Futures contract for 2 months ahead"
+                        : "= Futures Contract for 2 Months ahead"}
+                    </span>
                   </div>
                   <div className="flex items-center">
                     <span className="text-yellow-500 font-mono font-bold mr-3">9</span>
-                    <span className="text-gray-300">= Year</span>
+                    <span className="text-gray-300">{locale === "en" ? "= Year" : "= Year"}</span>
                   </div>
                 </div>
               </div>

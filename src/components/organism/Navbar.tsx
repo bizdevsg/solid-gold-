@@ -93,6 +93,17 @@ export default function Navbar() {
                 { label: t("nav.analysis.pivot"), href: "/analisis/pivot-fibonacci" },
             ],
         },
+        {
+            label: t("nav.education"),
+            key: "education",
+            dropdown: [
+                { label: t("nav.education.terms"), href: "/edukasi/istilah-dalam-transaksi-online" },
+                { label: t("nav.education.loco"), href: "/edukasi/loco-london-gold" },
+                { label: t("nav.education.symbols"), href: "/edukasi/simbol-index" },
+                { label: t("nav.education.screen"), href: "/edukasi/tampilan-transaksi-online" },
+                { label: t("nav.education.system"), href: "/edukasi/transaksi-sistem-online" },
+            ],
+        },
         { label: t("nav.contact"), href: "/kontak" },
     ];
 
