@@ -2,6 +2,7 @@ import useSWR from "swr";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/i18n/useI18n";
 
 const API_BASE = (
     process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -146,6 +147,7 @@ function statusClass(status: string) {
 }
 
 export default function WakilPialangSection() {
+    const { t } = useI18n();
     const [selectedCabangId, setSelectedCabangId] = useState<string>("0");
 
     const wakilUrl = useMemo(() => {
@@ -181,17 +183,17 @@ export default function WakilPialangSection() {
         <section className="text-white space-y-7 mb-5" data-aos="fade-up">
             <div className="text-center mx-auto max-w-xl px-4">
                 <p className="font-bold mb-2 uppercase text-yellow-500 text-sm md:text-base">
-                    Wakil Pialang
+                    {t("wakil.title")}
                 </p>
                 <h2 className="font-bold mb-4 uppercase text-lg md:text-2xl">
-                    Semua ahli berpengalaman ada di sini
+                    {t("wakil.sectionTitle")}
                 </h2>
             </div>
 
             {/* Filter Cabang */}
             <div className="px-4 flex justify-center">
                 <div className="w-full max-w-5xl">
-                    <div className="block text-sm text-gray-300 mb-2 text-center">Pilih Cabang</div>
+                    <div className="block text-sm text-gray-300 mb-2 text-center">{t("wakil.pickBranch")}</div>
                     <div className="w-full">
                         <div className="overflow-x-auto rounded-xl border border-neutral-800 bg-neutral-900/40 p-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                             <div className="flex gap-2 whitespace-nowrap w-max mx-auto">
@@ -203,7 +205,7 @@ export default function WakilPialangSection() {
                                         : "bg-neutral-950 text-white border-neutral-700 hover:border-yellow-500"
                                         }`}
                                 >
-                                    PT. Solid Gold Berjangka - Jakarta
+                                    {t("common.hqJakarta")}
                                 </button>
                                 {(kantorCabangList ?? []).map((k) => {
                                     const id = String(k.id);
@@ -232,7 +234,7 @@ export default function WakilPialangSection() {
             {isLoading && (
                 <div className="px-4">
                     <div className="rounded-xl bg-[#1e1e1e] p-6 text-center text-gray-300">
-                        Memuat data…
+                        {t("wakil.loading")}
                     </div>
                 </div>
             )}
@@ -240,7 +242,7 @@ export default function WakilPialangSection() {
             {error && (
                 <div className="px-4">
                     <div className="rounded-xl bg-red-900/40 border border-red-700 p-6 text-center">
-                        Gagal memuat data. Coba refresh halaman.
+                        {t("wakil.errorDetail")}
                     </div>
                 </div>
             )}
@@ -280,13 +282,13 @@ export default function WakilPialangSection() {
                                             pialang.kantor_cabang_id === "0" ||
                                             pialang.kantor_cabang_id == null ||
                                             String(pialang.kantor_cabang_id).trim() === ""
-                                            ? "PT. Solid Gold Berjangka - Jakarta"
+                                            ? t("common.hqJakarta")
                                             : "-")}
                                 </p>
                                 <p className={`font-semibold text-sm ${statusClass(pialang.status)}`}>
                                     {pialang.status?.toUpperCase()}
                                 </p>
-                                <div className="pt-2 text-yellow-500 text-sm font-medium">Detail</div>
+                                <div className="pt-2 text-yellow-500 text-sm font-medium">{t("common.details")}</div>
                             </div>
                         </Link>
                     ))}
@@ -295,7 +297,7 @@ export default function WakilPialangSection() {
                     {data && data.length === 0 && (
                         <div className="col-span-full">
                             <div className="rounded-xl bg-[#1e1e1e] p-6 text-center text-gray-300">
-                                Belum ada data wakil pialang.
+                                {t("wakil.empty")}
                             </div>
                         </div>
                     )}

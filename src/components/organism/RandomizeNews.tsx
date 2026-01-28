@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import NewsCard from "../moleculs/NewsCard";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Kategori {
     id: number;
@@ -98,6 +99,7 @@ function pickTitle(item: Berita): string {
 }
 
 export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string }) {
+    const { t } = useI18n();
     const {
         data,
         error,
@@ -130,9 +132,9 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
     return (
         <div>
             <div className="text-center mb-10">
-                <p className="text-yellow-500 font-semibold">Suggested News</p>
+                <p className="text-yellow-500 font-semibold">{t("news.suggested")}</p>
                 <h1 className="text-2xl md:text-3xl font-bold text-white">
-                    Rekomendasi pilihan, biar kamu gak ketinggalan.
+                    {t("news.suggestedTitle")}
                 </h1>
             </div>
 
@@ -153,7 +155,7 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
                     ))}
                 </div>
             ) : error ? (
-                <div className="text-red-400">Gagal memuat berita.</div>
+                <div className="text-red-400">{t("common.errorNews")}</div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {news.map((item) => {
@@ -183,7 +185,7 @@ export default function RandomizeNews({ excludedSlug }: { excludedSlug?: string 
 
                     {news.length === 0 && (
                         <div className="col-span-full text-center text-gray-300">
-                            Tidak ada berita rekomendasi.
+                            {t("news.emptySuggested")}
                         </div>
                     )}
                 </div>

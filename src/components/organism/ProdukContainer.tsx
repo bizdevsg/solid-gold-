@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import ProdukCard from "../moleculs/ProdukCard";
+import { useI18n } from "@/i18n/useI18n";
 
 type Produk = {
     id: number;
@@ -20,6 +21,7 @@ interface ProdukContainerProps {
 }
 
 export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps) {
+    const { t } = useI18n();
     const API_BASE = useMemo(
         () =>
             (
@@ -53,14 +55,14 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
                     },
                 });
 
-                if (!res.ok) throw new Error("Gagal memuat data produk");
+                if (!res.ok) throw new Error(t("product.errorLoad"));
 
                 // JSON dari server
                 const json = await res.json();
                 // ambil array data
                 const data: Produk[] = json.data;
 
-                if (!Array.isArray(data)) throw new Error("Format data tidak valid");
+                if (!Array.isArray(data)) throw new Error(t("common.invalidFormat"));
                 if (!isMounted) return;
 
                 const filtered = data.filter(
@@ -69,7 +71,7 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
                 setProduk(filtered);
             } catch (e: any) {
                 if (!isMounted) return;
-                setError(e?.message ?? "Terjadi kesalahan saat memuat data");
+                setError(e?.message ?? t("common.errorLoad"));
             } finally {
                 if (isMounted) setLoading(false);
             }
@@ -109,7 +111,7 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
     if (!produk.length) {
         return (
             <div className="text-gray-300 bg-neutral-900 border border-neutral-700 rounded p-4">
-                Tidak ada produk untuk kategori {targetKategori}.
+                {t("product.emptyCategory", { category: targetKategori })}
             </div>
         );
     }

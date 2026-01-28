@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import { useEffect } from "react";
 import AOS from "aos";
+import { useI18n } from "@/i18n/useI18n";
 
 const API_BASE = (
     process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -51,6 +52,7 @@ function toEmbedUrl(mapsLink?: string | null, address?: string) {
 }
 
 export default function KantorPusat() {
+    const { t } = useI18n();
     const { data, error, isLoading } = useSWR<Setting[]>(`${API_BASE}/api/v1/setting`, fetcher, {
         refreshInterval: 60_000,
         revalidateOnFocus: true,
@@ -80,7 +82,7 @@ export default function KantorPusat() {
                         <div className="w-full h-full rounded-lg bg-neutral-800 animate-pulse" />
                     ) : error ? (
                         <div className="w-full h-full rounded-lg bg-neutral-900 flex items-center justify-center text-red-400">
-                            Gagal memuat peta.
+                            {t("contact.mapError")}
                         </div>
                     ) : (
                         <iframe
@@ -110,12 +112,12 @@ export default function KantorPusat() {
                             </div>
                         </div>
                     ) : error ? (
-                        <p className="text-red-400">Gagal memuat data setting.</p>
+                        <p className="text-red-400">{t("contact.settingError")}</p>
                     ) : (
                         <>
-                            <h2 className="font-bold mb-2 uppercase text-yellow-500">Hubungi Kami</h2>
+                            <h2 className="font-bold mb-2 uppercase text-yellow-500">{t("contact.title")}</h2>
                             <h1 className="font-bold mb-4 uppercase text-3xl md:text-4xl">
-                                {setting?.web_title || "Kantor Pusat"}
+                                {setting?.web_title || t("contact.headOffice")}
                             </h1>
 
                             <div className="space-y-5">
@@ -131,24 +133,24 @@ export default function KantorPusat() {
                                             {address}
                                         </a>
                                     ) : (
-                                        <span className="text-gray-400">Alamat belum tersedia</span>
+                                        <span className="text-gray-400">{t("contact.addressUnavailable")}</span>
                                     )}
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-5">
                                     <p>
-                                        <strong>FAX : </strong>
+                                        <strong>{t("contact.fax")} : </strong>
                                         {setting?.fax || "-"}
                                     </p>
                                     <span>|</span>
                                     <p>
-                                        <strong>Telp : </strong>
+                                        <strong>{t("contact.phone")} : </strong>
                                         {setting?.phone || "-"}
                                     </p>
                                 </div>
 
                                 <p>
-                                    Alamat email:{" "}
+                                    {t("contact.emailLabel")}{" "}
                                     {setting?.email ? (
                                         <a
                                             href={`mailto:${setting.email}`}

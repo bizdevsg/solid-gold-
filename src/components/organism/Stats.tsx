@@ -1,6 +1,8 @@
 import { FiCheckCircle, FiShield, FiGlobe, FiUsers } from "react-icons/fi";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function WhyChooseUs() {
+    const { t } = useI18n();
     return (
         <div className="w-full px-8 py-6 bg-neutral-800 rounded flex flex-col gap-5 md:flex-row md:justify-around md:items-center">
 
@@ -10,8 +12,8 @@ export default function WhyChooseUs() {
                     <FiShield className="w-8 h-8" />
                 </div>
                 <div>
-                    <p className="text-white font-bold text-3xl leading-none">Resmi</p>
-                    <p className="text-gray-400 font-bold text-base">Legalitas & BAPPEBTI</p>
+                    <p className="text-white font-bold text-3xl leading-none">{t("stats.legalTitle")}</p>
+                    <p className="text-gray-400 font-bold text-base">{t("stats.legalDesc")}</p>
                 </div>
             </div>
 
@@ -23,8 +25,8 @@ export default function WhyChooseUs() {
                     <FiGlobe className="w-8 h-8" />
                 </div>
                 <div>
-                    <p className="text-white font-bold text-3xl leading-none">Online</p>
-                    <p className="text-gray-400 font-bold text-base">Trading & Monitoring</p>
+                    <p className="text-white font-bold text-3xl leading-none">{t("stats.onlineTitle")}</p>
+                    <p className="text-gray-400 font-bold text-base">{t("stats.onlineDesc")}</p>
                 </div>
             </div>
 
@@ -37,7 +39,7 @@ export default function WhyChooseUs() {
                 </div>
                 <div>
                     <p className="text-white font-bold text-3xl leading-none">24/7</p>
-                    <p className="text-gray-400 font-bold text-base">Research & Support</p>
+                    <p className="text-gray-400 font-bold text-base">{t("stats.supportDesc")}</p>
                 </div>
             </div>
         </div>

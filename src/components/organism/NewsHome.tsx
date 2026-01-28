@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import NewsCard from "../moleculs/NewsCard";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Kategori {
   id: number;
@@ -105,6 +106,7 @@ function pickTitle(item: Berita): string {
 }
 
 export default function NewsHome() {
+  const { t } = useI18n();
   const { data, error, isLoading } = useSWR("https://portalnews.newsmaker.id/api/v1/berita", fetcher, {
     refreshInterval: 15_000,
     revalidateOnFocus: true,
@@ -126,9 +128,9 @@ export default function NewsHome() {
     <div className="px-4 sm:px-6 lg:px-8 py-10" data-aos="fade-up">
       {/* Header */}
       <div className="text-center mb-10">
-        <p className="text-yellow-500 font-semibold">READ MORE</p>
+        <p className="text-yellow-500 font-semibold">{t("news.readMore")}</p>
         <h1 className="text-2xl md:text-3xl font-bold text-white">
-          Latest News Updates
+          {t("news.latestTitle")}
         </h1>
       </div>
 
@@ -150,7 +152,7 @@ export default function NewsHome() {
           ))}
         </div>
       ) : error ? (
-        <div className="text-red-400">Gagal memuat berita.</div>
+        <div className="text-red-400">{t("common.errorNews")}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {news.map((item) => {
@@ -182,7 +184,7 @@ export default function NewsHome() {
 
           {news.length === 0 && (
             <div className="col-span-full text-center text-gray-300">
-              Tidak ada berita terbaru.
+              {t("news.emptyLatest")}
             </div>
           )}
         </div>

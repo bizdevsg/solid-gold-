@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { FaArrowLeft } from "react-icons/fa";
+import { useI18n } from "@/i18n/useI18n";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -76,6 +77,7 @@ const fetcher = async (url: string): Promise<WakilPialang | null> => {
 
 export default function WakilPialangDetailPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const raw = router.query.slug;
   const id = typeof raw === "string" ? Number(raw) : Array.isArray(raw) ? Number(raw[0]) : NaN;
 
@@ -85,22 +87,22 @@ export default function WakilPialangDetailPage() {
   );
 
   return (
-    <PageTemplates title="Detail Wakil Pialang">
+    <PageTemplates title={t("wakil.detailTitle")}>
       <div className="py-12">
         <div className="container mx-auto px-4">
           <button
             onClick={() => router.push("/tentang-kami/wakil-pialang")}
             className="flex items-center text-yellow-500 hover:text-yellow-400 mb-6 transition-colors"
           >
-            <FaArrowLeft className="mr-2" /> Kembali
+            <FaArrowLeft className="mr-2" /> {t("common.back")}
           </button>
 
           {isLoading ? (
-            <div className="text-center text-gray-300">Memuat data…</div>
+            <div className="text-center text-gray-300">{t("wakil.loading")}</div>
           ) : error ? (
-            <div className="text-center text-red-400">Gagal memuat detail wakil pialang.</div>
+            <div className="text-center text-red-400">{t("wakil.detailError")}</div>
           ) : !data ? (
-            <div className="text-center text-gray-300">Data tidak ditemukan.</div>
+            <div className="text-center text-gray-300">{t("common.dataNotFound")}</div>
           ) : (
             <div className="bg-neutral-800 rounded-lg shadow-lg overflow-hidden">
               <div className="p-6 border-b border-neutral-700 flex flex-col md:flex-row md:items-center gap-6">
@@ -134,15 +136,15 @@ export default function WakilPialangDetailPage() {
               <div className="p-6 text-gray-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div className="bg-neutral-900/50 rounded p-4">
-                    <div className="text-gray-400">ID</div>
+                    <div className="text-gray-400">{t("common.id")}</div>
                     <div className="text-white font-semibold">{data.id}</div>
                   </div>
                   <div className="bg-neutral-900/50 rounded p-4">
-                    <div className="text-gray-400">Nomor ID</div>
+                    <div className="text-gray-400">{t("wakil.idNumber")}</div>
                     <div className="text-white font-semibold">{data.nomor_id}</div>
                   </div>
                   <div className="bg-neutral-900/50 rounded p-4 md:col-span-2">
-                    <div className="text-gray-400">Cabang</div>
+                    <div className="text-gray-400">{t("wakil.branch")}</div>
                     <div className="text-white font-semibold">
                       {data.kantor_cabang?.nama_kantor_cabang ?? "-"}
                     </div>
@@ -156,7 +158,7 @@ export default function WakilPialangDetailPage() {
                         rel="noopener noreferrer"
                         className="inline-block mt-3 text-yellow-500 hover:text-yellow-400"
                       >
-                        Lihat Maps
+                        {t("wakil.viewMap")}
                       </a>
                     )}
                   </div>

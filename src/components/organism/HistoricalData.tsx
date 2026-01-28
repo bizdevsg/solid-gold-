@@ -3,6 +3,7 @@
 
 import useSWR from "swr";
 import { useMemo, useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 type Row = {
     id: number;
@@ -56,16 +57,17 @@ function normalizeApi(raw: any): Row[] {
     return rows;
 }
 
-const numFmt = new Intl.NumberFormat("id-ID", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-});
-const dateFmt = (s?: string) => {
+const numFmtFactory = (locale: string) =>
+    new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+const dateFmtFactory = (locale: string) => (s?: string) => {
     if (!s) return "-";
     const d = new Date(s);
     return Number.isNaN(d.getTime())
         ? s
-        : d.toLocaleDateString("id-ID", {
+        : d.toLocaleDateString(locale === "en" ? "en-US" : "id-ID", {
             year: "numeric",
             month: "short",
             day: "2-digit",
@@ -93,8 +95,11 @@ const ALIAS: Record<string, string> = {
 };
 
 export default function HistoricalDataTable() {
+    const { t, locale } = useI18n();
     const DEFAULT_FILTER: FilterType = "LGD Daily";
     const [activeFilter, setActiveFilter] = useState<FilterType>(DEFAULT_FILTER);
+    const numFmt = useMemo(() => numFmtFactory(locale), [locale]);
+    const dateFmt = useMemo(() => dateFmtFactory(locale), [locale]);
 
     const { data, error, isLoading, mutate } = useSWR<unknown>(
         "https://endpoapi-production-3202.up.railway.app/api/historical?dateFrom=2025-07-01",
@@ -132,7 +137,7 @@ export default function HistoricalDataTable() {
         <div className="w-full mb-4">
             {/* Header & Controls */}
             <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-white font-semibold text-lg">Historical Data</h2>
+                <h2 className="text-white font-semibold text-lg">{t("history.title")}</h2>
                 <div className="flex items-center gap-2">
                     {/* Dropdown filter */}
                     <select
@@ -154,11 +159,11 @@ export default function HistoricalDataTable() {
                 <table className="min-w-[720px] w-full text-sm">
                     <thead className="bg-neutral-900/70 text-neutral-300">
                         <tr>
-                            <th className="px-3 py-2 text-left">Tanggal</th>
-                            <th className="px-3 py-2 text-right">Open</th>
-                            <th className="px-3 py-2 text-right">High</th>
-                            <th className="px-3 py-2 text-right">Low</th>
-                            <th className="px-3 py-2 text-right">Close</th>
+                            <th className="px-3 py-2 text-left">{t("history.date")}</th>
+                            <th className="px-3 py-2 text-right">{t("history.open")}</th>
+                            <th className="px-3 py-2 text-right">{t("history.high")}</th>
+                            <th className="px-3 py-2 text-right">{t("history.low")}</th>
+                            <th className="px-3 py-2 text-right">{t("history.close")}</th>
                         </tr>
                     </thead>
                     <tbody className="bg-neutral-900/40 text-white">
@@ -188,7 +193,7 @@ export default function HistoricalDataTable() {
                                     colSpan={6}
                                     className="px-3 py-6 text-center text-red-400"
                                 >
-                                    Gagal memuat data.
+                                    {t("history.error")}
                                 </td>
                             </tr>
                         ) : limitedRows.length === 0 ? (
@@ -197,7 +202,7 @@ export default function HistoricalDataTable() {
                                     colSpan={6}
                                     className="px-3 py-6 text-center text-neutral-300"
                                 >
-                                    Tidak ada data pada kategori <b>{activeFilter}</b>.
+                                    {t("history.empty", { category: activeFilter })}
                                 </td>
                             </tr>
                         ) : (

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import NewsCard from "../moleculs/NewsCard";
 import { useDataLoader } from "@/providers/DataLoaderProvider";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Kategori {
     id: number;
@@ -42,17 +43,25 @@ const kategoriMap: Record<string, string[]> = {
 
 export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     const { track } = useDataLoader();
+    const { t } = useI18n();
 
-    const [activeFilter, setActiveFilter] = useState("All");
+    const allFilterValue = "all";
+    const [activeFilter, setActiveFilter] = useState(allFilterValue);
     const [searchQuery, setSearchQuery] = useState("");
     const [newsData, setNewsData] = useState<Berita[]>([]);
     const [loading, setLoading] = useState(true);
     const abortRef = useRef<AbortController | null>(null);
 
-    const filters = useMemo(() => ["All", ...(kategoriMap[kategoriSlug] || [])], [kategoriSlug]);
+    const filters = useMemo(
+        () => [
+            { value: allFilterValue, label: t("common.all") },
+            ...(kategoriMap[kategoriSlug] || []).map((item) => ({ value: item, label: item })),
+        ],
+        [kategoriSlug, t]
+    );
 
     useEffect(() => {
-        setActiveFilter("All");
+        setActiveFilter(allFilterValue);
     }, [kategoriSlug]);
 
     // Fetch data dari API route + laporkan ke provider agar overlay global menunggu
@@ -70,7 +79,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
             headers: { accept: "application/json" },
         })
             .then(async (res) => {
-                if (!res.ok) throw new Error(`Gagal mengambil data berita (HTTP ${res.status})`);
+                if (!res.ok) throw new Error(t("news.fetchError", { status: res.status }));
                 const data: unknown = await res.json();
                 setNewsData(Array.isArray(data) ? (data as Berita[]) : []);
             })
@@ -86,7 +95,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
 
         track(p);
         return () => controller.abort();
-    }, [kategoriSlug, track]);
+    }, [kategoriSlug, track, t]);
 
     // Filter + urutkan terbaru + batasi 9 item
     const filteredNews = useMemo(() => {
@@ -104,8 +113,8 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
 
         const result = byKategoriSlug.filter((news) => {
             const katName = news.kategori?.name || "";
-            const matchFilter =
-                activeFilter.toLowerCase() === "all" ||
+                const matchFilter =
+                activeFilter === allFilterValue ||
                 katName.toLowerCase() === activeFilter.toLowerCase();
 
             const text =
@@ -156,14 +165,14 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 <div className="flex flex-wrap gap-3">
                     {filters.map((filter) => (
                         <button
-                            key={filter}
-                            onClick={() => setActiveFilter(filter)}
-                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
+                            key={filter.value}
+                            onClick={() => setActiveFilter(filter.value)}
+                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter.value
                                 ? "btn-primary"
                                 : "bg-gray-100/5 hover:bg-gray-100/10 text-white"
                                 }`}
                         >
-                            {filter}
+                            {filter.label}
                         </button>
                     ))}
                 </div>
@@ -171,7 +180,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 <div className="w-full md:w-1/2">
                     <input
                         type="text"
-                        placeholder="Cari berita..."
+                        placeholder={t("common.search")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full px-4 py-2 border border-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-transparent text-white placeholder:text-neutral-400"
@@ -182,7 +191,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
             {/* Grid berita */}
             {filteredNews.length === 0 ? (
                 <div className="text-neutral-300 border border-neutral-800 rounded-lg p-6">
-                    Tidak ada berita yang cocok.
+                    {t("news.emptyList")}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">

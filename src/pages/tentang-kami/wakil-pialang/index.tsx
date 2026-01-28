@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { FaUserTie } from "react-icons/fa";
+import { useI18n } from "@/i18n/useI18n";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -65,6 +66,7 @@ const kantorFetcher = async (url: string): Promise<KantorCabang[]> => {
 
 export default function WakilPialangPage() {
   const router = useRouter();
+  const { t } = useI18n();
 
   const [selectedCabangId, setSelectedCabangId] = useState<string>("0");
 
@@ -93,21 +95,21 @@ export default function WakilPialangPage() {
   }, [data]);
 
   return (
-    <PageTemplates title="Wakil Pialang">
+    <PageTemplates title={t("wakil.title")}>
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Daftar Wakil Pialang
+              {t("wakil.title")}
             </h1>
             <div className="w-24 h-1 bg-yellow-500 mx-auto"></div>
             <p className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-              Berikut adalah daftar Wakil Pialang Berjangka PT. Solid Gold Berjangka.
+              {t("wakil.subtitle")}
             </p>
           </div>
 
           <div className="max-w-5xl mx-auto mb-8">
-            <div className="block text-sm text-gray-300 mb-2 text-center">Pilih Cabang</div>
+            <div className="block text-sm text-gray-300 mb-2 text-center">{t("wakil.pickBranch")}</div>
             <div className="overflow-x-auto rounded-xl border border-neutral-800 bg-neutral-900/40 p-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="flex gap-2 whitespace-nowrap w-max mx-auto">
                 <button
@@ -119,7 +121,7 @@ export default function WakilPialangPage() {
                       : "bg-neutral-950 text-white border-neutral-700 hover:border-yellow-500"
                   }`}
                 >
-                  PT. Solid Gold Berjangka - Jakarta
+                  {t("common.hqJakarta")}
                 </button>
                 {(kantorCabangList ?? []).map((k) => {
                   const id = String(k.id);
@@ -144,20 +146,20 @@ export default function WakilPialangPage() {
           </div>
 
           {isLoading ? (
-            <div className="text-center text-gray-300">Memuat data…</div>
+            <div className="text-center text-gray-300">{t("wakil.loading")}</div>
           ) : error ? (
-            <div className="text-center text-red-400">Gagal memuat data wakil pialang.</div>
+            <div className="text-center text-red-400">{t("wakil.error")}</div>
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-center gap-3 mb-8 text-sm">
                 <span className="px-3 py-1 rounded-full bg-neutral-800 text-gray-200">
-                  Total: {stats.total}
+                  {t("wakil.total")}: {stats.total}
                 </span>
                 <span className="px-3 py-1 rounded-full bg-neutral-800 text-green-300">
-                  Aktif: {stats.active}
+                  {t("wakil.active")}: {stats.active}
                 </span>
                 <span className="px-3 py-1 rounded-full bg-neutral-800 text-red-300">
-                  Non-Aktif: {stats.inactive}
+                  {t("wakil.inactive")}: {stats.inactive}
                 </span>
               </div>
 
@@ -190,7 +192,7 @@ export default function WakilPialangPage() {
                               wp.kantor_cabang_id === "0" ||
                               wp.kantor_cabang_id == null ||
                               String(wp.kantor_cabang_id).trim() === ""
-                                ? "PT. Solid Gold Berjangka - Jakarta"
+                                ? t("common.hqJakarta")
                                 : "-")}
                           </p>
                         </div>
@@ -214,7 +216,7 @@ export default function WakilPialangPage() {
                             router.push(`/tentang-kami/wakil-pialang/${wp.id}`);
                           }}
                         >
-                          <FaUserTie /> Detail
+                          <FaUserTie /> {t("common.details")}
                         </button>
                       </div>
                     </div>

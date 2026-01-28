@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { useI18n } from "@/i18n/useI18n";
 
 interface ReadMoreProps {
   kategoriSlug: string; // terima kategoriSlug sebagai prop
@@ -19,6 +20,7 @@ const readMoreUrlMap: Record<string, string> = {
 };
 
 export default function ReadMore({ kategoriSlug }: ReadMoreProps) {
+  const { t } = useI18n();
   const url = readMoreUrlMap[kategoriSlug] ?? "#"; // fallback jika slug tidak ada
   return (
     <Link
@@ -27,7 +29,7 @@ export default function ReadMore({ kategoriSlug }: ReadMoreProps) {
       target="_blank" // opsional: buka tab baru
       rel="noopener noreferrer"
     >
-      Baca Selengkapnya...
+      {t("news.readMoreCta")}
     </Link>
   );
 }

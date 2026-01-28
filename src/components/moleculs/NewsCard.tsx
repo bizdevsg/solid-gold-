@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useI18n } from "@/i18n/useI18n";
 
 interface NewsCardProps {
     title: string;
@@ -14,17 +15,19 @@ interface NewsCardProps {
 export default function NewsCard({
     title,
     category,
-    description = "Tidak ada deskripsi.",
+    description,
     image,
     href,
 }: NewsCardProps) {
+    const { t } = useI18n();
+    const safeDescription = description ?? t("news.noDescription");
     return (
         <Link href={href} prefetch={false} className="block h-full">
             <article className="bg-neutral-800 hover:bg-neutral-900 h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 <div className="relative w-full h-40 bg-neutral-700">
                     <Image
                         src={image || "/placeholder.jpg"}
-                        alt={title || "Berita"}
+                        alt={title || t("news.alt")}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
@@ -41,7 +44,7 @@ export default function NewsCard({
                         </h3>
                     </div>
                     <p className="text-gray-300 text-sm sm:text-base line-clamp-3">
-                        {description}
+                        {safeDescription}
                     </p>
                 </div>
             </article>

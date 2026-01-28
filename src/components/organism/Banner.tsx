@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function Banner() {
+    const { t } = useI18n();
     return (
         <div>
             <div className="flex flex-col lg:flex-row items-center justify-center gap-8 px-4 sm:px-6 lg:px-8">
@@ -17,14 +19,13 @@ export default function Banner() {
                 {/* Text Section */}
                 <div className="text-center max-w-lg order-2 lg:order-1" data-aos="fade-right">
                     <p className="text-lg text-yellow-500 font-semibold mb-2">
-                        PT. Solid Gold Berjangka
+                        {t("banner.company")}
                     </p>
                     <h3 className="text-3xl md:text-4xl   font-bold leading-snug mb-4 text-white">
-                        Selamat Datang di <br /> Solid Gold Berjangka
+                        {t("banner.title")} <br /> {t("banner.subtitle")}
                     </h3>
                     <p className="text-gray-300 text-sm leading-relaxed">
-                        Member of Jakarta Futures Exchange & <br />
-                        Member of Indonesia Derivatives Clearing House
+                        {t("banner.member")}
                     </p>
                     {/* Buttons */}
                     <div className="mt-8 flex flex-col md:flex-row justify-center gap-4 px-4">
@@ -32,13 +33,13 @@ export default function Banner() {
                             href="https://demo.sgberjangka.com/login" target="_blank"
                             className="btn-primary px-10 py-5 rounded text-center shadow"
                         >
-                            Login Akun Demo
+                            {t("banner.demo")}
                         </Link>
                         <Link
                             href="https://etrade.sgberjangka.com/login" target="_blank"
                             className="btn-primary px-10 py-5 rounded text-center shadow"
                         >
-                            Login Akun Live
+                            {t("banner.live")}
                         </Link>
                     </div>
                 </div>

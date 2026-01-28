@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import CountryFlag from "react-country-flag";
+import { useI18n } from "@/i18n/useI18n";
 
 // Definisikan interface untuk item data
 interface DataItem {
@@ -29,7 +30,12 @@ interface DataItem {
 }
 
 // Daftar filter yang tersedia
-const filters = ["Today", "This Week", "Previous Week", "Next Week"];
+const filters = [
+  { value: "Today", labelKey: "calendar.filters.today" },
+  { value: "This Week", labelKey: "calendar.filters.thisWeek" },
+  { value: "Previous Week", labelKey: "calendar.filters.previousWeek" },
+  { value: "Next Week", labelKey: "calendar.filters.nextWeek" },
+];
 
 // Pemetaan mata uang ke kode negara ISO Alpha-2
 const currencyToCountry: Record<string, string> = {
@@ -47,6 +53,7 @@ const currencyToCountry: Record<string, string> = {
 };
 
 export default function KalenderEkonomi() {
+  const { t } = useI18n();
   const [activeFilter, setActiveFilter] = useState("Today");
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState<DataItem[]>([]); // Tipe data yang benar
@@ -69,7 +76,7 @@ export default function KalenderEkonomi() {
       const res = await fetch(
         `https://endpoapi-production-3202.up.railway.app/api/calendar/${endpointMap[filter]}`
       );
-      if (!res.ok) throw new Error("Gagal mengambil data");
+      if (!res.ok) throw new Error(t("calendar.fetchError"));
       const json = await res.json();
       setData(Array.isArray(json.data) ? json.data : []);
     } catch (error) {
@@ -151,14 +158,14 @@ export default function KalenderEkonomi() {
         <div className="flex flex-wrap gap-3">
           {filters.map((filter) => (
             <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter
+              key={filter.value}
+              onClick={() => setActiveFilter(filter.value)}
+              className={`uppercase border text-white border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter.value
                 ? "bg-yellow-500 text-black font-semibold"
                 : "bg-gray-100/5 hover:bg-gray-100/10"
                 }`}
             >
-              {filter}
+              {t(filter.labelKey)}
             </button>
           ))}
         </div>
@@ -166,7 +173,7 @@ export default function KalenderEkonomi() {
         <div className="w-full md:w-1/2">
           <input
             type="text"
-            placeholder="Cari data..."
+            placeholder={t("calendar.search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-4 py-2 text-white border border-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
@@ -182,16 +189,16 @@ export default function KalenderEkonomi() {
               <thead className="bg-yellow-500">
                 <tr className="divide-x divide-yellow-700">
                   <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
-                    Time
+                    {t("calendar.time")}
                   </th>
                   <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
-                    Country
+                    {t("calendar.country")}
                   </th>
                   <th className="px-2 md:px-4 py-2 text-center font-bold bg-yellow-400 text-neutral-900 uppercase">
-                    Impact
+                    {t("calendar.impact")}
                   </th>
                   <th className="px-2 md:px-4 py-2 text-left font-bold text-neutral-900 uppercase">
-                    Event
+                    {t("calendar.event")}
                   </th>
                 </tr>
               </thead>
@@ -199,7 +206,7 @@ export default function KalenderEkonomi() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="text-center py-4 text-neutral-100">
-                      Loading...
+                      {t("calendar.loading")}
                     </td>
                   </tr>
                 ) : paginatedData.length > 0 ? (
@@ -235,12 +242,12 @@ export default function KalenderEkonomi() {
                         <td className="px-2 md:px-4 py-2 text-neutral-100 break-words align-top">
                           <div className="font-medium">{item.event}</div>
                           <div className="flex flex-wrap gap-1 text-neutral-400">
-                            <p><strong>Previous:</strong> {item.previous || "-"}</p>
+                            <p><strong>{t("calendar.previous")}:</strong> {item.previous || "-"}</p>
                             <span>|</span>
-                            <p><strong>Forecast:</strong> {item.forecast || "-"}</p>
+                            <p><strong>{t("calendar.forecast")}:</strong> {item.forecast || "-"}</p>
                             <span>|</span>
                             <p>
-                              <strong>Actual:</strong>{" "}
+                              <strong>{t("calendar.actual")}:</strong>{" "}
                               <span className={getActualClass(item.actual, item.forecast)}>
                                 {item.actual || "-"}
                               </span>
@@ -257,25 +264,25 @@ export default function KalenderEkonomi() {
                               {/* Card Detail */}
                               <div className="text-white space-y-3 border border-yellow-500 p-4 rounded-lg w-full">
                                 <div>
-                                  <p className="font-bold text-lg">Sources:</p> {item.details.sources || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.sources")}:</p> {item.details.sources || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Measures:</p> {item.details.measures || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.measures")}:</p> {item.details.measures || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Usual Effect:</p> {item.details.usualEffect || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.usualEffect")}:</p> {item.details.usualEffect || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Frequency:</p> {item.details.frequency || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.frequency")}:</p> {item.details.frequency || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Next Released:</p> {item.details.nextReleased || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.nextReleased")}:</p> {item.details.nextReleased || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Notes:</p> {item.details.notes || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.notes")}:</p> {item.details.notes || "-"}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-lg">Why Trader Care:</p> {item.details.whyTraderCare || "-"}
+                                  <p className="font-bold text-lg">{t("calendar.whyCare")}:</p> {item.details.whyTraderCare || "-"}
                                 </div>
                               </div>
 
@@ -284,10 +291,10 @@ export default function KalenderEkonomi() {
                                 <table className="w-full border-collapse text-white rounded-xl overflow-hidden shadow-md table-auto">
                                   <thead>
                                     <tr className="bg-zinc-700 uppercase text-xs">
-                                      <th className="px-2 py-2 text-left">Date</th>
-                                      <th className="px-2 py-2 text-left">Previous</th>
-                                      <th className="px-2 py-2 text-left">Forecast</th>
-                                      <th className="px-2 py-2 text-left">Actual</th>
+                                      <th className="px-2 py-2 text-left">{t("calendar.date")}</th>
+                                      <th className="px-2 py-2 text-left">{t("calendar.previous")}</th>
+                                      <th className="px-2 py-2 text-left">{t("calendar.forecast")}</th>
+                                      <th className="px-2 py-2 text-left">{t("calendar.actual")}</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -323,7 +330,7 @@ export default function KalenderEkonomi() {
                 ) : (
                   <tr>
                     <td colSpan={4} className="text-center py-4 text-neutral-100">
-                      Tidak ada data
+                      {t("calendar.empty")}
                     </td>
                   </tr>
                 )}
@@ -341,17 +348,17 @@ export default function KalenderEkonomi() {
             disabled={currentPage === 1}
             className="px-4 py-2 bg-gray-600 text-white rounded-md"
           >
-            Previous
+            {t("calendar.prev")}
           </button>
           <span className="text-neutral-100">
-            Page {currentPage} of {totalPages}
+            {t("calendar.pageOf", { current: currentPage, total: totalPages })}
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="px-4 py-2 bg-gray-600 text-white rounded-md"
           >
-            Next
+            {t("calendar.next")}
           </button>
         </div>
       )}

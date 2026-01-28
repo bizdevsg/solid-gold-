@@ -1,5 +1,6 @@
 import PageTemplates from "@/components/templates/PageTemplates";
 import { FaFileAlt, FaBalanceScale, FaBuilding, FaHandshake, FaLaptopHouse, FaChartLine, FaFileContract, FaShieldAlt, FaFileSignature } from 'react-icons/fa';
+import { useI18n } from "@/i18n/useI18n";
 
 type LegalDocument = {
   id: number;
@@ -10,95 +11,96 @@ type LegalDocument = {
 };
 
 export default function LegalitasBisnis() {
+  const { t } = useI18n();
   const legalDocuments: LegalDocument[] = [
     {
       id: 1,
-      title: 'Akta Pendirian Perseroan Terbatas',
+      title: t("legal.docs.1.title"),
       number: '52',
-      description: 'Tanggal 18 Januari 2002 oleh Notaris Soehendro Gautama, SH, PT. Solid Gold Berjangka',
+      description: t("legal.docs.1.desc"),
       icon: <FaFileAlt className="text-3xl text-yellow-500" />
     },
     {
       id: 2,
-      title: 'Pengesahan Departemen Kehakiman dan HAM',
+      title: t("legal.docs.2.title"),
       number: 'C-05612 HT.01.01.TH.2002',
-      description: 'Pengesahan resmi dari Kementerian Hukum dan HAM',
+      description: t("legal.docs.2.desc"),
       icon: <FaBalanceScale className="text-3xl text-yellow-500" />
     },
     {
       id: 3,
-      title: 'Surat Persetujuan Anggota Bursa (SPAB)',
+      title: t("legal.docs.3.title"),
       number: 'SPAB-047/BBJ/07/02',
-      description: 'Persetujuan keanggotaan bursa berjangka',
+      description: t("legal.docs.3.desc"),
       icon: <FaFileAlt className="text-3xl text-yellow-500" />
     },
     {
       id: 4,
-      title: 'Izin Usaha Pialang Berjangka',
+      title: t("legal.docs.4.title"),
       number: '161/BAPPEBTI/SI/IX/2002',
-      description: 'Keputusan Kepala BAPPEBTI',
+      description: t("legal.docs.4.desc"),
       icon: <FaBuilding className="text-3xl text-yellow-500" />
     },
     {
       id: 5,
-      title: 'Keanggotaan Lembaga Kliring Berjangka',
+      title: t("legal.docs.5.title"),
       number: '15/AK-KBI/V/2003',
-      description: 'Keanggotaan resmi di Lembaga Kliring Berjangka',
+      description: t("legal.docs.5.desc"),
       icon: <FaHandshake className="text-3xl text-yellow-500" />
     },
     {
       id: 6,
-      title: 'Izin Pialang Berjangka untuk Transaksi Luar Negeri',
+      title: t("legal.docs.6.title"),
       number: '287/BAPPEBTI/SP/I/2004',
-      description: 'Izin sebagai Pialang Berjangka yang menawarkan dan/atau menyalurkan amanat nasabah untuk transaksi kontrak berjangka ke bursa berjangka luar negeri',
+      description: t("legal.docs.6.desc"),
       icon: <FaChartLine className="text-3xl text-yellow-500" />
     },
     {
       id: 7,
-      title: 'Perjanjian Kerjasama dengan PT. Royal Assetindo',
+      title: t("legal.docs.7.title"),
       number: '262/CO-BOD/SGB/VI/2005',
-      description: 'Perjanjian Kerjasama dengan Pedagang Penyelenggara Sistem Perdagangan Alternatif',
+      description: t("legal.docs.7.desc"),
       icon: <FaFileContract className="text-3xl text-yellow-500" />
     },
     {
       id: 8,
-      title: 'Persetujuan sebagai Peserta SPA',
+      title: t("legal.docs.8.title"),
       number: '1156/BAPPEBTI/SI/3/2007',
-      description: 'Pemberian Persetujuan sebagai peserta Sistem Perdagangan Alternatif (SPA)',
+      description: t("legal.docs.8.desc"),
       icon: <FaShieldAlt className="text-3xl text-yellow-500" />
     },
     {
       id: 9,
-      title: 'Penerimaan Nasabah Secara Elektronik',
+      title: t("legal.docs.9.title"),
       number: '27/BAPPEBTI/KEP-PBK/09/2014',
-      description: 'Penetapan sebagai Pialang Berjangka yang Melakukan Kegiatan Penerimaan Nasabah secara Elektronik On-Line',
+      description: t("legal.docs.9.desc"),
       icon: <FaLaptopHouse className="text-3xl text-yellow-500" />
     },
     {
       id: 10,
-      title: 'Perantara Perdagangan Efek Derivatif Keuangan',
+      title: t("legal.docs.10.title"),
       number: 'S-373/PM.02/2025',
-      description: 'Pesetujuan Prinsip Pelaku Derivatif Keuangan sebagai Perantara Perdagangan Efek Derivatif Keuangan di Otoritas Jasa Keuangan',
+      description: t("legal.docs.10.desc"),
       icon: <FaFileSignature className="text-3xl text-yellow-500" />
     },
     {
       id: 11,
-      title: 'Peserta Sistem Perdagangan Alternatif Derivatif PUVA',
+      title: t("legal.docs.11.title"),
       number: '27/663/DPPK/Srt/B',
-      description: 'Terdaftar sebagai Pialang Berjangka – Peserta Sistem Perdagangan Alternatif Derivatif PUVA di Bank Indonesia',
+      description: t("legal.docs.11.desc"),
       icon: <FaBuilding className="text-3xl text-yellow-500" />
     }
   ];
 
   return (
-    <PageTemplates>
+    <PageTemplates title={t("legal.title")}>
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Legalitas Bisnis</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{t("legal.title")}</h1>
             <div className="w-24 h-1 bg-yellow-500 mx-auto"></div>
             <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-              <span className="text-gray-300">Berikut adalah dokumen-dokumen legal yang menjadi dasar hukum dan pengakuan resmi atas operasional PT. Solid Gold Berjangka</span>
+              <span className="text-gray-300">{t("legal.subtitle")}</span>
             </p>
           </div>
 
@@ -118,7 +120,7 @@ export default function LegalitasBisnis() {
                     <h3 className="text-lg font-semibold text-white">{doc.title}</h3>
                   </div>
                   <div className="pl-16">
-                    <p className="text-yellow-400 font-medium mb-2">No. {doc.number}</p>
+                    <p className="text-yellow-400 font-medium mb-2">{t("legal.numberPrefix")} {doc.number}</p>
                     <p className="text-gray-300">{doc.description}</p>
                   </div>
                 </div>
@@ -128,12 +130,10 @@ export default function LegalitasBisnis() {
 
           <div className="mt-16 p-8 rounded-lg shadow-md">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-4">Legalitas Lengkap dan Terverifikasi</h2>
-              <p className="text-gray-300 mb-6">
-                Seluruh dokumen legalitas dapat dilihat langsung di kantor kami atau melalui salinan resmi yang telah dilegalisir.
-              </p>
+              <h2 className="text-2xl font-bold text-white mb-4">{t("legal.ctaTitle")}</h2>
+              <p className="text-gray-300 mb-6">{t("legal.ctaText")}</p>
               <button className="btn-primary py-2 px-6 rounded-md">
-                Hubungi Kami untuk Info Lebih Lanjut
+                {t("legal.ctaButton")}
               </button>
             </div>
           </div>

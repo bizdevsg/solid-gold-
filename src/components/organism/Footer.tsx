@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import FooterMiniCardContainer from "@/components/moleculs/FooterMiniCardContainer";
+import { useI18n } from "@/i18n/useI18n";
 
 type LinkItem = {
     label: string;
@@ -22,64 +23,65 @@ type MenuItem = {
 };
 
 export default function Footer() {
+    const { t } = useI18n();
     const menuItems: MenuItem[] = [
         {
-            label: "Produk",
+            label: t("footer.products"),
             key: "produk",
             dropdown: [
-                { label: "Multilateral (JFX)", href: "/produk/multilateral" },
-                { label: "Bilateral (SPA)", href: "/produk/bilateral" },
-                { label: "Karakteristik Produk", href: "/produk/karakteristik-produk" },
-                { label: "Ilustrasi Transaksi", href: "/produk/ilustrasi-transaksi" },
+                { label: t("nav.products.multilateral"), href: "/produk/multilateral" },
+                { label: t("nav.products.bilateral"), href: "/produk/bilateral" },
+                { label: t("nav.products.characteristics"), href: "/produk/karakteristik-produk" },
+                { label: t("nav.products.illustration"), href: "/produk/ilustrasi-transaksi" },
             ],
         },
         {
-            label: "Berita",
+            label: t("footer.news"),
             key: "news",
             dropdown: [
                 {
-                    category: "Market",
+                    category: t("footer.market"),
                     children: [
-                        { label: "Index", href: "/indexNews" },
-                        { label: "Commodity", href: "/commodityNews" },
-                        { label: "Currencies", href: "/currenciesNews" },
+                        { label: t("nav.news.index"), href: "/indexNews" },
+                        { label: t("nav.news.commodity"), href: "/commodityNews" },
+                        { label: t("nav.news.currencies"), href: "/currenciesNews" },
                     ],
                 },
                 {
-                    category: "Ekonomi",
+                    category: t("footer.economy"),
                     children: [
-                        { label: "Global & Ekonomi", href: "/economicNews" },
-                        { label: "Fiscal & Moneter", href: "/fiscalMoneter" },
+                        { label: t("nav.news.global"), href: "/economicNews" },
+                        { label: t("nav.news.fiscal"), href: "/fiscalMoneter" },
                     ],
                 },
             ],
         },
         {
-            label: "Tentang Kami",
+            label: t("footer.about"),
             key: "tentang-kami",
             dropdown: [
                 {
-                    category: "Perusahaan",
+                    category: t("footer.company"),
                     children: [
-                        { label: "Profil", href: "/tentang-kami/profil" },
-                        { label: "Legalitas Bisnis", href: "/tentang-kami/legalitas-bisnis" },
-                        { label: "Fasilitas Layanan", href: "/tentang-kami/fasilitas-layanan" },
-                        { label: "Alasan Memilih Kami", href: "/tentang-kami/alasan" },
-                        { label: "Wakil Pialang", href: "/tentang-kami/wakil-pialang" },
+                        { label: t("nav.about.profile"), href: "/tentang-kami/profil" },
+                        { label: t("nav.about.legal"), href: "/tentang-kami/legalitas-bisnis" },
+                        { label: t("nav.about.services"), href: "/tentang-kami/fasilitas-layanan" },
+                        { label: t("nav.about.reason"), href: "/tentang-kami/alasan" },
+                        { label: t("nav.about.broker"), href: "/tentang-kami/wakil-pialang" },
                     ],
                 },
             ],
         },
         {
-            label: "Prosedur",
+            label: t("footer.procedures"),
             key: "prosedur",
             dropdown: [
                 {
-                    category: "Panduan",
+                    category: t("footer.guides"),
                     children: [
-                        { label: "Petunjuk Transaksi", href: "/prosedur/petunjuk-transaksi" },
-                        { label: "Prosedur Penarikan", href: "/prosedur/prosedur-penarikan" },
-                        { label: "Prosedur Regol", href: "/prosedur/prosedur-regol" },
+                        { label: t("nav.procedures.guide"), href: "/prosedur/petunjuk-transaksi" },
+                        { label: t("nav.procedures.withdrawal"), href: "/prosedur/prosedur-penarikan" },
+                        { label: t("nav.procedures.regol"), href: "/prosedur/prosedur-regol" },
                     ],
                 },
             ],
@@ -95,7 +97,7 @@ export default function Footer() {
                         <div>
                             <img src="/assets/sglogo.png" alt="Logo" className="h-12 mb-4" />
                             <p className="text-sm text-gray-400 leading-relaxed">
-                                Broker resmi yang diawasi oleh Bappebti dan Bursa Berjangka.
+                                {t("footer.brokerNote")}
                             </p>
                         </div>
                         <FooterMiniCardContainer />
@@ -157,7 +159,7 @@ export default function Footer() {
             <div className="border-t border-gray-800">
                 <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 flex gap-5 py-5 flex-col md:flex-row justify-between items-center">
                     <div className="text-left text-sm text-gray-300">
-                        © {new Date().getFullYear()} Solid Gold Berjangka. All rights reserved.
+                        {t("footer.rights", { year: new Date().getFullYear() })}
                     </div>
                     <div className="flex items-center gap-3">
                         <a

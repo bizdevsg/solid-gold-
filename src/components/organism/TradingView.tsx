@@ -1,4 +1,7 @@
+import { useI18n } from "@/i18n/useI18n";
+
 export default function TradingView() {
+    const { t } = useI18n();
     return (
         <div className="w-full bg-linear-to-r from-zinc-900 to-zinc-800 text-gray-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 py-12">
@@ -10,11 +13,7 @@ export default function TradingView() {
                             alt="TradingView"
                             className="w-50 object-contain"
                         />
-                        <p className="mt-4 text-justify">
-                            Chart yang kami gunakan disediakan oleh TradingView, sebuah platform charting bagi para trader dan investor dari seluruh penjuru dunia.
-                            Temukan berbagai instrumen finansial seperti chart <strong>EURUSD</strong>, <strong>BTCUSD</strong>, <strong>IHSG</strong>, dan juga peralatan seperti Stock Screener yang tersedia secara gratis dan
-                            dapat membantu dalam aktivitas trading dan investasi anda.
-                        </p>
+                        <p className="mt-4 text-justify">{t("tradingview.desc")}</p>
                     </div>
 
                     {/* Tombol "Live Chart" */}
@@ -24,7 +23,7 @@ export default function TradingView() {
                             target="_blank"
                             className="btn-primary text-center px-6 py-3 rounded-lg max-w-max"
                         >
-                            Live Chart
+                            {t("tradingview.title")}
                         </a>
                     </div>
                 </div>

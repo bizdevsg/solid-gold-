@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import PageTemplates from "@/components/templates/PageTemplates";
 import RandomizeNews from "@/components/organism/RandomizeNews";
+import { useI18n } from "@/i18n/useI18n";
 
 type TitleVariants = {
     default?: string;
@@ -30,6 +31,7 @@ function pickTitle(b?: Berita | null) {
 
 export default function BeritaDetailPage() {
     const router = useRouter();
+    const { t, locale } = useI18n();
     const rawSlug = router.query.newsSlug;
 
     const newsSlug = useMemo(() => {
@@ -68,7 +70,7 @@ export default function BeritaDetailPage() {
                     router.replace("/404");
                     return;
                 }
-                if (!res.ok) throw new Error(`Gagal mengambil data berita (status ${res.status})`);
+                if (!res.ok) throw new Error(t("news.fetchError", { status: res.status }));
 
                 const result = await res.json();
                 const data: Berita | null = result?.data ?? null;
@@ -82,7 +84,7 @@ export default function BeritaDetailPage() {
                 setBerita({ ...data, content: result?.data?.content ?? "" });
             } catch (e: any) {
                 if (e?.name !== "AbortError") {
-                    setErrMsg(e?.message || "Terjadi kesalahan saat memuat berita");
+                    setErrMsg(e?.message || t("news.loadError"));
                     setBerita(null);
                 }
             } finally {
@@ -91,22 +93,22 @@ export default function BeritaDetailPage() {
         })();
 
         return () => ac.abort();
-    }, [router, router.isReady, newsSlug]);
+    }, [router, router.isReady, newsSlug, t]);
 
     if (redirecting404) return null;
 
     if (loading) {
         return (
-            <PageTemplates title="Loading...">
-                <p>Memuat data...</p>
+            <PageTemplates title={t("common.loadingTitle")}>
+                <p>{t("common.loading")}</p>
             </PageTemplates>
         );
     }
 
     if (!berita) {
         return (
-            <PageTemplates title="Terjadi Kesalahan">
-                <p className="text-red-400">{errMsg ?? "Berita tidak ditemukan."}</p>
+            <PageTemplates title={t("common.errorTitle")}>
+                <p className="text-red-400">{errMsg ?? t("news.notFound")}</p>
             </PageTemplates>
         );
     }
@@ -117,12 +119,12 @@ export default function BeritaDetailPage() {
         <PageTemplates title={pageTitle}>
             <div className="text-center mb-6">
                 {berita.kategori?.name && (
-                    <p className="text-yellow-500 font-semibold mb-2">{berita.kategori.name} News</p>
+                    <p className="text-yellow-500 font-semibold mb-2">{berita.kategori.name} {t("news.label")}</p>
                 )}
                 <h1 className="text-3xl font-bold text-white mb-2">{pageTitle}</h1>
                 {berita.created_at && (
                     <p className="text-gray-400 text-sm">
-                        {new Date(berita.created_at).toLocaleDateString("id-ID", {
+                        {new Date(berita.created_at).toLocaleDateString(locale === "en" ? "en-US" : "id-ID", {
                             year: "numeric",
                             month: "long",
                             day: "numeric",

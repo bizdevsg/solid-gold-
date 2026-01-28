@@ -1,3 +1,5 @@
+import { useI18n } from "@/i18n/useI18n";
+
 type ProdukCardProps = {
     title: string;
     description: string;
@@ -12,6 +14,7 @@ export default function ProdukCard({
     imagePath,
     href,
 }: ProdukCardProps) {
+    const { t } = useI18n();
     const BASE_URL =
         (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
             process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -38,7 +41,7 @@ export default function ProdukCard({
                     href={href}
                     className="btn-primary w-full text-center px-5 py-2 rounded-full mt-3 inline-block"
                 >
-                    Detail
+                    {t("common.details")}
                 </a>
             </div>
         </div>

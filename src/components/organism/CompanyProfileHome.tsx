@@ -2,27 +2,25 @@
 
 import Link from "next/link";
 import { FiCheckCircle, FiEye, FiTarget } from "react-icons/fi";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function CompanyProfileHome() {
+    const { t } = useI18n();
     return (
         <section className="px-4 sm:px-6 lg:px-8 py-12" data-aos="fade-up">
             <div className="max-w-6xl mx-auto mb-8 text-center">
                 <p className="text-yellow-500 font-semibold uppercase text-sm md:text-base">
-                    Tentang Kami
+                    {t("home.aboutLabel")}
                 </p>
                 <h2 className="text-white font-bold text-xl md:text-2xl">
-                    Profil Perusahaan
+                    {t("home.companyProfile")}
                 </h2>
             </div>
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
                 <div className="order-2 lg:order-2">
                     <div className="space-y-5 text-gray-300 leading-relaxed">
-                        <p>
-                            Berdiri sejak tahun 2002, PT Solid Gold Berjangka ("SGB") merupakan perusahaan pialang berjangka terdaftar dan diawasi oleh Badan Pengawas Perdagangan Berjangka Komoditi (BAPPEBTI). Berpengalaman lebih dari 20 tahun di industri Perdagangan Berjangka Komoditi, SGB adalah anggota dari PT Bursa Berjangka Jakarta (BBJ) dan PT Kliring Berjangka Indonesia (Persero).
-                        </p>
-                        <p>
-                            Saat ini pelayanan transaksi PT Solid Gold Berjangka terus meluas dengan total kantor operasional mencapai 3 kantor tersebar di Jakarta, Semarang, Makassar.
-                        </p>
+                        <p>{t("home.profile.p1")}</p>
+                        <p>{t("home.profile.p2")}</p>
 
                         <div className="pt-2 space-y-5">
                             <div>
@@ -30,22 +28,16 @@ export default function CompanyProfileHome() {
                                     <span className="text-yellow-500 text-lg">
                                         <FiTarget />
                                     </span>
-                                    <h3 className="text-white font-semibold">Misi Perusahaan</h3>
+                                    <h3 className="text-white font-semibold">{t("home.mission")}</h3>
                                 </div>
                                 <ul className="space-y-2 text-gray-300">
                                     <li className="flex items-start gap-2">
                                         <FiCheckCircle className="text-yellow-500 mt-1" />
-                                        <span>
-                                            Menjadi sebuah perusahaan pialang berjangka yang memiliki skala
-                                            internasional
-                                        </span>
+                                        <span>{t("home.mission.item1")}</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <FiCheckCircle className="text-yellow-500 mt-1" />
-                                        <span>
-                                            Menjadi market leader, baik itu secara regional ataupun
-                                            internasional
-                                        </span>
+                                        <span>{t("home.mission.item2")}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -55,24 +47,16 @@ export default function CompanyProfileHome() {
                                     <span className="text-yellow-500 text-lg">
                                         <FiEye />
                                     </span>
-                                    <h3 className="text-white font-semibold">Visi Perusahaan</h3>
+                                    <h3 className="text-white font-semibold">{t("home.vision")}</h3>
                                 </div>
                                 <ul className="space-y-2 text-gray-300">
                                     <li className="flex items-start gap-2">
                                         <FiCheckCircle className="text-yellow-500 mt-1" />
-                                        <span>
-                                            Mengembangkan dan memajukan Perdagangan Berjangka di Indonesia
-                                            sehingga dapat memberikan dampak positif kepada perekonomian
-                                            Nasional baik dari segi mikro dan makro
-                                        </span>
+                                        <span>{t("home.vision.item1")}</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <FiCheckCircle className="text-yellow-500 mt-1" />
-                                        <span>
-                                            Memberdayakan Perdagangan Berjangka di Indonesia dan membantu
-                                            semua pihak yang membutuhkannya untuk dapat mempergunakannya
-                                            sebagai sarana lindung nilai (Hedging)
-                                        </span>
+                                        <span>{t("home.vision.item2")}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -84,7 +68,7 @@ export default function CompanyProfileHome() {
                             href="/tentang-kami/profil"
                             className="btn-primary inline-flex items-center justify-center px-5 py-2 rounded"
                         >
-                            Pelajari Lebih Lanjut
+                            {t("common.learnMore")}
                         </Link>
                     </div>
                 </div>

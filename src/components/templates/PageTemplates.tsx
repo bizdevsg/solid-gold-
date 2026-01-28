@@ -10,6 +10,7 @@ import Router from "next/router";
 import { DataLoaderProvider, useDataLoader } from "@/providers/DataLoaderProvider";
 import TradingView from "../organism/TradingView";
 import LanguageToggle from "../atoms/LanguageToggle";
+import { useI18n } from "@/i18n/useI18n";
 
 // Live chat (Tawk.to) sementara dimatikan.
 // Untuk nyalain lagi tanpa ubah kode: set env `NEXT_PUBLIC_ENABLE_LIVE_CHAT=true` lalu rebuild.
@@ -22,6 +23,7 @@ interface PageTemplatesProps {
 
 // --- Overlay terpisah biar reuse ---
 function GlobalLoadingOverlay({ active }: { active: boolean }) {
+    const { t } = useI18n();
     return (
         <div
             className={`pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center 
@@ -32,7 +34,7 @@ function GlobalLoadingOverlay({ active }: { active: boolean }) {
         >
             <div className="pointer-events-auto flex flex-col items-center gap-4">
                 <div className="border-4 border-neutral-700 border-t-yellow-400 rounded-full w-12 h-12 animate-spin" />
-                <p className="text-sm text-neutral-300">Memuat data…</p>
+                <p className="text-sm text-neutral-300">{t("common.loading")}</p>
             </div>
         </div>
     );

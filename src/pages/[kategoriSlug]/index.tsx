@@ -4,14 +4,15 @@ import MiniHeader from "@/components/atoms/MiniHeader";
 import ReadMore from "@/components/atoms/ReadMore";
 import NewsContainer from "@/components/organism/NewsContainer";
 import PageTemplates from "@/components/templates/PageTemplates";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
     kategoriSlug: string;
 }
 
 export default function NewsByCategory({ kategoriSlug }: Props) {
-    // Ubah slug jadi judul rapi (dengan override khusus)
-    const pageTitle = toPageTitle(kategoriSlug);
+    const { locale } = useI18n();
+    const pageTitle = toPageTitle(kategoriSlug, locale);
 
     return (
         <PageTemplates title={pageTitle}>
@@ -41,9 +42,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) => 
 
 /* --- Utils --- */
 // Override judul untuk slug tertentu
-const TITLE_OVERRIDES: Record<string, string> = {
-    analisismarket: "Analisis Market",
-    analisisopini: "Analisis & Opini",
+const TITLE_OVERRIDES: Record<string, { id: string; en: string }> = {
+    analisismarket: { id: "Analisis Market", en: "Market Analysis" },
+    analisisopini: { id: "Analisis & Opini", en: "Analysis & Opinion" },
+    economicnews: { id: "Global & Ekonomi", en: "Global & Economy" },
+    fiscalmoneter: { id: "Fiscal & Moneter", en: "Fiscal & Monetary" },
+    indexnews: { id: "Index", en: "Index" },
+    commoditynews: { id: "Commodity", en: "Commodity" },
+    currenciesnews: { id: "Currencies", en: "Currencies" },
 };
 
 // Humanize slug umum: pecah camelCase, kebab-case, snake_case → Title Case
@@ -63,7 +69,9 @@ function humanizeSlug(input: string): string {
 }
 
 // Wrapper dengan override
-function toPageTitle(slug: string): string {
+function toPageTitle(slug: string, locale?: string): string {
     const key = slug.toLowerCase().replace(/[\s\-_&/]+/g, "");
-    return TITLE_OVERRIDES[key] ?? humanizeSlug(slug);
+    const override = TITLE_OVERRIDES[key];
+    if (override) return locale === "en" ? override.en : override.id;
+    return humanizeSlug(slug);
 }

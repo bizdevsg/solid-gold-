@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
+import { useI18n } from "@/i18n/useI18n";
 
 // ===== Types =====
 interface Kategori {
@@ -38,8 +39,6 @@ type DisplayItem =
     | { type: "news"; content: string; href: string }
     | { type: "market"; content: string; value?: number; percentChange?: number }
     | { type: "sep"; variant: "dot" | "bar" }; // ‘•’ atau ‘|’
-
-const numberFmt = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 });
 
 // ===== Kategori mapping (nama kategori API -> slug halaman) =====
 const kategoriMap: Record<string, string[]> = {
@@ -119,7 +118,11 @@ function intersperseNewsWithDots(items: DisplayItem[]): DisplayItem[] {
     return out;
 }
 
-function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
+function buildDisplayItems(
+    market: Quote[],
+    news: Berita[],
+    t: (key: string, vars?: Record<string, string | number>) => string
+): DisplayItem[] {
     // Ambil 3 berita teratas → masing2 item terpisah dengan href
     const newsItems: DisplayItem[] = news.slice(0, 5).map((n) => {
         const mapped = getKategoriSlugFromName(n.kategori?.name);
@@ -127,7 +130,7 @@ function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
             mapped && n.slug ? `/${encodeURIComponent(mapped)}/${encodeURIComponent(n.slug)}` : "/#";
         return {
             type: "news" as const,
-            content: pickTitle(n).trim() || n.title?.trim() || "(Tanpa judul)",
+            content: pickTitle(n).trim() || n.title?.trim() || t("news.noTitle"),
             href,
         };
     });
@@ -135,7 +138,7 @@ function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
     const newsPart: DisplayItem[] =
         newsItems.length > 0
             ? newsItems
-            : [{ type: "news", content: "Tidak ada berita terbaru", href: "/#" }];
+            : [{ type: "news", content: t("news.emptyLatest"), href: "/#" }];
 
     const marketItems: DisplayItem[] = market.map((m) => ({
         type: "market",
@@ -156,6 +159,11 @@ function buildDisplayItems(market: Quote[], news: Berita[]): DisplayItem[] {
 
 // ===== Komponen =====
 export default function TopNews() {
+    const { t, locale } = useI18n();
+    const numberFmt = useMemo(
+        () => new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", { maximumFractionDigits: 2 }),
+        [locale]
+    );
     const containerRef = useRef<HTMLDivElement | null>(null);
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [marqueeDuration, setMarqueeDuration] = useState<number>(25);
@@ -205,7 +213,7 @@ export default function TopNews() {
     const news = useMemo(() => normalizeNews(newsRaw), [newsRaw]);
     const market = useMemo(() => normalizeMarket(marketRaw ?? []), [marketRaw]);
 
-    const items: DisplayItem[] = useMemo(() => buildDisplayItems(market, news), [market, news]);
+    const items: DisplayItem[] = useMemo(() => buildDisplayItems(market, news, t), [market, news, t]);
 
     const displayItems: DisplayItem[] = useMemo(() => {
         if (!items.length) return [];
@@ -236,7 +244,7 @@ export default function TopNews() {
         <div className="bg-[#111827] rounded w-full overflow-hidden">
             <div className="flex items-center p-2">
                 <div className="bg-red-600 text-white font-bold text-sm px-3 py-1 rounded flex-shrink-0 select-none">
-                    TOP NEWS
+                    {t("news.top")}
                 </div>
 
                 <div className="flex-1 overflow-hidden relative ml-3" ref={containerRef}>
@@ -247,9 +255,9 @@ export default function TopNews() {
                             ))}
                         </div>
                     ) : error ? (
-                        <div className="text-red-400">Gagal memuat data.</div>
+                        <div className="text-red-400">{t("common.errorLoad")}</div>
                     ) : displayItems.length === 0 ? (
-                        <div className="text-gray-300">Tidak ada data.</div>
+                        <div className="text-gray-300">{t("common.emptyData")}</div>
                     ) : (
                         <div
                             ref={contentRef}
@@ -260,7 +268,7 @@ export default function TopNews() {
                                     : undefined
                             }
                             aria-live="polite"
-                            aria-label="Ticker berita dan pasar"
+                            aria-label={t("news.tickerLabel")}
                         >
                             {displayItems.map((item, idx) => {
                                 if (item.type === "sep") {
@@ -309,7 +317,7 @@ export default function TopNews() {
                                         key={`news-${idx}`}
                                         href={item.href}
                                         className="flex-shrink-0 text-gray-200 italic hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded-sm transition-colors"
-                                        aria-label={`Baca: ${item.content}`}
+                                        aria-label={`${t("news.read")} ${item.content}`}
                                         prefetch
                                     >
                                         {item.content}

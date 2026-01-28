@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
+import LanguageToggle from "@/components/atoms/LanguageToggle";
+import { useI18n } from "@/i18n/useI18n";
 
 type MenuLink = { label: string; href: string };
 type MenuGroup = { category: string; children: MenuLink[] };
@@ -15,6 +17,7 @@ type MenuItem =
 export default function Navbar() {
     const router = useRouter();
     const pathname = router.pathname ?? "";
+    const { t } = useI18n();
 
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -24,68 +27,70 @@ export default function Navbar() {
     const navRef = useRef<HTMLDivElement | null>(null);
 
     const menuItems: MenuItem[] = [
-        {   label: "Beranda", href: "/" },
-        {   label: "Tentang Kami",
+        { label: t("nav.home"), href: "/" },
+        {
+            label: t("nav.about"),
             key: "about",
             dropdown: [
-                 { label: "Profil Perusahaan", href: "/tentang-kami/profil" },
-                 { label: "Legalitas Bisnis", href: "/tentang-kami/legalitas-bisnis" },
-                 { label: "Wakil Pialang Berjangka", href: "/tentang-kami/wakil-pialang" },
-                 { label: "Fasilitas & Layanan", href: "/tentang-kami/fasilitas-layanan" },
-                 { label: "Pencapaian", href: "/tentang-kami/video-galeri" },
-                 { label: "Umum", href: "/tentang-kami/market-update" },
-                 { label: "Alasan Anda Memilih Kami", href: "/tentang-kami/alasan" },
-             ],
-          },
-        {
-            label: "Produk",
-            key: "produk",
-            dropdown: [
-                { label: "Multilateral (JFX)", href: "/produk/multilateral" },
-                { label: "Bilateral (SPA)", href: "/produk/bilateral" },
-                { label: "Karakteristik Produk", href: "/produk/karakteristik-produk" },
-                { label: "Ilustrasi Transaksi", href: "/produk/ilustrasi-transaksi" },
+                { label: t("nav.about.profile"), href: "/tentang-kami/profil" },
+                { label: t("nav.about.legal"), href: "/tentang-kami/legalitas-bisnis" },
+                { label: t("nav.about.broker"), href: "/tentang-kami/wakil-pialang" },
+                { label: t("nav.about.services"), href: "/tentang-kami/fasilitas-layanan" },
+                { label: t("nav.about.achievements"), href: "/tentang-kami/video-galeri" },
+                { label: t("nav.about.general"), href: "/tentang-kami/market-update" },
+                { label: t("nav.about.reason"), href: "/tentang-kami/alasan" },
             ],
         },
-        {   label: "Prosedur",
+        {
+            label: t("nav.products"),
+            key: "produk",
+            dropdown: [
+                { label: t("nav.products.multilateral"), href: "/produk/multilateral" },
+                { label: t("nav.products.bilateral"), href: "/produk/bilateral" },
+                { label: t("nav.products.characteristics"), href: "/produk/karakteristik-produk" },
+                { label: t("nav.products.illustration"), href: "/produk/ilustrasi-transaksi" },
+            ],
+        },
+        {
+            label: t("nav.procedures"),
             key: "prosedur",
             dropdown: [
-                { label: "Petunjuk Transaksi", href: "/prosedur/petunjuk-transaksi" },
-                { label: "Prosedur Penarikan", href: "/prosedur/prosedur-penarikan" },
-                { label: "Prosedur Registrasi Online", href: "/prosedur/prosedur-regol" },
+                { label: t("nav.procedures.guide"), href: "/prosedur/petunjuk-transaksi" },
+                { label: t("nav.procedures.withdrawal"), href: "/prosedur/prosedur-penarikan" },
+                { label: t("nav.procedures.regol"), href: "/prosedur/prosedur-regol" },
             ],
          },
         {
-            label: "Berita",
+            label: t("nav.news"),
             key: "news",
             dropdown: [
                 {
-                    category: "Market",
+                    category: t("nav.news.market"),
                     children: [
-                        { label: "Index", href: "/indexNews" },
-                        { label: "Commodity", href: "/commodityNews" },
-                        { label: "Currencies", href: "/currenciesNews" },
+                        { label: t("nav.news.index"), href: "/indexNews" },
+                        { label: t("nav.news.commodity"), href: "/commodityNews" },
+                        { label: t("nav.news.currencies"), href: "/currenciesNews" },
                     ],
                 },
                 {
-                    category: "Ekonomi",
+                    category: t("nav.news.economy"),
                     children: [
-                        { label: "Global & Ekonomi", href: "/economicNews" },
-                        { label: "Fiscal & Moneter", href: "/fiscalMoneter" },
+                        { label: t("nav.news.global"), href: "/economicNews" },
+                        { label: t("nav.news.fiscal"), href: "/fiscalMoneter" },
                     ],
                 },
             ],
         },
         {
-            label: "Analisis",
+            label: t("nav.analysis"),
             key: "analysis",
             dropdown: [
-                { label: "Analisis Market", href: "/analisisMarket" },
-                { label: "Kalender Ekonomi", href: "/analisis/kalender-ekonomi" },
-                { label: "Pivot & Fibonacci", href: "/analisis/pivot-fibonacci" },
+                { label: t("nav.analysis.market"), href: "/analisisMarket" },
+                { label: t("nav.analysis.calendar"), href: "/analisis/kalender-ekonomi" },
+                { label: t("nav.analysis.pivot"), href: "/analisis/pivot-fibonacci" },
             ],
         },
-        {   label: "Kontak", href: "/kontak" },
+        { label: t("nav.contact"), href: "/kontak" },
     ];
 
     /** Utils Active */
@@ -392,15 +397,9 @@ export default function Navbar() {
                                 );
                             })}
 
-                            {/* CTA */}
-                            <div className="lg:block w-full lg:w-auto mt-1 lg:mt-0">
-                                <Link
-                                    href="https://regol.solidgold.co.id/"
-                                    className="btn-primary text-sm px-5 py-2 rounded block text-center lg:inline-block"
-                                    onClick={closeAllMenus}
-                                >
-                                    Daftar Sekarang
-                                </Link>
+                            {/* Language */}
+                            <div className="lg:block w-full lg:w-auto mt-1 lg:mt-0 flex items-center gap-3">
+                                <LanguageToggle />
                             </div>
                         </div>
                     </div>

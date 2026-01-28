@@ -5,6 +5,7 @@ import { useRouter } from "next/router"; // <-- Pages Router
 import { useEffect, useMemo, useState } from "react";
 import AOS from "aos";
 import NewsCard from "../moleculs/NewsCard";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Kategori {
     id: number;
@@ -83,6 +84,7 @@ function pickArray<T = unknown>(raw: any): T[] {
 
 export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     const router = useRouter();
+    const { t } = useI18n();
 
     // 404 guard manual
     const allowedSlugs = useMemo(() => new Set(Object.keys(kategoriMap)), []);
@@ -90,18 +92,19 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
         // render fallback 404
         return (
             <div className="text-center text-red-400 py-20">
-                <h1>404 - Halaman Tidak Ditemukan</h1>
+                <h1>{t("common.notFound")}</h1>
                 <button
                     className="btn-primary mt-4 px-4 py-2 rounded"
                     onClick={() => router.push("/")}
                 >
-                    Kembali ke Beranda
+                    {t("common.backHome")}
                 </button>
             </div>
         );
     }
 
-    const [activeFilter, setActiveFilter] = useState("All");
+    const allFilterValue = "all";
+    const [activeFilter, setActiveFilter] = useState(allFilterValue);
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
@@ -113,11 +116,17 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     });
 
     useEffect(() => {
-        setActiveFilter("All");
+        setActiveFilter(allFilterValue);
         setSearchQuery("");
     }, [kategoriSlug]);
 
-    const filters = useMemo(() => ["All", ...(kategoriMap[kategoriSlug] || [])], [kategoriSlug]);
+    const filters = useMemo(
+        () => [
+            { value: allFilterValue, label: t("common.all") },
+            ...(kategoriMap[kategoriSlug] || []).map((item) => ({ value: item, label: item })),
+        ],
+        [kategoriSlug, t]
+    );
 
     const { data, error } = useSWR("https://portalnews.newsmaker.id/api/v1/berita", fetcher, {
         refreshInterval: 15_000,
@@ -154,7 +163,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
             .filter((n) => {
                 const katName = n.kategori?.name || "";
                 const matchFilter =
-                    activeFilter.toLowerCase() === "all" ||
+                    activeFilter === allFilterValue ||
                     katName.toLowerCase() === activeFilter.toLowerCase();
 
                 const text = (pickTitle(n) || "").toLowerCase() + " " + katName.toLowerCase();
@@ -171,7 +180,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
     const showNoData = data !== undefined && filteredNews.length === 0;
     const skeletonCount = filteredNews.length > 0 ? filteredNews.length : 9;
 
-    if (error) return <div className="text-red-400">Gagal memuat berita.</div>;
+    if (error) return <div className="text-red-400">{t("common.errorNews")}</div>;
 
     return (
         <div className="space-y-5">
@@ -180,14 +189,14 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 <div className="flex flex-wrap gap-3">
                     {filters.map((filter) => (
                         <button
-                            key={filter}
-                            onClick={() => setActiveFilter(filter)}
-                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter
+                            key={filter.value}
+                            onClick={() => setActiveFilter(filter.value)}
+                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter.value
                                 ? "btn-primary"
                                 : "bg-gray-100/5 hover:bg-gray-100/10 text-white"
                                 }`}
                         >
-                            {filter}
+                            {filter.label}
                         </button>
                     ))}
                 </div>
@@ -195,7 +204,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                 <div className="w-full md:w-1/2">
                     <input
                         type="text"
-                        placeholder="Cari berita..."
+                        placeholder={t("common.search")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full px-4 py-2 border border-yellow-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-transparent text-white placeholder:text-neutral-400"
@@ -220,7 +229,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
             ) : showNoData ? (
                 <div className="text-neutral-300 border border-neutral-800 rounded-lg py-52 aos-init aos-animate" data-aos="fade-up" data-aos-once="true">
                     <div className="flex justify-center">
-                        <img src="/assets/No Data Available Illustration.png" alt="No Data" className="h-50" />
+                        <img src="/assets/No Data Available Illustration.png" alt={t("common.noDataAlt")} className="h-50" />
                     </div>
                 </div>
             ) : (

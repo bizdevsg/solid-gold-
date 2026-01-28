@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MiniHeader from "../atoms/MiniHeader";
+import { useI18n } from "@/i18n/useI18n";
 
 type LogoItem = {
     src: string;
@@ -102,20 +103,21 @@ const LogoGrid = ({
 };
 
 export default function Watcher() {
+    const { t } = useI18n();
     const logoPengawas: LogoItem[] = [
         {
             src: "/assets/bappeti.png",
-            alt: "Logo JFX",
+            alt: t("watcher.alt.bappebti"),
             href: "https://bappebti.go.id/pialang_berjangka/detail/049",
         },
         {
             src: "/assets/OJK_Logo.png",
-            alt: "Logo OJK",
+            alt: t("watcher.alt.ojk"),
             href: "https://www.ojk.go.id/id/Default.aspx",
         },
         {
             src: "/assets/Logo-BI.png",
-            alt: "Logo Bank Indonesia",
+            alt: t("watcher.alt.bi"),
             href: "https://www.bi.go.id/id/default.aspx",
         },
     ];
@@ -123,17 +125,17 @@ export default function Watcher() {
     const logoMember: LogoItem[] = [
         {
             src: "/assets/logo JFX.png",
-            alt: "Logo JFX",
+            alt: t("watcher.alt.jfx"),
             href: "https://www.jfx.co.id/MarketMaker/market_maker/Pialang",
         },
         {
             src: "/assets/logo KBI.png",
-            alt: "Logo KBI",
+            alt: t("watcher.alt.kbi"),
             href: "http://ptkbi.com/our-partner/perdagangan-berjangka-komoditi",
         },
         {
             src: "/assets/aspebtindo.png",
-            alt: "Aspebtindo",
+            alt: t("watcher.alt.aspebtindo"),
             href: "",
         },
     ];
@@ -145,7 +147,7 @@ export default function Watcher() {
         >
             {/* logoPengawas normal */}
             <LogoGrid
-                title="BERIZIN DAN DIAWASI"
+                title={t("watcher.supervised")}
                 items={logoPengawas}
                 Aos="fade-left"
                 AosHeader="fade-right"
@@ -155,7 +157,7 @@ export default function Watcher() {
 
             {/* logoMember: baris pertama 2, baris kedua 1 full di mobile */}
             <LogoGrid
-                title="KEANGGOTAAN DARI"
+                title={t("watcher.membership")}
                 items={logoMember}
                 Aos="fade-left"
                 AosHeader="fade-right"

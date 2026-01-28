@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { useI18n } from "@/i18n/useI18n";
 
 const API_BASE = (
     process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -35,6 +36,7 @@ const fetcher = (url: string) =>
     });
 
 export default function KantorCabangSection() {
+    const { t } = useI18n();
     const { data, error, isLoading } = useSWR<Kantor[]>(`${API_BASE}/api/v1/kantor-cabang`, fetcher, {
         refreshInterval: 30_000,   // auto-refresh tiap 30 detik
         revalidateOnFocus: true,    // revalidate saat tab kembali aktif
@@ -47,7 +49,9 @@ export default function KantorCabangSection() {
 
     return (
         <div className="mb-5">
-            <h2 className="font-bold mb-4 uppercase text-yellow-500 text-xl" data-aos="fade-right">Kantor Cabang</h2>
+            <h2 className="font-bold mb-4 uppercase text-yellow-500 text-xl" data-aos="fade-right">
+                {t("contact.branchOffice")}
+            </h2>
 
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-white" data-aos="fade-up">
@@ -63,9 +67,9 @@ export default function KantorCabangSection() {
                     ))}
                 </div>
             ) : error ? (
-                <div className="text-red-400" data-aos="fade-up">Gagal memuat kantor cabang.</div>
+                <div className="text-red-400" data-aos="fade-up">{t("contact.branchError")}</div>
             ) : kantorList.length === 0 ? (
-                <div className="text-neutral-300" data-aos="fade-up">Belum ada data kantor cabang.</div>
+                <div className="text-neutral-300" data-aos="fade-up">{t("contact.branchEmpty")}</div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-white" data-aos="fade-up">
                     {kantorList.map((k) => {
@@ -80,16 +84,16 @@ export default function KantorCabangSection() {
                                     <p>{k.alamat_kantor_cabang}</p>
                                     <div className="flex flex-wrap items-center gap-3 text-sm md:text-base">
                                         <p>
-                                            <strong>Telp:</strong> {k.telepon_kantor_cabang || "-"}
+                                            <strong>{t("contact.phone")}:</strong> {k.telepon_kantor_cabang || "-"}
                                         </p>
                                         <span>|</span>
                                         <p>
-                                            <strong>Fax:</strong> {k.fax_kantor_cabang || "-"}
+                                            <strong>{t("contact.fax")}:</strong> {k.fax_kantor_cabang || "-"}
                                         </p>
                                     </div>
                                     {k.email_kantor_cabang && (
                                         <p className="text-sm md:text-base">
-                                            <strong>Email:</strong> {k.email_kantor_cabang}
+                                            <strong>{t("contact.email")}:</strong> {k.email_kantor_cabang}
                                         </p>
                                     )}
                                 </div>
@@ -110,7 +114,7 @@ export default function KantorCabangSection() {
                             <div
                                 key={k.id}
                                 className="border border-neutral-700 rounded-lg p-5 bg-neutral-900"
-                                title="Link maps tidak tersedia"
+                                title={t("contact.mapsUnavailable")}
                             >
                                 {CardInner}
                             </div>

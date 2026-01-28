@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import TikTokEmbed from "../moleculs/TikTokEmbed";
+import { useI18n } from "@/i18n/useI18n";
 
 /* ========= Types ========= */
 type ApiLegalitas = {
@@ -152,6 +153,7 @@ function useBodyScrollLock(locked: boolean) {
 }
 
 export default function VideoGaleri() {
+    const { t } = useI18n();
     /* ===== TikTok ID ===== */
     // Perbaikan: API mengembalikan array setting → gunakan ApiSetting[].
     const { data: settingData, error: settingErr } = useSWR<
@@ -328,14 +330,14 @@ export default function VideoGaleri() {
                 data-aos="fade-right"
             >
                 <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
-                    Video TikTok
+                    {t("gallery.tiktok")}
                 </div>
 
                 {settingErr && (
-                    <div className="text-red-400 text-sm">Gagal memuat TikTok ID</div>
+                    <div className="text-red-400 text-sm">{t("gallery.tiktokError")}</div>
                 )}
                 {!tiktokId ? (
-                    <div className="text-neutral-300 text-sm">Memuat TikTok ID…</div>
+                    <div className="text-neutral-300 text-sm">{t("gallery.tiktokLoading")}</div>
                 ) : (
                     <TikTokEmbed videoId={tiktokId} />
                 )}
@@ -349,15 +351,15 @@ export default function VideoGaleri() {
                     data-aos="fade-left"
                 >
                     <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
-                        Legalitas
+                        {t("gallery.legal")}
                     </div>
                     <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-lg min-h-[16rem] bg-neutral-900">
                         {legalitasLoading ? (
                             <div className="w-full h-full animate-pulse bg-neutral-800" />
                         ) : legalitasErr ? (
-                            <div className="p-6 text-red-400">Gagal memuat legalitas.</div>
+                            <div className="p-6 text-red-400">{t("gallery.legalError")}</div>
                         ) : legalitasList.length === 0 ? (
-                            <div className="p-6 text-neutral-300">Belum ada data legalitas.</div>
+                            <div className="p-6 text-neutral-300">{t("gallery.legalEmpty")}</div>
                         ) : legalitasList.length === 1 ? (
                             // Hanya 1 data → tampilkan satu gambar saja, tanpa slideshow
                             <img
@@ -423,15 +425,15 @@ export default function VideoGaleri() {
                     data-aos="fade-left"
                 >
                     <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
-                        Video Edukasi
+                        {t("gallery.eduVideo")}
                     </div>
                     <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-lg min-h-[16rem] bg-neutral-900">
                         {videoLoading ? (
                             <div className="w-full h-full animate-pulse bg-neutral-800" />
                         ) : videoErr ? (
-                            <div className="p-6 text-red-400">Gagal memuat video.</div>
+                            <div className="p-6 text-red-400">{t("gallery.videoError")}</div>
                         ) : videoList.length === 0 ? (
-                            <div className="p-6 text-neutral-300">Belum ada data video.</div>
+                            <div className="p-6 text-neutral-300">{t("gallery.videoEmpty")}</div>
                         ) : videoList.length === 1 ? (
                             // 1 video → tampil satu saja
                             <img
@@ -509,7 +511,7 @@ export default function VideoGaleri() {
                             className="absolute right-3 top-3 px-3 py-1 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
                             autoFocus
                         >
-                            Close
+                            {t("common.close")}
                         </button>
 
                         <div className="w-full max-h-[90vh] overflow-auto flex items-center justify-center">
@@ -542,7 +544,7 @@ export default function VideoGaleri() {
                             className="absolute right-3 top-3 px-3 py-1 z-50 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
                             autoFocus
                         >
-                            Close
+                            {t("common.close")}
                         </button>
 
                         {/* Wrapper rasio 16:9 agar iframe pasti punya tinggi */}
@@ -559,7 +561,7 @@ export default function VideoGaleri() {
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-neutral-300">
-                                    Embed tidak tersedia
+                                    {t("gallery.embedUnavailable")}
                                 </div>
                             )}
                         </div>

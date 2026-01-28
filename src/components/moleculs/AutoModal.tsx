@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function AutoModal() {
     const [modalOpen, setModalOpen] = useState(false);
+    const { t } = useI18n();
 
     // Tampilkan modal otomatis saat halaman dibuka
     useEffect(() => {
@@ -48,7 +50,7 @@ export default function AutoModal() {
                         <div className="space-y-3">
                             {/* Judul */}
                             <h2 className="text-2xl text-center text-yellow-500 font-bold mb-4">
-                                AYO DOWNLOAD VERSI ANDROID SEKARANG!
+                                {t("modal.title")}
                             </h2>
                             {/* Gambar */}
                             <img
@@ -58,9 +60,7 @@ export default function AutoModal() {
                             />
                             {/* Deskripsi */}
                             <p className="text-center text-gray-700 mb-4 px-2">
-                                Dapatkan pengalaman trading terbaik langsung dari smartphone Anda.
-                                Unduh aplikasi Solid Gold Berjangka versi Android sekarang dan nikmati fitur lengkap,
-                                berita terbaru, dan akses cepat ke akun demo maupun live.
+                                {t("modal.desc")}
                             </p>
                         </div>
                     </div>

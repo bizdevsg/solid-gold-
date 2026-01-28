@@ -1,3 +1,5 @@
+import { useI18n } from "@/i18n/useI18n";
+
 type Produk = {
     id: number;
     nama_produk: string;
@@ -16,11 +18,12 @@ interface ProdukDetailProps {
 }
 
 export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps) {
+    const { t, locale } = useI18n();
     // Guard: bila data tidak tersedia, tampilkan pesan ramah (menghindari crash)
     if (!data) {
         return (
             <div className="text-red-400 bg-neutral-900 border border-red-800 rounded p-4">
-                Data produk tidak tersedia.
+                {t("product.notAvailable")}
             </div>
         );
     }
@@ -39,18 +42,18 @@ export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps
     // Label dari route (jika ada)
     const labelFromRoute =
         kategoriProduk === "multilateral"
-            ? "Produk Multilateral (JFX)"
+            ? t("product.multilateralHeader")
             : kategoriProduk === "bilateral"
-                ? "Produk Bilateral (SPA)"
+                ? t("product.bilateralHeader")
                 : undefined;
 
     // Fallback label dari data API
     const up = (data.kategori || "").toUpperCase();
     const labelFromData =
         up === "JFX"
-            ? "Produk Multilateral (JFX)"
+            ? t("product.multilateralHeader")
             : up === "SPA"
-                ? "Produk Bilateral (SPA)"
+                ? t("product.bilateralHeader")
                 : data.kategori || "-";
 
     const headerTitle = labelFromRoute ?? labelFromData;
@@ -71,7 +74,9 @@ export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps
 
                     {data.specs && (
                         <div className="mt-6">
-                            <h2 className="text-xl font-semibold mb-2">Spesifikasi {data.nama_produk}</h2>
+                            <h2 className="text-xl font-semibold mb-2">
+                                {t("product.specs", { name: data.nama_produk })}
+                            </h2>
                             <div
                                 className="prose prose-invert max-w-none"
                                 dangerouslySetInnerHTML={{ __html: data.specs }}
@@ -81,11 +86,11 @@ export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps
                     <div className="text-xs text-neutral-500">
                         {(() => {
                             const ts = data?.updated_at;
-                            if (!ts) return "Last Update: -";
+                            if (!ts) return t("product.lastUpdateEmpty");
                             const d = new Date(ts);
-                            if (isNaN(d.getTime())) return "Last Update: -";
+                            if (isNaN(d.getTime())) return t("product.lastUpdateEmpty");
 
-                            const formatted = new Intl.DateTimeFormat("id-ID", {
+                            const formatted = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "id-ID", {
                                 year: "numeric",
                                 month: "long",   // contoh: Agu
                                 day: "2-digit",
@@ -95,7 +100,7 @@ export default function ProdukDetail({ data, kategoriProduk }: ProdukDetailProps
                                 timeZone: "Asia/Jakarta",
                             }).format(d);
 
-                            return `Last Update: ${formatted} WIB`;
+                            return t("product.lastUpdate", { datetime: formatted });
                         })()}
                     </div>
                 </div>

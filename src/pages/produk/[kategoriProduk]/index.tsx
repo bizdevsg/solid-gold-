@@ -4,21 +4,23 @@ import Header from "@/components/moleculs/Header";
 import ProdukContainer from "@/components/organism/ProdukContainer";
 import PageTemplates from "@/components/templates/PageTemplates";
 import type { GetServerSideProps } from "next";
+import { useI18n } from "@/i18n/useI18n";
 
 type PageProps = {
     kategoriProduk: "multilateral" | "bilateral";
 };
 
 export default function ProdukByKategoriPage({ kategoriProduk }: PageProps) {
+    const { t } = useI18n();
     const isMultilateral = kategoriProduk === "multilateral";
-    const pageTitle = isMultilateral ? "Produk JFX" : "Produk SPA";
+    const pageTitle = isMultilateral ? t("product.multilateralTitle") : t("product.bilateralTitle");
     const headerTitle = isMultilateral
-        ? "Produk Multilateral (JFX)"
-        : "Produk Bilateral (SPA)";
+        ? t("product.multilateralHeader")
+        : t("product.bilateralHeader");
 
     return (
         <PageTemplates title={pageTitle}>
-            <Header title={headerTitle} subtitle="PT. Solid Gold Berjangka" />
+            <Header title={headerTitle} subtitle={t("banner.company")} />
             <ProdukContainer kategoriProduk={kategoriProduk} />
         </PageTemplates>
     );

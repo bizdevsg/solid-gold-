@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { useI18n } from "@/i18n/useI18n";
 
 type Setting = {
     id: number;
@@ -30,6 +31,7 @@ const fetcher = (url: string) =>
     });
 
 export default function AboutSection() {
+    const { t } = useI18n();
     return (
         <section className="py-12 md:py-20">
             <div className="container mx-auto px-4">
@@ -49,15 +51,11 @@ export default function AboutSection() {
                     {/* Right Section - Content */}
                     <div className="w-full md:w-7/12 lg:w-1/2 text-left" data-aos="fade-left">
                         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-yellow-500 uppercase tracking-wider">
-                            Profil Perusahaan
+                            {t("about.profileTitle")}
                         </h2>
                         <div className="space-y-6 text-white">
-                            <p className="leading-relaxed">
-                                Berdiri sejak tahun 2002, PT Solid Gold Berjangka ("SGB") merupakan perusahaan pialang berjangka terdaftar dan diawasi oleh Badan Pengawas Perdagangan Berjangka Komoditi (BAPPEBTI). Berpengalaman lebih dari 20 tahun di industri Perdagangan Berjangka Komoditi, SGB adalah anggota dari PT Bursa Berjangka Jakarta (BBJ) dan PT Kliring Berjangka Indonesia (Persero).
-                            </p>
-                            <p className="leading-relaxed">
-                                Saat ini pelayanan transaksi PT Solid Gold Berjangka terus meluas dengan total kantor operasional mencapai 3 kantor tersebar di Jakarta, Semarang, Makassar.
-                            </p>
+                            <p className="leading-relaxed">{t("home.profile.p1")}</p>
+                            <p className="leading-relaxed">{t("home.profile.p2")}</p>
                         </div>
                     </div>    
                 </div>
@@ -65,44 +63,44 @@ export default function AboutSection() {
                 {/* Visi Misi Section */}
                 <div className="mx-auto bg-neutral-800/50 p-8 rounded-lg border border-neutral-600/30">
                     <h2 className="text-2xl md:text-3xl font-bold mb-8 text-yellow-500 text-center uppercase tracking-wider">
-                        Visi dan Misi Perusahaan
+                        {t("about.visionMissionTitle")}
                     </h2>
                     
                     <div className="space-y-8">
                         <div>
                             <h3 className="text-xl font-semibold text-yellow-400 mb-4 border-b border-yellow-500/30 pb-2">
-                                Misi Perusahaan
+                                {t("home.mission")}
                             </h3>
                             <ul className="space-y-3 text-white pl-5">
                                 <li className="flex items-start">
                                     <span className="text-yellow-500 mr-2">•</span>
-                                    <span>Menjadi sebuah perusahaan pialang berjangka yang memiliki skala internasional</span>
+                                    <span>{t("home.mission.item1")}</span>
                                 </li>
                                 <li className="flex items-start">
                                     <span className="text-yellow-500 mr-2">•</span>
-                                    <span>Menjadi market leader, baik itu secara regional ataupun internasional</span>
+                                    <span>{t("home.mission.item2")}</span>
                                 </li>
                             </ul>
                         </div>
 
                         <div>
                             <h3 className="text-xl font-semibold text-yellow-400 mb-4 border-b border-yellow-500/30 pb-2">
-                                Visi Perusahaan
+                                {t("home.vision")}
                             </h3>
                             <ul className="space-y-3 text-white pl-5">
                                 <li className="flex items-start">
                                     <span className="text-yellow-500 mr-2">•</span>
-                                    <span>Mengembangkan dan memajukan Perdagangan Berjangka di Indonesia sehingga dapat memberikan dampak positif kepada perekonomian Nasional baik dari segi mikro dan makro</span>
+                                    <span>{t("home.vision.item1")}</span>
                                 </li>
                                 <li className="flex items-start">
                                     <span className="text-yellow-500 mr-2">•</span>
-                                    <span>Memberdayakan Perdagangan Berjangka di Indonesia dan membantu semua pihak yang membutuhkannya untuk dapat mempergunakannya sebagai sarana lindung nilai (Hedging)</span>
+                                    <span>{t("home.vision.item2")}</span>
                                 </li>
                             </ul>
                         </div>
 
                         <div className="mt-6 text-white">
-                            <p>Dari visi dan misi perusahaan keuangan PT. Solid Gold Berjangka ini, kami berusaha semaksimal mungkin mendirikan perusahaan agar dapat memajukan dan mengembangkan perdagangan berjangka di Indonesia untuk memberikan dampak positif bagi perekonomian nasional, baik dari segi makro maupun mikro.</p>
+                            <p>{t("about.visionClosing")}</p>
                         </div>
                     </div>
                 </div>

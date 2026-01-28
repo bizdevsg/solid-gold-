@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import MarketUpdateCard from "../moleculs/MarketUpdateCard";
+import { useI18n } from "@/i18n/useI18n";
 
 type Quote = { symbol: string; last: number; valueChange: number; percentChange: number };
 
@@ -14,6 +15,7 @@ const fetcher = (url: string) =>
     });
 
 export default function MarketUpdate() {
+    const { t } = useI18n();
     const containerRef = useRef<HTMLDivElement>(null);
     const firstSetRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -114,22 +116,22 @@ export default function MarketUpdate() {
         };
     }, [quotes.length, hovered, loopWidth]);
 
-    if (loading) return <p className="text-white">Loading market…</p>;
-    if (error) return <p className="text-red-400">Gagal memuat market.</p>;
+    if (loading) return <p className="text-white">{t("market.loading")}</p>;
+    if (error) return <p className="text-red-400">{t("market.error")}</p>;
 
     return (
         <div className="relative w-full">
             <button
                 onClick={scrollLeft}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
-                aria-label="Scroll kiri"
+                aria-label={t("market.scrollLeft")}
             >
                 <FaChevronLeft />
             </button>
             <button
                 onClick={scrollRight}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
-                aria-label="Scroll kanan"
+                aria-label={t("market.scrollRight")}
             >
                 <FaChevronRight />
             </button>
@@ -156,7 +158,7 @@ export default function MarketUpdate() {
                         </div>
                     ))}
                     {quotes.length === 0 && (
-                        <div className="text-gray-300 px-4 py-2">Tidak ada data market.</div>
+                        <div className="text-gray-300 px-4 py-2">{t("market.empty")}</div>
                     )}
                 </div>
             </div>

@@ -3,6 +3,7 @@ import type { GetServerSideProps } from "next";
 import PageTemplates from "@/components/templates/PageTemplates";
 import Header from "@/components/moleculs/Header";
 import ProdukDetail from "@/components/organism/ProdukDetail"; // ganti ke 'organisms' kalau folder kamu plural
+import { useI18n } from "@/i18n/useI18n";
 
 type Produk = {
     id: number;
@@ -22,11 +23,12 @@ type PageProps = {
 };
 
 export default function ProdukDetailPage({ kategoriProduk, produk }: PageProps) {
+    const { t } = useI18n();
     const isMultilateral = kategoriProduk === "multilateral";
-    const headerTitle = produk?.nama_produk ?? "Detail Produk";
+    const headerTitle = produk?.nama_produk ?? t("product.detailTitle");
     const subheaderTitle = isMultilateral
-        ? "Produk Multilateral (JFX)"
-        : "Produk Bilateral (SPA)";
+        ? t("product.multilateralHeader")
+        : t("product.bilateralHeader");
 
     return (
         <PageTemplates title={headerTitle}>

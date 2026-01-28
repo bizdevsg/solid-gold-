@@ -1,5 +1,6 @@
 // File: @/components/organism/PivotFibonacci.tsx
 import React, { useMemo, useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 // Small helpers
 const num = (v: string) => (v.trim() === "" ? NaN : Number(v));
@@ -64,6 +65,7 @@ function fibRetracements({ A, B }: { A: number; B: number }) {
 }
 
 export default function PivotFibonacciWidget() {
+    const { t } = useI18n();
     // Inputs for Pivot
     const [open, setOpen] = useState("");
     const [high, setHigh] = useState("");
@@ -112,7 +114,7 @@ export default function PivotFibonacciWidget() {
                         : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
                         }`}
                 >
-                    Pivot
+                    {t("analysis.pivotTab")}
                 </button>
                 <button
                     onClick={() => setShowPivot(false)}
@@ -121,7 +123,7 @@ export default function PivotFibonacciWidget() {
                         : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
                         }`}
                 >
-                    Fibonacci
+                    {t("analysis.fibTab")}
                 </button>
             </div>
 
@@ -130,7 +132,7 @@ export default function PivotFibonacciWidget() {
                     {/* Inputs */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="flex flex-col gap-1">
-                            <label className="text-neutral-300 text-sm">Open</label>
+                            <label className="text-neutral-300 text-sm">{t("analysis.open")}</label>
                             <input
                                 className="bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
                                 type="number"
@@ -140,7 +142,7 @@ export default function PivotFibonacciWidget() {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-neutral-300 text-sm">High</label>
+                            <label className="text-neutral-300 text-sm">{t("analysis.high")}</label>
                             <input
                                 className="bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
                                 type="number"
@@ -150,7 +152,7 @@ export default function PivotFibonacciWidget() {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-neutral-300 text-sm">Low</label>
+                            <label className="text-neutral-300 text-sm">{t("analysis.low")}</label>
                             <input
                                 className="bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
                                 type="number"
@@ -160,7 +162,7 @@ export default function PivotFibonacciWidget() {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-neutral-300 text-sm">Close</label>
+                            <label className="text-neutral-300 text-sm">{t("analysis.close")}</label>
                             <input
                                 className="bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
                                 type="number"
@@ -172,7 +174,7 @@ export default function PivotFibonacciWidget() {
                     </div>
 
                     <button className="btn-primary rounded-xl px-4 py-2 shadow cursor-pointer">
-                        Calculate Pivot
+                        {t("analysis.calculatePivot")}
                     </button>
 
                     {/* Table */}
@@ -180,10 +182,10 @@ export default function PivotFibonacciWidget() {
                         <table className="min-w-full text-sm">
                             <thead className="bg-neutral-900 text-neutral-200">
                                 <tr>
-                                    <th className="p-3 text-left">Level</th>
-                                    <th className="p-3 text-left">Classic</th>
-                                    <th className="p-3 text-left">Woodie</th>
-                                    <th className="p-3 text-left">Camarilla</th>
+                                    <th className="p-3 text-left">{t("analysis.level")}</th>
+                                    <th className="p-3 text-left">{t("analysis.classic")}</th>
+                                    <th className="p-3 text-left">{t("analysis.woodie")}</th>
+                                    <th className="p-3 text-left">{t("analysis.camarilla")}</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-neutral-950/60 text-neutral-100">
@@ -204,34 +206,34 @@ export default function PivotFibonacciWidget() {
                     {/* Up Trend */}
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="bg-neutral-900/60 rounded-2xl border border-neutral-800 p-4 shadow">
-                            <h3 className="text-lime-400 font-bold text-lg mb-4">Up Trend</h3>
+                            <h3 className="text-lime-400 font-bold text-lg mb-4">{t("analysis.upTrend")}</h3>
                             <img src="/assets/Uptrend.jpg" alt="Uptrend" className="mb-5" />
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-neutral-300 text-sm">Price A (Low)</label>
+                                    <label className="text-neutral-300 text-sm">{t("analysis.priceALow")}</label>
                                     <input
                                         type="number"
                                         value={upA}
                                         onChange={(e) => setUpA(e.target.value)}
                                         className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
-                                        placeholder="Low price"
+                                        placeholder={t("analysis.lowPrice")}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-neutral-300 text-sm">Price B (High)</label>
+                                    <label className="text-neutral-300 text-sm">{t("analysis.priceBHigh")}</label>
                                     <input
                                         type="number"
                                         value={upB}
                                         onChange={(e) => setUpB(e.target.value)}
                                         className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
-                                        placeholder="High price"
+                                        placeholder={t("analysis.highPrice")}
                                     />
                                 </div>
                             </div>
 
                             {/* Retracement */}
                             <div className="mt-5">
-                                <h4 className="text-neutral-200 font-semibold mb-2">Retracement Levels</h4>
+                                <h4 className="text-neutral-200 font-semibold mb-2">{t("analysis.retracement")}</h4>
                                 <div className="grid grid-cols-5 gap-2 text-center text-xs md:text-sm">
                                     {fibUp?.r.map((p, i) => (
                                         <div key={p} className="bg-neutral-950 border border-neutral-800 rounded-xl p-2">
@@ -244,7 +246,7 @@ export default function PivotFibonacciWidget() {
 
                             {/* Projection */}
                             <div className="mt-5">
-                                <h4 className="text-neutral-200 font-semibold mb-2">Extension Levels</h4>
+                                <h4 className="text-neutral-200 font-semibold mb-2">{t("analysis.extension")}</h4>
                                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-center text-sm">
                                     {fibUp?.extLevels.map((p, i) => (
                                         <div key={p} className="bg-neutral-950 border border-neutral-800 rounded-xl p-2">
@@ -258,33 +260,33 @@ export default function PivotFibonacciWidget() {
 
                         {/* Down Trend */}
                         <div className="bg-neutral-900/60 rounded-2xl border border-neutral-800 p-4 shadow">
-                            <h3 className="text-rose-400 font-bold text-lg mb-4">Down Trend</h3>
+                            <h3 className="text-rose-400 font-bold text-lg mb-4">{t("analysis.downTrend")}</h3>
                             <img src="/assets/Downtren.jpg" alt="Downtrend" className="mb-5" />
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-neutral-300 text-sm">Price A (High)</label>
+                                    <label className="text-neutral-300 text-sm">{t("analysis.priceAHigh")}</label>
                                     <input
                                         type="number"
                                         value={downA}
                                         onChange={(e) => setDownA(e.target.value)}
                                         className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
-                                        placeholder="High price"
+                                        placeholder={t("analysis.highPrice")}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-neutral-300 text-sm">Price B (Low)</label>
+                                    <label className="text-neutral-300 text-sm">{t("analysis.priceBLow")}</label>
                                     <input
                                         type="number"
                                         value={downB}
                                         onChange={(e) => setDownB(e.target.value)}
                                         className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100"
-                                        placeholder="Low price"
+                                        placeholder={t("analysis.lowPrice")}
                                     />
                                 </div>
                             </div>
 
                             <div className="mt-5">
-                                <h4 className="text-neutral-200 font-semibold mb-2">Retracement Levels</h4>
+                                <h4 className="text-neutral-200 font-semibold mb-2">{t("analysis.retracement")}</h4>
                                 <div className="grid grid-cols-5 gap-2 text-center text-xs md:text-sm">
                                     {fibDown?.r.map((p, i) => (
                                         <div key={p} className="bg-neutral-950 border border-neutral-800 rounded-xl p-2">
@@ -296,7 +298,7 @@ export default function PivotFibonacciWidget() {
                             </div>
 
                             <div className="mt-5">
-                                <h4 className="text-neutral-200 font-semibold mb-2">Extension Levels</h4>
+                                <h4 className="text-neutral-200 font-semibold mb-2">{t("analysis.extension")}</h4>
                                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-center text-sm">
                                     {fibDown?.extLevels.map((p, i) => (
                                         <div key={p} className="bg-neutral-950 border border-neutral-800 rounded-xl p-2">

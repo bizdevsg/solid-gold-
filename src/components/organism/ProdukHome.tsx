@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import ProdukCard from "../moleculs/ProdukCard";
+import { useI18n } from "@/i18n/useI18n";
 
 type Produk = {
     id: number;
@@ -19,6 +20,7 @@ type Produk = {
 const MAX_PER_CATEGORY = 3;
 
 export default function ProdukHome() {
+    const { t } = useI18n();
     const API_BASE = useMemo(
         () =>
             (
@@ -46,17 +48,17 @@ export default function ProdukHome() {
                         Accept: "application/json",
                     },
                 });
-                if (!res.ok) throw new Error("Gagal memuat data produk");
+                if (!res.ok) throw new Error(t("product.errorLoad"));
 
                 const json = await res.json();
                 const data: Produk[] = json?.data;
-                if (!Array.isArray(data)) throw new Error("Format data tidak valid");
+                if (!Array.isArray(data)) throw new Error(t("common.invalidFormat"));
                 if (!isMounted) return;
 
                 setProduk(data);
             } catch (e: any) {
                 if (!isMounted) return;
-                setError(e?.message ?? "Terjadi kesalahan saat memuat data");
+                setError(e?.message ?? t("common.errorLoad"));
             } finally {
                 if (isMounted) setLoading(false);
             }
@@ -65,7 +67,7 @@ export default function ProdukHome() {
         return () => {
             isMounted = false;
         };
-    }, [API_BASE]);
+    }, [API_BASE, t]);
 
     const jfx = useMemo(
         () =>
@@ -85,8 +87,10 @@ export default function ProdukHome() {
     return (
         <section className="px-4 sm:px-6 lg:px-8 py-10" data-aos="fade-up">
             <div className="text-center mb-10">
-                <p className="text-yellow-500 font-semibold">PRODUK</p>
-                <h2 className="text-2xl md:text-3xl font-bold text-white">Produk Trading</h2>
+                <p className="text-yellow-500 font-semibold">{t("home.products")}</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white">
+                    {t("home.products.title")}
+                </h2>
             </div>
 
             {loading ? (
@@ -112,13 +116,13 @@ export default function ProdukHome() {
                     <div>
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-xl md:text-2xl font-bold text-white">
-                                Produk Multilateral (JFX)
+                                {t("home.products.jfx")}
                             </h3>
                             <Link
                                 href="/produk/multilateral"
                                 className="text-yellow-400 hover:text-yellow-300 underline underline-offset-4"
                             >
-                                Lihat semua
+                                {t("home.products.viewAll")}
                             </Link>
                         </div>
 
@@ -137,7 +141,7 @@ export default function ProdukHome() {
                             </div>
                         ) : (
                             <div className="text-gray-300 bg-neutral-900 border border-neutral-700 rounded p-4">
-                                Belum ada produk untuk kategori JFX.
+                                {t("home.products.emptyJfx")}
                             </div>
                         )}
                     </div>
@@ -145,13 +149,13 @@ export default function ProdukHome() {
                     <div>
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-xl md:text-2xl font-bold text-white">
-                                Produk Bilateral (SPA)
+                                {t("home.products.spa")}
                             </h3>
                             <Link
                                 href="/produk/bilateral"
                                 className="text-yellow-400 hover:text-yellow-300 underline underline-offset-4"
                             >
-                                Lihat semua
+                                {t("home.products.viewAll")}
                             </Link>
                         </div>
 
@@ -170,7 +174,7 @@ export default function ProdukHome() {
                             </div>
                         ) : (
                             <div className="text-gray-300 bg-neutral-900 border border-neutral-700 rounded p-4">
-                                Belum ada produk untuk kategori SPA.
+                                {t("home.products.emptySpa")}
                             </div>
                         )}
                     </div>
@@ -179,4 +183,3 @@ export default function ProdukHome() {
         </section>
     );
 }
-
