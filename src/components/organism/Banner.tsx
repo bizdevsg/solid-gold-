@@ -17,7 +17,7 @@ export default function Banner() {
                 </div>
 
                 {/* Text Section */}
-                <div className="text-center max-w-lg order-2 lg:order-1" data-aos="fade-right">
+                <div className="text-center max-w-lg order-2 lg:order-1 md:-translate-x-2" data-aos="fade-right">
                     <p className="text-lg text-yellow-500 font-semibold mb-2">
                         {t("banner.company")}
                     </p>
@@ -31,13 +31,19 @@ export default function Banner() {
                     <div className="mt-8 flex flex-col md:flex-row justify-center gap-4 px-4">
                         <Link
                             href="https://demo.sgberjangka.com/login" target="_blank"
-                            className="btn-primary px-10 py-5 rounded text-center shadow"
+                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
                         >
                             {t("banner.demo")}
                         </Link>
                         <Link
+                            href="https://regol.solidgold.co.id/" target="_blank"
+                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
+                        >
+                            {t("banner.regol")}
+                        </Link>
+                        <Link
                             href="https://etrade.sgberjangka.com/login" target="_blank"
-                            className="btn-primary px-10 py-5 rounded text-center shadow"
+                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
                         >
                             {t("banner.live")}
                         </Link>

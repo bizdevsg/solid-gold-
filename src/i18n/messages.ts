@@ -339,6 +339,7 @@ export const messages: Record<Locale, Messages> = {
     "banner.subtitle": "Solid Gold Berjangka",
     "banner.member": "Member of Jakarta Futures Exchange & Member of Indonesia Derivatives Clearing House",
     "banner.demo": "Login Akun Demo",
+    "banner.regol": "Online Account Registration",
     "banner.live": "Login Akun Live",
 
     "home.aboutLabel": "Tentang Kami",
@@ -810,6 +811,7 @@ export const messages: Record<Locale, Messages> = {
     "banner.subtitle": "Solid Gold Berjangka",
     "banner.member": "Member of Jakarta Futures Exchange & Member of Indonesia Derivatives Clearing House",
     "banner.demo": "Demo Account Login",
+    "banner.regol": "Online Account Registration",
     "banner.live": "Live Account Login",
 
     "home.aboutLabel": "About Us",
