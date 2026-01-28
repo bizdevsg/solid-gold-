@@ -28,24 +28,24 @@ export default function Banner() {
                         {t("banner.member")}
                     </p>
                     {/* Buttons */}
-                    <div className="mt-8 flex flex-col md:flex-row justify-center gap-4 px-4">
-                        <Link
-                            href="https://demo.sgberjangka.com/login" target="_blank"
-                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
-                        >
-                            {t("banner.demo")}
-                        </Link>
+                    <div className="mt-8 flex flex-col md:flex-row justify-center gap-3 px-4">
                         <Link
                             href="https://regol.solidgold.co.id/" target="_blank"
-                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
+                            className="btn-primary px-4 py-3 rounded-xl text-center shadow text-sm md:text-base whitespace-nowrap"
                         >
                             {t("banner.regol")}
                         </Link>
                         <Link
                             href="https://etrade.sgberjangka.com/login" target="_blank"
-                            className="btn-primary px-6 py-4 rounded text-center shadow text-sm md:text-base whitespace-nowrap"
+                            className="btn-primary px-4 py-3 rounded-xl text-center shadow text-sm md:text-base whitespace-nowrap"
                         >
                             {t("banner.live")}
+                        </Link>
+                        <Link
+                            href="https://demo.sgberjangka.com/login" target="_blank"
+                            className="btn-primary px-4 py-3 rounded-xl text-center shadow text-sm md:text-base whitespace-nowrap"
+                        >
+                            {t("banner.demo")}
                         </Link>
                     </div>
                 </div>
