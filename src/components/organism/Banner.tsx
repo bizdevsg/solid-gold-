@@ -30,13 +30,13 @@ export default function Banner() {
                     <div className="mt-8 flex flex-col md:flex-row justify-center gap-4 px-4">
                         <Link
                             href="https://demo.sgberjangka.com/login" target="_blank"
-                            className="bg-gradient-to-b from-yellow-400 to-black px-10 py-5 rounded text-center text-white font-semibold shadow hover:opacity-90 transition"
+                            className="btn-primary px-10 py-5 rounded text-center shadow"
                         >
                             Login Akun Demo
                         </Link>
                         <Link
                             href="https://etrade.sgberjangka.com/login" target="_blank"
-                            className="bg-gradient-to-b from-yellow-400 to-black px-10 py-5 rounded text-center text-white font-semibold shadow hover:opacity-90 transition"
+                            className="btn-primary px-10 py-5 rounded text-center shadow"
                         >
                             Login Akun Live
                         </Link>

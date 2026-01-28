@@ -92,7 +92,7 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
             <div className="text-center text-red-400 py-20">
                 <h1>404 - Halaman Tidak Ditemukan</h1>
                 <button
-                    className="mt-4 px-4 py-2 bg-yellow-500 rounded text-black"
+                    className="btn-primary mt-4 px-4 py-2 rounded"
                     onClick={() => router.push("/")}
                 >
                     Kembali ke Beranda
@@ -182,9 +182,9 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                         <button
                             key={filter}
                             onClick={() => setActiveFilter(filter)}
-                            className={`uppercase border border-yellow-500 text-white px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter
-                                ? "bg-yellow-500 text-white"
-                                : "bg-gray-100/5 hover:bg-gray-100/10"
+                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer ${activeFilter === filter
+                                ? "btn-primary"
+                                : "bg-gray-100/5 hover:bg-gray-100/10 text-white"
                                 }`}
                         >
                             {filter}

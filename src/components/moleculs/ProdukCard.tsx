@@ -36,7 +36,7 @@ export default function ProdukCard({
                 <p className="text-gray-400 mt-2 line-clamp-2">{description}</p>
                 <a
                     href={href}
-                    className="w-full text-center border border-yellow-500 px-5 py-2 rounded-full hover:bg-yellow-500 hover:text-black mt-3 inline-block transition-all duration-300"
+                    className="btn-primary w-full text-center px-5 py-2 rounded-full mt-3 inline-block"
                 >
                     Detail
                 </a>

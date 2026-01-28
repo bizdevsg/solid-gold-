@@ -11,7 +11,7 @@ export default function Custom404() {
             </p>
             <a
                 href="/"
-                className="px-6 py-3 rounded-lg bg-yellow-500 text-white font-medium hover:bg-yellow-600 transition-all duration-300"
+                className="btn-primary px-6 py-3 rounded-lg"
             >
                 Kembali ke Beranda
             </a>

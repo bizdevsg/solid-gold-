@@ -115,7 +115,7 @@ export default function WakilPialangPage() {
                   onClick={() => setSelectedCabangId("0")}
                   className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
                     selectedCabangId === "0"
-                      ? "bg-yellow-500 text-black border-yellow-500 shadow"
+                      ? "btn-primary border-yellow-500 shadow"
                       : "bg-neutral-950 text-white border-neutral-700 hover:border-yellow-500"
                   }`}
                 >
@@ -131,7 +131,7 @@ export default function WakilPialangPage() {
                       onClick={() => setSelectedCabangId(id)}
                       className={`px-4 py-2 rounded-lg border text-sm transition-colors shrink-0 ${
                         active
-                          ? "bg-yellow-500 text-black border-yellow-500 shadow"
+                          ? "btn-primary border-yellow-500 shadow"
                           : "bg-neutral-950 text-white border-neutral-700 hover:border-yellow-500"
                       }`}
                     >

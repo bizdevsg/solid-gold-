@@ -10,6 +10,10 @@
   }
 }
 
+@utility btn-primary {
+  @apply bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold transition hover:from-yellow-500 hover:to-yellow-700;
+}
+
 /* sekarang baru aturan CSS lainnya */
 :root {
   --background: #131313;

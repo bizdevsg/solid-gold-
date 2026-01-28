@@ -22,7 +22,7 @@ export default function ReadMore({ kategoriSlug }: ReadMoreProps) {
   const url = readMoreUrlMap[kategoriSlug] ?? "#"; // fallback jika slug tidak ada
   return (
     <Link
-      className="w-fit bg-gradient-to-b from-yellow-500 to-black text-white px-5 py-3 rounded-lg inline-block"
+      className="btn-primary w-fit px-5 py-3 rounded-lg inline-block"
       href={url}
       target="_blank" // opsional: buka tab baru
       rel="noopener noreferrer"

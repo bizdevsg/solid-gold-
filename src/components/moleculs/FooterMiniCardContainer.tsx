@@ -10,7 +10,7 @@ export default function FooterMiniCardContainer() {
                     />
                 </div>
             </a>
-            <a>
+            <a href="/tentang-kami/legalitas-bisnis">
                 <div className="bg-gradient-to-br from-white via-zinc-100 to-zinc-200 p-3 rounded-2xl shadow-xl border border-zinc-300 w-fit hover:scale-105 hover:shadow-2xl transition transform duration-300 ease-in-out">
                     <img
                         src="/assets/logo TSI.png"

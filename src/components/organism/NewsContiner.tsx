@@ -158,7 +158,9 @@ export default function NewsContainer({ kategoriSlug }: NewsContainerProps) {
                         <button
                             key={filter}
                             onClick={() => setActiveFilter(filter)}
-                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter ? "bg-yellow-500 text-white" : "bg-gray-100/5 hover:bg-gray-100/10"
+                            className={`uppercase border border-yellow-500 px-3 py-2 rounded-lg transition-all duration-300 ${activeFilter === filter
+                                ? "btn-primary"
+                                : "bg-gray-100/5 hover:bg-gray-100/10 text-white"
                                 }`}
                         >
                             {filter}

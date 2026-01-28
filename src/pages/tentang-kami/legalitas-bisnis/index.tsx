@@ -132,7 +132,7 @@ export default function LegalitasBisnis() {
               <p className="text-gray-300 mb-6">
                 Seluruh dokumen legalitas dapat dilihat langsung di kantor kami atau melalui salinan resmi yang telah dilegalisir.
               </p>
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-6 rounded-md transition duration-300">
+              <button className="btn-primary py-2 px-6 rounded-md">
                 Hubungi Kami untuk Info Lebih Lanjut
               </button>
             </div>

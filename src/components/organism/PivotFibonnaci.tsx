@@ -107,14 +107,18 @@ export default function PivotFibonacciWidget() {
             <div className="flex gap-2">
                 <button
                     onClick={() => setShowPivot(true)}
-                    className={`px-4 py-2 rounded-xl font-medium shadow hover:bg-yellow-500 hover:text-black transition duration-300 cursor-pointer ${showPivot ? "bg-yellow-500 text-black" : "bg-neutral-800 text-neutral-200"
+                    className={`px-4 py-2 rounded-xl font-medium shadow transition duration-300 cursor-pointer ${showPivot
+                        ? "btn-primary"
+                        : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
                         }`}
                 >
                     Pivot
                 </button>
                 <button
                     onClick={() => setShowPivot(false)}
-                    className={`px-4 py-2 rounded-xl font-medium shadow hover:bg-yellow-500 hover:text-black transition duration-300 cursor-pointer ${!showPivot ? "bg-yellow-500 text-black" : "bg-neutral-800 text-neutral-200"
+                    className={`px-4 py-2 rounded-xl font-medium shadow transition duration-300 cursor-pointer ${!showPivot
+                        ? "btn-primary"
+                        : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
                         }`}
                 >
                     Fibonacci
@@ -167,7 +171,7 @@ export default function PivotFibonacciWidget() {
                         </div>
                     </div>
 
-                    <button className="bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl px-4 py-2 font-semibold shadow cursor-pointer transition ">
+                    <button className="btn-primary rounded-xl px-4 py-2 shadow cursor-pointer">
                         Calculate Pivot
                     </button>
 

@@ -22,7 +22,7 @@ export default function TradingView() {
                         <a
                             href="https://id.tradingview.com/chart/"
                             target="_blank"
-                            className="bg-red-500 text-white text-center px-6 py-3 rounded-lg hover:bg-red-600 transition duration-300 max-w-max"
+                            className="btn-primary text-center px-6 py-3 rounded-lg max-w-max"
                         >
                             Live Chart
                         </a>

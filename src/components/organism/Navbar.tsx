@@ -396,7 +396,7 @@ export default function Navbar() {
                             <div className="lg:block w-full lg:w-auto mt-1 lg:mt-0">
                                 <Link
                                     href="https://regol.solidgold.co.id/"
-                                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold text-sm px-5 py-2 rounded transition hover:from-yellow-500 hover:to-yellow-700 block text-center lg:inline-block"
+                                    className="btn-primary text-sm px-5 py-2 rounded block text-center lg:inline-block"
                                     onClick={closeAllMenus}
                                 >
                                     Daftar Sekarang
