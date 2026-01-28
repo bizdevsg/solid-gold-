@@ -10,9 +10,10 @@ import { useI18n } from "@/i18n/useI18n";
 
 type MenuLink = { label: string; href: string };
 type MenuGroup = { category: string; children: MenuLink[] };
+type SubMenuItem = { label: string; href: string; subDropdown?: MenuLink[] };
 type MenuItem =
     | { label: string; key?: string; href: string }
-    | { label: string; key: string; dropdown: (MenuLink | MenuGroup)[] };
+    | { label: string; key: string; dropdown: (MenuLink | MenuGroup | SubMenuItem)[] };
 
 export default function Navbar() {
     const router = useRouter();
@@ -22,7 +23,9 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+    const [activeSubDropdown, setActiveSubDropdown] = useState<string | null>(null);
     const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
+    const [mobileSubDropdown, setMobileSubDropdown] = useState<string | null>(null);
     const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
     const navRef = useRef<HTMLDivElement | null>(null);
 
@@ -99,14 +102,27 @@ export default function Navbar() {
         return pathname === href || pathname.startsWith(href + "/");
     };
 
-    const getDropdownLinks = (dropdown: (MenuLink | MenuGroup)[]): MenuLink[] => {
+    const getDropdownLinks = (dropdown: (MenuLink | MenuGroup | SubMenuItem)[]): MenuLink[] => {
         if (!dropdown?.length) return [];
-        return isGroupArray(dropdown)
-            ? (dropdown as MenuGroup[]).flatMap((g) => g.children)
-            : (dropdown as MenuLink[]);
+        if (isGroupArray(dropdown)) {
+            return (dropdown as MenuGroup[]).flatMap((g) => g.children);
+        }
+        
+        const links: MenuLink[] = [];
+        (dropdown as (MenuLink | SubMenuItem)[]).forEach(item => {
+            if (isSubMenuItem(item)) {
+                links.push({ label: item.label, href: item.href });
+                if (item.subDropdown) {
+                    links.push(...item.subDropdown);
+                }
+            } else {
+                links.push(item);
+            }
+        });
+        return links;
     };
 
-    const isDropdownActive = (dropdown: (MenuLink | MenuGroup)[]) =>
+    const isDropdownActive = (dropdown: (MenuLink | MenuGroup | SubMenuItem)[]) =>
         getDropdownLinks(dropdown).some((l) => isActiveHref(l.href));
 
     // Scroll state
@@ -138,14 +154,18 @@ export default function Navbar() {
             if (!navRef.current) return;
             if (!navRef.current.contains(e.target as Node)) {
                 setActiveDropdown(null);
+                setActiveSubDropdown(null);
                 setMobileDropdown(null);
+                setMobileSubDropdown(null);
                 setIsOpen(false);
             }
         };
         const onKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 setActiveDropdown(null);
+                setActiveSubDropdown(null);
                 setMobileDropdown(null);
+                setMobileSubDropdown(null);
                 setIsOpen(false);
             }
         };
@@ -165,22 +185,36 @@ export default function Navbar() {
         }
         setIsOpen(false);
         setActiveDropdown(null);
+        setActiveSubDropdown(null);
         setMobileDropdown(null);
+        setMobileSubDropdown(null);
     }, [pathname]);
 
     // Hover handlers (desktop)
-    const handleMouseEnter = (key: string) => {
+    const handleMouseEnter = (key: string, isSubDropdown?: string) => {
         if (timeoutId.current) clearTimeout(timeoutId.current);
-        setActiveDropdown(key);
+        if (isSubDropdown) {
+            setActiveSubDropdown(isSubDropdown);
+        } else {
+            setActiveDropdown(key);
+        }
     };
-    const handleMouseLeave = () => {
-        timeoutId.current = setTimeout(() => setActiveDropdown(null), 120);
+    const handleMainMouseLeave = () => {
+        timeoutId.current = setTimeout(() => {
+            setActiveDropdown(null);
+            setActiveSubDropdown(null);
+        }, 300);
+    };
+    const handleDropdownMouseEnter = () => {
+        if (timeoutId.current) clearTimeout(timeoutId.current);
     };
 
     const closeAllMenus = () => {
         setIsOpen(false);
         setActiveDropdown(null);
+        setActiveSubDropdown(null);
         setMobileDropdown(null);
+        setMobileSubDropdown(null);
     };
 
     const linkBase = "text-base hover:text-yellow-500 transition-colors";
@@ -240,8 +274,6 @@ export default function Navbar() {
                                         <div
                                             key={idx}
                                             className="relative w-full lg:w-auto"
-                                            onMouseEnter={() => handleMouseEnter(key)}
-                                            onMouseLeave={handleMouseLeave}
                                         >
                                             <button
                                                 type="button"
@@ -253,18 +285,24 @@ export default function Navbar() {
                                                     setMobileDropdown(mobileDropdown === key ? null : key)
                                                 }
                                                 onFocus={() => handleMouseEnter(key)}
+                                                onMouseEnter={() => handleMouseEnter(key)}
                                             >
                                                 {item.label}
                                                 <FiChevronDown />
                                             </button>
 
-                                            {/* Desktop Dropdown */}
+                                            {/* Desktop Dropdown Wrapper */}
                                             <div
-                                                role="menu"
-                                                aria-label={item.label}
-                                                className={`absolute left-0 mt-2 bg-neutral-800 text-white rounded-md shadow-lg ring-1 ring-white/10 w-[15rem] ${desktopOpen ? "hidden lg:block" : "hidden"
-                                                    }`}
+                                                className="hidden lg:block"
+                                                onMouseEnter={() => handleMouseEnter(key)}
+                                                onMouseLeave={handleMainMouseLeave}
                                             >
+                                                <div
+                                                    role="menu"
+                                                    aria-label={item.label}
+                                                    className={`absolute left-0 mt-2 bg-neutral-800 text-white rounded-md shadow-lg ring-1 ring-white/10 w-[15rem] ${desktopOpen ? "block" : "hidden"
+                                                        }`}
+                                                >
                                                 {isGroupArray(dropdown) ? (
                                                     <div className="py-2">
                                                         {dropdown.map((group, gIdx) => (
@@ -297,27 +335,82 @@ export default function Navbar() {
                                                     </div>
                                                 ) : (
                                                     <ul className="py-2">
-                                                        {(dropdown as MenuLink[]).map((link, lIdx) => {
+                                                        {(dropdown as (MenuLink | SubMenuItem)[]).map((link, lIdx) => {
+                                                            const hasSubDropdown = 'subDropdown' in link && link.subDropdown;
                                                             const childActive = isActiveHref(link.href);
+                                                            const subKey = `${key}-${lIdx}`;
+                                                            
                                                             return (
-                                                                <li key={lIdx}>
-                                                                    <Link
-                                                                        href={link.href}
-                                                                        className={`block py-2 px-4 ${childActive
-                                                                            ? "text-yellow-400"
-                                                                            : "text-gray-300 hover:text-yellow-500"
-                                                                            }`}
-                                                                        aria-current={childActive ? "page" : undefined}
-                                                                        onClick={closeAllMenus}
-                                                                    >
-                                                                        {link.label}
-                                                                    </Link>
+                                                                <li key={lIdx} className="relative">
+                                                                    {hasSubDropdown ? (
+                                                                        <div
+                                                                            className="relative"
+                                                                            onMouseEnter={() => setActiveSubDropdown(subKey)}
+                                                                            onMouseLeave={() => setActiveSubDropdown(null)}
+                                                                        >
+                                                                            <button
+                                                                                className={`flex justify-between items-center w-full py-2 px-4 ${childActive
+                                                                                    ? "text-yellow-400"
+                                                                                    : "text-gray-300 hover:text-yellow-500"
+                                                                                    }`}
+                                                                                aria-haspopup="menu"
+                                                                                aria-expanded={activeSubDropdown === subKey}
+                                                                            >
+                                                                                {link.label}
+                                                                                <FiChevronDown className="ml-1" />
+                                                                            </button>
+                                                                            
+                                                                            {/* Sub Dropdown */}
+                                                                            <div
+                                                                                role="menu"
+                                                                                className={`absolute left-full top-0 ml-1 bg-neutral-800 text-white rounded-md shadow-lg ring-1 ring-white/10 w-[15rem] ${activeSubDropdown === subKey ? "block" : "hidden"
+                                                                                    }`}
+                                                                                onMouseEnter={() => setActiveSubDropdown(subKey)}
+                                                                                onMouseLeave={() => setActiveSubDropdown(null)}
+                                                                            >
+                                                                                <ul className="py-2">
+                                                                                    {link.subDropdown!.map((subLink, subIdx) => {
+                                                                                        const subActive = isActiveHref(subLink.href);
+                                                                                        return (
+                                                                                            <li key={subIdx}>
+                                                                                                <Link
+                                                                                                    href={subLink.href}
+                                                                                                    className={`block py-2 px-4 ${subActive
+                                                                                                        ? "text-yellow-400"
+                                                                                                        : "text-gray-300 hover:text-yellow-500"
+                                                                                                        }`}
+                                                                                                    aria-current={subActive ? "page" : undefined}
+                                                                                                    onClick={closeAllMenus}
+                                                                                                >
+                                                                                                    {subLink.label}
+                                                                                                </Link>
+                                                                                            </li>
+                                                                                        );
+                                                                                    })}
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <Link
+                                                                            href={link.href}
+                                                                            className={`block py-2 px-4 ${childActive
+                                                                                ? "text-yellow-400"
+                                                                                : "text-gray-300 hover:text-yellow-500"
+                                                                                }`}
+                                                                            aria-current={childActive ? "page" : undefined}
+                                                                            onClick={closeAllMenus}
+                                                                            onMouseEnter={() => setActiveSubDropdown(null)}
+                                                                        >
+                                                                            {link.label}
+                                                                        </Link>
+                                                                    )}
                                                                 </li>
                                                             );
                                                         })}
                                                     </ul>
                                                 )}
                                             </div>
+                                            </div> {/* Close Desktop Dropdown Wrapper */}
 
                                             {/* Mobile Dropdown */}
                                             {mobileDropdown === key && (
@@ -354,21 +447,65 @@ export default function Navbar() {
                                                         </div>
                                                     ) : (
                                                         <ul>
-                                                            {(dropdown as MenuLink[]).map((link, lIdx) => {
+                                                            {(dropdown as (MenuLink | SubMenuItem)[]).map((link, lIdx) => {
+                                                                const hasSubDropdown = 'subDropdown' in link && link.subDropdown;
                                                                 const childActive = isActiveHref(link.href);
+                                                                const subKey = `${key}-${lIdx}`;
+                                                                
                                                                 return (
                                                                     <li key={lIdx}>
-                                                                        <Link
-                                                                            href={link.href}
-                                                                            className={`block py-2 pl-2 ${childActive
-                                                                                ? "text-yellow-400"
-                                                                                : "text-gray-300 hover:text-yellow-500"
-                                                                                }`}
-                                                                            aria-current={childActive ? "page" : undefined}
-                                                                            onClick={closeAllMenus}
-                                                                        >
-                                                                            {link.label}
-                                                                        </Link>
+                                                                        {hasSubDropdown ? (
+                                                                            <div>
+                                                                                <button
+                                                                                    className={`flex justify-between items-center w-full py-2 pl-2 ${childActive
+                                                                                        ? "text-yellow-400"
+                                                                                        : "text-gray-300 hover:text-yellow-500"
+                                                                                        }`}
+                                                                                    onClick={() =>
+                                                                                        setMobileSubDropdown(mobileSubDropdown === subKey ? null : subKey)
+                                                                                    }
+                                                                                >
+                                                                                    {link.label}
+                                                                                    <FiChevronDown className={`ml-1 transition-transform ${mobileSubDropdown === subKey ? "rotate-180" : ""}`} />
+                                                                                </button>
+                                                                                
+                                                                                {/* Mobile Sub Dropdown */}
+                                                                                {mobileSubDropdown === subKey && (
+                                                                                    <ul className="pl-4 pt-1">
+                                                                                        {link.subDropdown!.map((subLink, subIdx) => {
+                                                                                            const subActive = isActiveHref(subLink.href);
+                                                                                            return (
+                                                                                                <li key={subIdx}>
+                                                                                                    <Link
+                                                                                                        href={subLink.href}
+                                                                                                        className={`block py-2 pl-2 ${subActive
+                                                                                                            ? "text-yellow-400"
+                                                                                                            : "text-gray-300 hover:text-yellow-500"
+                                                                                                            }`}
+                                                                                                        aria-current={subActive ? "page" : undefined}
+                                                                                                        onClick={closeAllMenus}
+                                                                                                    >
+                                                                                                        {subLink.label}
+                                                                                                    </Link>
+                                                                                                </li>
+                                                                                            );
+                                                                                        })}
+                                                                                    </ul>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <Link
+                                                                                href={link.href}
+                                                                                className={`block py-2 pl-2 ${childActive
+                                                                                    ? "text-yellow-400"
+                                                                                    : "text-gray-300 hover:text-yellow-500"
+                                                                                    }`}
+                                                                                aria-current={childActive ? "page" : undefined}
+                                                                                onClick={closeAllMenus}
+                                                                            >
+                                                                                {link.label}
+                                                                            </Link>
+                                                                        )}
                                                                     </li>
                                                                 );
                                                             })}
@@ -410,6 +547,10 @@ export default function Navbar() {
 }
 
 /** Helper */
-function isGroupArray(arr: (MenuLink | MenuGroup)[]): arr is MenuGroup[] {
+function isGroupArray(arr: (MenuLink | MenuGroup | SubMenuItem)[]): arr is MenuGroup[] {
     return typeof (arr?.[0] as any)?.category === "string";
+}
+
+function isSubMenuItem(item: MenuLink | MenuGroup | SubMenuItem): item is SubMenuItem {
+    return 'subDropdown' in item;
 }

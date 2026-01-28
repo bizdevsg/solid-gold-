@@ -42,7 +42,13 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
     );
 
     useEffect(() => {
-        let isMounted = true;
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted) return;
+        
+        let isRequestMounted = true;
         (async () => {
             try {
                 setLoading(true);
@@ -73,14 +79,33 @@ export default function ProdukContainer({ kategoriProduk }: ProdukContainerProps
                 if (!isMounted) return;
                 setError(e?.message ?? t("common.errorLoad"));
             } finally {
-                if (isMounted) setLoading(false);
+                if (isRequestMounted) setLoading(false);
             }
         })();
 
         return () => {
-            isMounted = false;
+            isRequestMounted = false;
         };
-    }, [API_BASE, targetKategori]);
+    }, [API_BASE, targetKategori, isMounted]);
+
+    // Show loading during hydration
+    if (!isMounted) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-neutral-800 rounded-lg shadow animate-pulse">
+                        <div className="w-full h-48 bg-neutral-700 rounded-t-lg" />
+                        <div className="p-4">
+                            <div className="h-6 bg-neutral-700 rounded w-2/3 mb-3" />
+                            <div className="h-4 bg-neutral-700 rounded w-full mb-2" />
+                            <div className="h-4 bg-neutral-700 rounded w-5/6 mb-4" />
+                            <div className="h-10 bg-neutral-700 rounded" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     if (loading) {
         return (
