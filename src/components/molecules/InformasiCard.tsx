@@ -13,6 +13,13 @@ interface InformasiCardProps {
 export default function InformasiCard({ slug, image, title, date, content }: InformasiCardProps) {
   const router = useRouter();
 
+  const plainContent = content
+    ? content
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+    : "";
+
   const handleClick = () => {
     router.push(`/tentang-kami/umum/informasi/${slug}`);
   };
@@ -52,7 +59,7 @@ export default function InformasiCard({ slug, image, title, date, content }: Inf
           {date}
         </p>
         <p className="text-sm text-gray-300 line-clamp-4">
-          {content}
+          {plainContent}
         </p>
       </div>
     </div>

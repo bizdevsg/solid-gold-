@@ -2,39 +2,88 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import PageTemplates from "@/components/templates/PageTemplates";
 import Image from 'next/image';
+import useSWR from 'swr';
 
 interface InformasiDetail {
   id: number;
   slug: string;
-  image: string;
+  image?: string | null;
   title: string;
   content: string;
-  date: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
-// Data informasi sementara (dalam real app, ini akan diambil dari API)
-const informasiData: InformasiDetail[] = [
-  {
-    id: 1,
-    slug: "info-dan-kegiatan-1",
-    image: "/assets/Informasi-1.jpg",
-    title: "Info dan Kegiatan 1",
-    date: "18 Juni 2017",
-    content: `The largest and most active brokerage firms in the futures trading industry, PT Solid Gold Berjangka is committed to continue to spearhead the growth of futures transactions in Indonesia through the operation and implementation of a transaction system is orderly, fair, efficient and transparent so that is increasingly accepted by society. Refers to a service oriented, PT Solid Gold Berjangka are always trying to put the interests of its customers by having experience of more than ten years and is supported by a professional staff with good experience and facilities of our online trading system is ready to help to increase the investment value of its customers wherever they are as a manifestation of our dedication to provide the best services. With the optimism that industrial commodity futures and derivatives trading in the country will continue to grow and thrive, PT Solid Gold Berjangka are always ready to move dynamically in order to meet the challenges of the future market.
+type ApiResponse<T> = { data: T } & Record<string, unknown>;
 
-As one of the largest and most active brokerage firms in the futures trading industry, PT Solid Gold Berjangka is committed to continue to spearhead the growth of futures transactions in Indonesia through the operation and implementation of a transaction system is orderly, fair, efficient and transparent so that is increasingly accepted by society. Refers to a service oriented, PT Solid Gold Berjangka are always trying to put the interests of its customers by having experience of more than ten years and is supported by a professional staff with good experience and facilities of our online trading system is ready to help to increase the investment value of its customers wherever they are as a manifestation of our dedication to provide the best services. With the optimism that industrial commodity futures and derivatives trading in the country will continue to grow and thrive, PT Solid Gold Berjangka are always ready to move dynamically in order to meet the challenges of the future market.`
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  "https://sg-admin.newsmaker.id/test"
+).replace(/\/+$/, "");
+
+const MEDIA_BASE = (
+  process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  "https://sg-admin.newsmaker.id/test"
+).replace(/\/+$/, "");
+
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN ?? "SGB-c7b0604664fd48d9";
+
+function mediaUrl(p?: string | null) {
+  if (!p) return "/assets/Informasi-1.jpg";
+  if (/^https?:\/\//i.test(p)) return p;
+  return `${MEDIA_BASE}/${String(p).replace(/^\/+/, "")}`;
+}
+
+function formatDate(ts?: string | null): string {
+  if (!ts) return "-";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+const fetcher = async (url: string): Promise<InformasiDetail | null> => {
+  const r = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${API_TOKEN}`,
+    },
+    cache: "no-store",
+  });
+
+  if (r.status === 404) {
+    return null;
   }
-];
+
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+  const json = (await r.json()) as ApiResponse<InformasiDetail | null>;
+  return (json?.data as InformasiDetail | null) ?? null;
+};
 
 export default function InformasiDetailPage() {
   const router = useRouter();
-  const { slug } = router.query;
+  const rawSlug = router.query.slug;
+  const slug =
+    typeof rawSlug === 'string'
+      ? rawSlug
+      : Array.isArray(rawSlug)
+      ? rawSlug[0]
+      : '';
 
-  // Find informasi by slug
-  const informasi = informasiData.find(item => item.slug === slug);
+  const { data, error, isLoading } = useSWR<InformasiDetail | null>(
+    slug ? `${API_BASE}/api/v1/informasi/${encodeURIComponent(slug)}` : null,
+    fetcher
+  );
 
-  // Handle loading state
-  if (router.isFallback) {
+  // Handle loading state (awal / slug belum siap)
+  if (!slug || isLoading) {
     return (
       <PageTemplates title="Loading...">
         <div className="container mx-auto px-4 py-12">
@@ -47,8 +96,28 @@ export default function InformasiDetailPage() {
     );
   }
 
+  if (error) {
+    return (
+      <PageTemplates title="Terjadi Kesalahan">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center">
+            <div className="text-gray-400 text-6xl mb-4">⚠️</div>
+            <h1 className="text-3xl font-bold text-white mb-4">Gagal memuat informasi</h1>
+            <p className="text-gray-300 mb-8">Silakan coba beberapa saat lagi.</p>
+            <button
+              onClick={() => router.push('/tentang-kami/umum/informasi')}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+            >
+              Kembali ke Informasi
+            </button>
+          </div>
+        </div>
+      </PageTemplates>
+    );
+  }
+
   // Handle not found
-  if (!informasi) {
+  if (!data) {
     return (
       <PageTemplates title="Informasi Tidak Ditemukan">
         <div className="container mx-auto px-4 py-12">
@@ -68,6 +137,8 @@ export default function InformasiDetailPage() {
     );
   }
 
+  const informasi = data;
+
   return (
     <PageTemplates title={informasi.title}>
       <div className="container mx-auto px-4 py-12">
@@ -84,7 +155,7 @@ export default function InformasiDetailPage() {
           <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-lg">
             <div className="relative w-full h-64 md:h-96 bg-gray-900/50">
               <Image
-                src={informasi.image}
+                src={mediaUrl(informasi.image)}
                 alt={informasi.title}
                 fill
                 className="object-contain"
@@ -94,11 +165,11 @@ export default function InformasiDetailPage() {
             
             {/* Date below image */}
             <div className="p-4 border-t border-neutral-700">
-              <p className="text-gray-400 text-center">
+              <p className="text-yellow-500 text-center">
                 <svg className="inline-block w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                 </svg>
-                {informasi.date}
+                {formatDate(informasi.created_at)}
               </p>
             </div>
           </div>
@@ -107,11 +178,10 @@ export default function InformasiDetailPage() {
         {/* Article Content */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-neutral-800 rounded-lg p-8 shadow-lg">
-            <div className="prose prose-invert max-w-none">
-              <div className="text-white leading-relaxed whitespace-pre-wrap text-base">
-                {informasi.content}
-              </div>
-            </div>
+            <div
+              className="prose prose-invert max-w-none text-white leading-relaxed text-base"
+              dangerouslySetInnerHTML={{ __html: informasi.content || "" }}
+            />
           </div>
 
           {/* Back Button */}
@@ -132,26 +202,3 @@ export default function InformasiDetailPage() {
   );
 }
 
-// Generate static paths for all informasi slugs
-export async function getStaticPaths() {
-  const paths = informasiData.map((informasi) => ({
-    params: { slug: informasi.slug },
-  }));
-
-  return {
-    paths,
-    fallback: true, // Show loading state for new paths
-  };
-}
-
-// Generate static props for each informasi
-export async function getStaticProps({ params }: { params: { slug: string } }) {
-  const informasi = informasiData.find(item => item.slug === params.slug);
-
-  return {
-    props: {
-      informasi,
-    },
-    revalidate: 60, // Revalidate every 60 seconds
-  };
-}

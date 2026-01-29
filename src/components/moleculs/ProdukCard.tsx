@@ -16,7 +16,7 @@ export default function ProdukCard({
         (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
             process.env.NEXT_PUBLIC_API_BASE_URL ??
             process.env.NEXT_PUBLIC_BASE_URL ??
-            "https://sg-admin.newsmaker.id"
+            "https://sg-admin.newsmaker.id/"
         ).replace(/\/+$/, "") + "/";
     const imgSrc = imagePath
         ? `${BASE_URL}${imagePath.startsWith("/") ? imagePath.slice(1) : imagePath}`

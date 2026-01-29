@@ -1,21 +1,74 @@
 import React from 'react';
 import PageTemplates from "@/components/templates/PageTemplates";
 import InformasiCard from "@/components/molecules/InformasiCard";
+import useSWR from "swr";
+
+interface Informasi {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  image?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+type ApiResponse<T> = { data: T } & Record<string, unknown>;
+
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  "https://sg-admin.newsmaker.id/test"
+).replace(/\/+$/, "");
+
+const MEDIA_BASE = (
+  process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  "https://sg-admin.newsmaker.id/test"
+).replace(/\/+$/, "");
+
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN ?? "SGB-c7b0604664fd48d9";
+
+function mediaUrl(p?: string | null) {
+  if (!p) return "/assets/Informasi-1.jpg";
+  if (/^https?:\/\//i.test(p)) return p;
+  return `${MEDIA_BASE}/${String(p).replace(/^\/+/, "")}`;
+}
+
+function formatDate(ts?: string | null): string {
+  if (!ts) return "-";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+const fetcher = async (url: string): Promise<Informasi[]> => {
+  const r = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${API_TOKEN}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+  const json = (await r.json()) as ApiResponse<Informasi[]>;
+  return Array.isArray(json?.data) ? json.data : [];
+};
 
 export default function InformasiPage() {
-  // Data informasi sementara
-  const informasiData = [
-    {
-      id: 1,
-      slug: "info-dan-kegiatan-1",
-      image: "/assets/Informasi-1.jpg",
-      title: "Info dan Kegiatan 1",
-      date: "18 Juni 2017",
-      content: `The largest and most active brokerage firms in the futures trading industry, PT Solid Gold Berjangka is committed to continue to spearhead the growth of futures transactions in Indonesia through the operation and implementation of a transaction system is orderly, fair, efficient and transparent so that is increasingly accepted by society. Refers to a service oriented, PT Solid Gold Berjangka are always trying to put the interests of its customers by having experience of more than ten years and is supported by a professional staff with good experience and facilities of our online trading system is ready to help to increase the investment value of its customers wherever they are as a manifestation of our dedication to provide the best services. With the optimism that industrial commodity futures and derivatives trading in the country will continue to grow and thrive, PT Solid Gold Berjangka are always ready to move dynamically in order to meet the challenges of the future market.
+  const { data, error, isLoading } = useSWR<Informasi[]>(
+    `${API_BASE}/api/v1/informasi`,
+    fetcher
+  );
 
-As one of the largest and most active brokerage firms in the futures trading industry, PT Solid Gold Berjangka is committed to continue to spearhead the growth of futures transactions in Indonesia through the operation and implementation of a transaction system is orderly, fair, efficient and transparent so that is increasingly accepted by society. Refers to a service oriented, PT Solid Gold Berjangka are always trying to put the interests of its customers by having experience of more than ten years and is supported by a professional staff with good experience and facilities of our online trading system is ready to help to increase the investment value of its customers wherever they are as a manifestation of our dedication to provide the best services. With the optimism that industrial commodity futures and derivatives trading in the country will continue to grow and thrive, PT Solid Gold Berjangka are always ready to move dynamically in order to meet the challenges of the future market.`
-    }
-  ];
+  const informasiData = data ?? [];
 
   return (
     <PageTemplates title="Informasi">
@@ -26,22 +79,35 @@ As one of the largest and most active brokerage firms in the futures trading ind
           <div className="w-24 h-1 bg-yellow-500 mx-auto"></div>
         </div>
 
-        {/* Grid Informasi Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {informasiData.map((informasi) => (
-            <InformasiCard
-              key={informasi.id}
-              slug={informasi.slug}
-              image={informasi.image}
-              title={informasi.title}
-              date={informasi.date}
-              content={informasi.content}
-            />
-          ))}
-        </div>
+        {isLoading && (
+          <div className="text-center py-12 text-gray-300">
+            Memuat informasi...
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="text-center py-12 text-red-400">
+            Gagal memuat informasi.
+          </div>
+        )}
+
+        {!isLoading && !error && informasiData.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {informasiData.map((informasi) => (
+              <InformasiCard
+                key={informasi.id}
+                slug={informasi.slug}
+                image={mediaUrl(informasi.image)}
+                title={informasi.title}
+                date={formatDate(informasi.created_at)}
+                content={informasi.content}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Empty State jika tidak ada data */}
-        {informasiData.length === 0 && (
+        {!isLoading && !error && informasiData.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">
               📄

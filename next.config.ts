@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "http",
+        hostname: "sg-admin.newsmaker.id",
+        port: "",
+        pathname: "/**",
+      },
+      {
         protocol: "https",
         hostname: "img.youtube.com",
         port: "",
