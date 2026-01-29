@@ -1,5 +1,4 @@
 import AutoModal from "@/components/moleculs/AutoModal";
-import Banner from "@/components/organism/Banner";
 import CompanyProfileHome from "@/components/organism/CompanyProfileHome";
 import MarketUpdate from "@/components/organism/MarketUpdate";
 import NewsHome from "@/components/organism/NewsHome";
@@ -35,3 +34,4 @@ export default function Home() {
     </PageTemplates>
   );
 }
+import Banner from "@/components/organism/Banner";

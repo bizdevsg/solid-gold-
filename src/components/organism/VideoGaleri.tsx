@@ -7,14 +7,6 @@ import TikTokEmbed from "../moleculs/TikTokEmbed";
 import { useI18n } from "@/i18n/useI18n";
 
 /* ========= Types ========= */
-type ApiLegalitas = {
-    id: number;
-    title: string;
-    image: string;
-    created_at?: string;
-    updated_at?: string;
-};
-type LegalitasItem = { title: string; file: string };
 
 type ApiVideo = {
     id: number;
@@ -165,50 +157,6 @@ export default function VideoGaleri() {
             ? settingData.data[0].tiktok_id
             : "";
 
-    /* ====== LEGALITAS ====== */
-    const {
-        data: legalitasData,
-        error: legalitasErr,
-        isLoading: legalitasLoading,
-    } = useSWR<ApiResponse<ApiLegalitas[]>>(
-        `${API_BASE}/api/v1/legalitas`,
-        fetcher,
-        { refreshInterval: 60_000 }
-    );
-
-    const legalitasList: LegalitasItem[] = useMemo(() => {
-        if (Array.isArray(legalitasData?.data)) {
-            return legalitasData.data.map((it) => ({
-                title: it.title,
-                file: mediaUrl(it.image),
-            }));
-        }
-        return [];
-    }, [legalitasData]);
-
-    const [legalitasIndex, setLegalitasIndex] = useState(0);
-    useEffect(() => setLegalitasIndex(0), [legalitasList.length]);
-
-    useEffect(() => {
-        if (legalitasList.length <= 2) return; // <= 2 tidak perlu slideshow
-        const itv = setInterval(
-            () => setLegalitasIndex((p) => (p + 1) % legalitasList.length),
-            5000
-        );
-        return () => clearInterval(itv);
-    }, [legalitasList.length]);
-
-
-    const prevLegalitas = () =>
-        setLegalitasIndex((p) =>
-            legalitasList.length ? (p === 0 ? legalitasList.length - 1 : p - 1) : 0
-        );
-    const nextLegalitas = () =>
-        setLegalitasIndex((p) =>
-            legalitasList.length ? (p === legalitasList.length - 1 ? 0 : p + 1) : 0
-        );
-    const currentLegalitas = legalitasList[legalitasIndex];
-
     /* ====== VIDEO ====== */
     const [videoModalOpen, setVideoModalOpen] = useState(false);
 
@@ -256,26 +204,6 @@ export default function VideoGaleri() {
         );
     const currentVideo = videoList[videoIndex];
 
-    /* ====== Modal Legalitas ====== */
-    const [legalitasModalOpen, setLegalitasModalOpen] = useState(false);
-    const [activeLegalitas, setActiveLegalitas] = useState<LegalitasItem | null>(
-        null
-    );
-    const openLegalitasModal = useCallback((img: LegalitasItem) => {
-        setActiveLegalitas(img);
-        setLegalitasModalOpen(true);
-    }, []);
-    const closeLegalitasModal = useCallback(() => {
-        setLegalitasModalOpen(false);
-        setActiveLegalitas(null);
-    }, []);
-    useEffect(() => {
-        if (!legalitasModalOpen) return;
-        const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeLegalitasModal();
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [legalitasModalOpen, closeLegalitasModal]);
-
     /* ====== Modal Video ====== */
     const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
     const openVideoModal = useCallback((v: VideoItem) => {
@@ -319,7 +247,7 @@ export default function VideoGaleri() {
     }, [activeVideo?.id, videoModalOpen]);
 
     // Kunci scroll body jika ada modal yang terbuka
-    const anyModalOpen = legalitasModalOpen || videoModalOpen;
+    const anyModalOpen = videoModalOpen;
     useBodyScrollLock(anyModalOpen);
 
     return (
@@ -330,7 +258,7 @@ export default function VideoGaleri() {
                 data-aos="fade-right"
             >
                 <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
-                    {t("gallery.tiktok")}
+                    @solidgold_news
                 </div>
 
                 {settingErr && (
@@ -343,83 +271,8 @@ export default function VideoGaleri() {
                 )}
             </section>
 
-            {/* Legalitas & Video */}
+            {/* Video */}
             <section className="flex flex-col lg:w-2/3 space-y-10">
-                {/* LEGALITAS */}
-                <div
-                    className="flex flex-col items-center text-center space-y-5"
-                    data-aos="fade-left"
-                >
-                    <div className="bg-neutral-800 px-4 py-2 rounded font-semibold text-yellow-500 w-fit">
-                        {t("gallery.legal")}
-                    </div>
-                    <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-lg min-h-[16rem] bg-neutral-900">
-                        {legalitasLoading ? (
-                            <div className="w-full h-full animate-pulse bg-neutral-800" />
-                        ) : legalitasErr ? (
-                            <div className="p-6 text-red-400">{t("gallery.legalError")}</div>
-                        ) : legalitasList.length === 0 ? (
-                            <div className="p-6 text-neutral-300">{t("gallery.legalEmpty")}</div>
-                        ) : legalitasList.length === 1 ? (
-                            // Hanya 1 data → tampilkan satu gambar saja, tanpa slideshow
-                            <img
-                                src={legalitasList[0].file}
-                                alt={legalitasList[0].title}
-                                className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
-                                onClick={() => openLegalitasModal(legalitasList[0])}
-                            />
-                        ) : legalitasList.length === 2 ? (
-                            // Tepat 2 data → tampilkan dua-duanya sekaligus tanpa tombol/animasi
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {legalitasList.map((item, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={item.file}
-                                        alt={item.title}
-                                        className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
-                                        onClick={() => openLegalitasModal(item)}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            // > 2 data → slideshow 2 item per slide
-                            <>
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={legalitasIndex}
-                                        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
-                                        initial={{ x: 300, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        exit={{ x: -300, opacity: 0 }}
-                                        transition={{ duration: 0.8 }}
-                                    >
-                                        {Array.from({ length: 2 }).map((_, i) => {
-                                            const idx = (legalitasIndex + i) % legalitasList.length;
-                                            const item = legalitasList[idx];
-                                            return (
-                                                <img
-                                                    key={idx}
-                                                    src={item.file}
-                                                    alt={item.title}
-                                                    className="w-full h-64 object-cover rounded-lg bg-neutral-800 cursor-pointer"
-                                                    onClick={() => openLegalitasModal(item)}
-                                                />
-                                            );
-                                        })}
-                                    </motion.div>
-                                </AnimatePresence>
-                                <button onClick={prevLegalitas} className="absolute top-1/2 left-2">
-                                    ❮
-                                </button>
-                                <button onClick={nextLegalitas} className="absolute top-1/2 right-2">
-                                    ❯
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* VIDEO */}
                 <div
                     className="flex flex-col items-center text-center space-y-5"
                     data-aos="fade-left"
@@ -435,7 +288,6 @@ export default function VideoGaleri() {
                         ) : videoList.length === 0 ? (
                             <div className="p-6 text-neutral-300">{t("gallery.videoEmpty")}</div>
                         ) : videoList.length === 1 ? (
-                            // 1 video → tampil satu saja
                             <img
                                 src={videoList[0].thumb}
                                 alt={videoList[0].title}
@@ -443,7 +295,6 @@ export default function VideoGaleri() {
                                 onClick={() => openVideoModal(videoList[0])}
                             />
                         ) : videoList.length === 2 ? (
-                            // 2 video → tampil dua-duanya sekaligus tanpa slide
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {videoList.map((item) => (
                                     <img
@@ -457,7 +308,6 @@ export default function VideoGaleri() {
                                 ))}
                             </div>
                         ) : (
-                            // > 2 → slideshow 2 item per slide
                             <>
                                 <AnimatePresence mode="wait">
                                     <motion.div
@@ -495,39 +345,6 @@ export default function VideoGaleri() {
                     </div>
                 </div>
             </section>
-
-            {/* Modal Legalitas */}
-            {legalitasModalOpen && activeLegalitas && (
-                <div
-                    className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex justify-center items-center z-50 p-4 overscroll-contain"
-                    onClick={closeLegalitasModal}
-                >
-                    <div
-                        className="bg-neutral-900 relative p-3 sm:p-4 rounded-xl shadow-2xl w-fit"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            onClick={closeLegalitasModal}
-                            className="absolute right-3 top-3 px-3 py-1 text-sm rounded-full bg-neutral-700 text-white hover:bg-neutral-800 transition cursor-pointer"
-                            autoFocus
-                        >
-                            {t("common.close")}
-                        </button>
-
-                        <div className="w-full max-h-[90vh] overflow-auto flex items-center justify-center">
-                            <img
-                                src={activeLegalitas.file}
-                                alt={activeLegalitas.title}
-                                className="max-h-[85vh] w-auto h-auto rounded-lg"
-                            />
-                        </div>
-
-                        <div className="mt-3 text-white font-medium">
-                            {activeLegalitas.title}
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Modal Video */}
             {videoModalOpen && activeVideo && (

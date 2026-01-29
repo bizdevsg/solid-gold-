@@ -52,7 +52,7 @@ function stripHtml(html: string): string {
     return html.replace(/<[^>]*>/g, " ");
 }
 function mediaUrl(p?: string) {
-    if (!p) return "/placeholder.jpg";
+    if (!p) return "/assets/Downtren.jpg";
     if (/^https?:\/\//i.test(p)) return p;
     const base = (
         process.env.NEXT_PUBLIC_PORTALNEWS_MEDIA_BASE_URL ??

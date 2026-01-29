@@ -21,9 +21,6 @@ export default function Banner() {
                     <p className="text-lg text-yellow-500 font-semibold mb-2">
                         {t("banner.company")}
                     </p>
-                    <h3 className="text-3xl md:text-4xl   font-bold leading-snug mb-4 text-white">
-                        {t("banner.title")} <br /> {t("banner.subtitle")}
-                    </h3>
                     <p className="text-gray-300 text-sm leading-relaxed">
                         {t("banner.member")}
                     </p>

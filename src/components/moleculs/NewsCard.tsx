@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/i18n/useI18n";
@@ -20,18 +21,28 @@ export default function NewsCard({
     href,
 }: NewsCardProps) {
     const { t } = useI18n();
+    const fallbackImage = "/assets/Downtren.jpg";
+    const [imgSrc, setImgSrc] = useState(image || fallbackImage);
     const safeDescription = description ?? t("news.noDescription");
+
+    useEffect(() => {
+        setImgSrc(image || fallbackImage);
+    }, [image, fallbackImage]);
+
     return (
         <Link href={href} prefetch={false} className="block h-full">
             <article className="bg-neutral-800 hover:bg-neutral-900 h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 <div className="relative w-full h-40 bg-neutral-700">
                     <Image
-                        src={image || "/placeholder.jpg"}
+                        src={imgSrc}
                         alt={title || t("news.alt")}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover"
                         priority={false}
+                        onError={() => {
+                            if (imgSrc !== fallbackImage) setImgSrc(fallbackImage);
+                        }}
                     />
                 </div>
                 <div className="p-4 flex flex-col h-full">
