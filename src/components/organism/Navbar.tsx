@@ -39,7 +39,7 @@ export default function Navbar() {
                 { label: t("nav.about.legal"), href: "/tentang-kami/legalitas-bisnis" },
                 { label: t("nav.about.broker"), href: "/tentang-kami/wakil-pialang" },
                 { label: t("nav.about.services"), href: "/tentang-kami/fasilitas-layanan" },
-                { label: t("nav.about.achievements"), href: "/tentang-kami/video-galeri" },
+                { label: t("nav.about.achievements"), href: "/tentang-kami/pencapaian" },
                 { label: t("nav.about.general"), href: "/tentang-kami/market-update" },
                 { label: t("nav.about.reason"), href: "/tentang-kami/alasan" },
             ],
